@@ -1,0 +1,4 @@
+USERNAME=hoangsaga123
+PASSWORD=SYdgGzAUiQg7tL8V
+
+mongodb+srv://hoangsaga123:SYdgGzAUiQg7tL8V@cluster0.ysizo3s.mongodb.net/

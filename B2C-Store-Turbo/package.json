@@ -1,5 +1,5 @@
 {
-  "name": "B2C-store",
+  "name": "B2C-Store-Turbo",
   "private": true,
   "scripts": {
     "build": "turbo run build",

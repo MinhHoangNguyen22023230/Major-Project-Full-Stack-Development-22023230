@@ -4,15 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate:db": "ts-node src/generateDatabase.ts",
+    "delete:db": "ts-node src/deleteDatabase.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/dotenv": "^8.2.3",
+    "dotenv": "^16.5.0",
     "mongodb": "^6.16.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18"
+    "@types/node": "^22.15.18",
+    "ts-node": "^10.9.2"
   }
 }

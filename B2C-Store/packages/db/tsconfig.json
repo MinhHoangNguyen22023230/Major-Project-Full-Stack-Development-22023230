@@ -1,5 +1,17 @@
 {
   "compilerOptions": {
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   }
 }

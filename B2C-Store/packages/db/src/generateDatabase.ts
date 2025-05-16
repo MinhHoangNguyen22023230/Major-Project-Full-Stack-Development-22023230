@@ -1,5 +1,5 @@
-import { connectToDatabase } from "./connection";
-import { User, Product, Order } from "./models";
+import { connectToDatabase } from "@/connection";
+import { User, Product, Order } from "@/models/models";
 
 async function generateDatabase() {
     try {

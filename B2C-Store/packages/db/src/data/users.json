@@ -1,0 +1,52 @@
+[
+    {
+        "userId": "1",
+        "username": "Admin",
+        "email": "admin@example.com",
+        "password": "hashedpassword123",
+        "address": [
+            {
+                "addressId": "1",
+                "street": "123 Admin St",
+                "city": "Admin City",
+                "state": "Admin State",
+                "postalCode": "12345",
+                "country": "Admin Country",
+                "isDefault": true
+            }
+        ],
+        "phoneNumber": "1234567890",
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z",
+        "role": "admin",
+        "wishlist": ["1", "2"],
+        "orders": ["1"],
+        "cartId": "1",
+        "reviews": ["1"]
+    },
+    {
+        "userId": "2",
+        "username": "John Doe",
+        "email": "john@example.com",
+        "password": "hashedpassword456",
+        "address": [
+            {
+                "addressId": "2",
+                "street": "456 User Ave",
+                "city": "User City",
+                "state": "User State",
+                "postalCode": "67890",
+                "country": "User Country",
+                "isDefault": true
+            }
+        ],
+        "phoneNumber": "9876543210",
+        "createdAt": "2023-01-02T00:00:00.000Z",
+        "updatedAt": "2023-01-02T00:00:00.000Z",
+        "role": "user",
+        "wishlist": ["2"],
+        "orders": ["2"],
+        "cartId": "2",
+        "reviews": ["2"]
+    }
+]

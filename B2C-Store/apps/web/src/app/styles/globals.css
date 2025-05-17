@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --background: #e8b315;
+  --foreground: #ededed;
+
+  /* Added color variables */
+  --yukon-gold: #7e6704ff;
+  --gallery: #ebebebff;
+  --rangoon-green: #0c0c08ff;
+  --supernova: #f6ce04ff;
+
+  /* Transition duration */
+  --transition-duration: 0.1s;
+}
+
+body {
+  background: var(--gallery);
+  color: var(--rangoon-green);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ease-in and ease-out for color transitions */
+.transition-color {
+  transition: color var(--transition-duration) ease-in-out, background-color var(--transition-duration) ease-in-out;
+}

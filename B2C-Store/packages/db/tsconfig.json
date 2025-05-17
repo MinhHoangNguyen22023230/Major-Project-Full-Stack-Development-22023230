@@ -1,5 +1,19 @@
 {
   "compilerOptions": {
-    "types": ["node"]
+    "moduleResolution": "node",
+    "types": [
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   }
 }

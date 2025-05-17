@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 64874",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 64874",
     "lint": "next lint"
   },
   "dependencies": {
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "@repo/db": "workspace:*"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

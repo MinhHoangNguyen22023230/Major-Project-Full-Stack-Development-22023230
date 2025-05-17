@@ -2,22 +2,37 @@
   "name": "@repo/db",
   "version": "1.0.0",
   "description": "",
-  "main": "connection.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "generate:db": "ts-node src/generateDatabase.ts",
-    "delete:db": "ts-node src/deleteDatabase.ts"
+    "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:migrate": "prisma migrate dev --skip-generate",
+    "db:push": "prisma db push",
+    "db:pull": "prisma db pull",
+    "lint": "eslint . --max-warnings 0",
+    "prebuild": "pnpm db:generate",
+    "predev": "pnpm db:generate",
+    "postinstall": "pnpm db:generate",
+    "studio": "prisma studio",
+    "dev": "tsc --watch",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@types/dotenv": "^8.2.3",
-    "dotenv": "^16.5.0",
-    "mongodb": "^6.16.0"
-  },
   "devDependencies": {
     "@types/node": "^22.15.18",
-    "ts-node": "^10.9.2"
+    "prisma": "^6.8.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/ui": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   }
 }

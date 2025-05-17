@@ -11,7 +11,7 @@
   --supernova: #f6ce04ff;
 
   /* Transition duration */
-  --transition-duration: 0.3s;
+  --transition-duration: 0.1s;
 }
 
 body {

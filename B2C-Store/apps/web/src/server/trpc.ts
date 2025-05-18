@@ -8,3 +8,5 @@ export const router = t.router;
 
 // This is a shortcut to `createRouter()` and will be deprecated in the future.
 export const publicProcedure = t.procedure;
+
+export const createContext = () => ({ prisma });

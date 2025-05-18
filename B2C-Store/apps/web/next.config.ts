@@ -1,12 +1,10 @@
-import type { NextConfig } from "next";
-
 const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'iili.io', // Allow images from iili.io
-        port: '', // No specific port
+        hostname: 'b2cstorage.s3.ap-southeast-2.amazonaws.com',
+        port: '',
         pathname: '/**', // Allow all paths under this hostname
       },
     ],

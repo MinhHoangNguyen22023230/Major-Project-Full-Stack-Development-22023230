@@ -14,7 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   username       String    @unique
@@ -63,9 +62,10 @@ model Product {
 }
 
 model Category {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  name     String    @unique
-  products Product[]
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String    @unique
+  description String
+  products    Product[]
 }
 
 model Brand {
@@ -73,6 +73,7 @@ model Brand {
   name        String    @unique
   description String?
   products    Product[]
+  imageUrl    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }

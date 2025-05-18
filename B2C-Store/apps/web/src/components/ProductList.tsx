@@ -1,19 +1,19 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { prisma } from "@repo/db";
+import { trpc } from "@/app/_trpc/client";
 
-export default async function ProductList() {
-  // Fetch products from the database
-  const products = await prisma.product.findMany({
-    include: {
-      category: true,
-      brand: true,
-    },
-  });
+
+export default function ProductList() {
+  const { data: products, isLoading, error } = trpc.getProducts.useQuery();
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {products.map((product) => (
+      {products?.map((product) => (
         <Link href={`/products/${product.id}`} key={product.id}>
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <Image

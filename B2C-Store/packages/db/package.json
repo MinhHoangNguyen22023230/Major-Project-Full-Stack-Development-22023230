@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",
     "db:migrate": "prisma migrate dev --skip-generate",
@@ -24,15 +25,13 @@
     "@types/node": "^22.15.18",
     "prisma": "^6.8.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.8.2",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@repo/ui": "workspace:*"
   },
   "exports": {
     ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.2"
   }
 }

@@ -1,10 +1,17 @@
 {
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "CommonJS",
-    "strict": true,
-    "esModuleInterop": true,
+    "target": "ES2017",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true,
     "outDir": "dist"
-  }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

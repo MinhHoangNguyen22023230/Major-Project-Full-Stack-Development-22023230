@@ -1,13 +1,12 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import {prisma} from "@repo/db"
-import { appRouter } from "@/server";
+import { createContext, appRouter } from "@repo/trpc";
 
 const handler = (req: Request) =>
   fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
-    createContext: () => ({ prisma }),
+    createContext,
   });
 
 export { handler as GET, handler as POST };

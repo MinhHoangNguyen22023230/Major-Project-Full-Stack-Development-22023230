@@ -1,5 +1,5 @@
 {
-  "name": "B2C-Store",
+  "name": "b2c-store",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -11,10 +11,19 @@
   "devDependencies": {
     "prettier": "^3.5.3",
     "turbo": "^2.5.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "typescript": "^5.8.3"
+    }
   }
 }

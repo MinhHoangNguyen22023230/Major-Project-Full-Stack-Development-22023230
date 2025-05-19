@@ -9,7 +9,7 @@ module.exports = {
                 gallery: "var(--gallery)", // Map CSS variable to Tailwind color
                 "rangoon-green": "var(--rangoon-green)", // Map CSS variable to Tailwind color
                 supernova: "var(--supernova)", // Map CSS variable to Tailwind color
-                "yukon-gold": "var(--yukon-gold)", // Map CSS variable to Tailwind color
+                "yukon-gold": "var(--yukon-gold)" // Map CSS variable to Tailwind color
             },
         },
     },

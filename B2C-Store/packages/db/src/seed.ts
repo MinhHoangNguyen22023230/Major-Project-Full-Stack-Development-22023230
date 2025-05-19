@@ -24,14 +24,16 @@ async function main() {
     const category1 = await prisma.category.create({
         data: {
             name: "Phone",
-            description: "device use for calling"
+            description: "device use for calling",
+            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/category/phone.jpg"
         },
     })
 
     const category2 = await prisma.category.create({
         data: {
             name: "Computer",
-            description: "device use for calling"
+            description: "device use for calling",
+            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/category/computer.jpg"
         },
     })
 

@@ -84,6 +84,9 @@ importers:
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@repo/trpc':
+        specifier: workspace:*
+        version: link:../../packages/trpc
       '@tanstack/react-query':
         specifier: ^5.76.1
         version: 5.76.1(react@19.1.0)
@@ -200,6 +203,18 @@ importers:
       typescript-eslint:
         specifier: ^8.32.0
         version: 8.32.0(eslint@9.26.0(jiti@2.4.2))(typescript@5.8.2)
+
+  packages/trpc:
+    dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../db
+      '@trpc/server':
+        specifier: ^11.1.2
+        version: 11.1.2(typescript@5.8.3)
+      zod:
+        specifier: ^3.24.4
+        version: 3.24.4
 
   packages/typescript-config: {}
 
@@ -3632,6 +3647,10 @@ snapshots:
   '@trpc/server@11.1.2(typescript@5.8.2)':
     dependencies:
       typescript: 5.8.2
+
+  '@trpc/server@11.1.2(typescript@5.8.3)':
+    dependencies:
+      typescript: 5.8.3
 
   '@tsconfig/node10@1.0.11': {}
 

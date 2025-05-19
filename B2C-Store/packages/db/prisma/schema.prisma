@@ -20,10 +20,10 @@ model User {
   email          String    @unique
   hashedPassword String
   cart           Cart?
-  order          Order[]
-  address        Address[]
+  orders         Order[]
+  addresses      Address[]
   wishList       WishList?
-  review         Review[]
+  reviews        Review[]
   imgUrl         String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -41,30 +41,32 @@ model Address {
 }
 
 model Product {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  name         String         @unique
-  price        Float
-  description  String
-  imageUrl     String
-  categoryId   String         @db.ObjectId
-  brandId      String         @db.ObjectId
-  category     Category       @relation(fields: [categoryId], references: [id])
-  brand        Brand          @relation(fields: [brandId], references: [id])
-  wishListItem WishListItem[]
-  orderItem    OrderItem[]
-  cartItem     CartItem[]
-  releaseDate  DateTime?
-  stock        Int
-  rating       Float?
-  reviews      Review[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String         @unique
+  price         Float
+  salePrice     Float?
+  description   String
+  imageUrl      String
+  categoryId    String         @db.ObjectId
+  brandId       String         @db.ObjectId
+  category      Category       @relation(fields: [categoryId], references: [id])
+  brand         Brand          @relation(fields: [brandId], references: [id])
+  wishListItems WishListItem[]
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  releaseDate   DateTime?
+  stock         Int
+  rating        Float?
+  reviews       Review[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Category {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String    @unique
-  description String
+  description String?
+  imageUrl    String?
   products    Product[]
 }
 
@@ -79,49 +81,53 @@ model Brand {
 }
 
 model Cart {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String     @unique @db.ObjectId
-  user      User       @relation(fields: [userId], references: [id])
-  cartItem  CartItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String     @unique @db.ObjectId
+  user       User       @relation(fields: [userId], references: [id])
+  totalPrice Float?
+  cartItems  CartItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model CartItem {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  cartId    String  @db.ObjectId
-  cart      Cart    @relation(fields: [cartId], references: [id])
-  productId String  @db.ObjectId
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  cartId     String  @db.ObjectId
+  cart       Cart    @relation(fields: [cartId], references: [id])
+  totalPrice Float
+  productId  String  @db.ObjectId
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int
 }
 
 model Order {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String      @db.ObjectId
-  user      User        @relation(fields: [userId], references: [id])
-  orderItem OrderItem[]
-  status    String      @default("pending")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String      @db.ObjectId
+  user       User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+  totalPrice Float?
+  status     String      @default("pending")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model OrderItem {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  orderId   String  @db.ObjectId
-  order     Order   @relation(fields: [orderId], references: [id])
-  productId String  @db.ObjectId
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId    String  @db.ObjectId
+  totalPrice Float
+  order      Order   @relation(fields: [orderId], references: [id])
+  productId  String  @db.ObjectId
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int
 }
 
 model WishList {
-  id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String         @unique @db.ObjectId
-  user         User           @relation(fields: [userId], references: [id])
-  wishListItem WishListItem[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String         @unique @db.ObjectId
+  user          User           @relation(fields: [userId], references: [id])
+  wishListItems WishListItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model WishListItem {

@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "strict": true,
+        "target": "ES2017",
+        "baseUrl": ".",
+        "moduleResolution": "nodenext",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    }
+}

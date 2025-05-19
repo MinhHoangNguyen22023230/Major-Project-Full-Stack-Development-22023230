@@ -137,6 +137,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   id: 'id',
   name: 'name',
   price: 'price',
+  salePrice: 'salePrice',
   description: 'description',
   imageUrl: 'imageUrl',
   categoryId: 'categoryId',
@@ -151,7 +152,8 @@ exports.Prisma.ProductScalarFieldEnum = {
 exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  description: 'description'
+  description: 'description',
+  imageUrl: 'imageUrl'
 };
 
 exports.Prisma.BrandScalarFieldEnum = {
@@ -166,6 +168,7 @@ exports.Prisma.BrandScalarFieldEnum = {
 exports.Prisma.CartScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  totalPrice: 'totalPrice',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -173,6 +176,7 @@ exports.Prisma.CartScalarFieldEnum = {
 exports.Prisma.CartItemScalarFieldEnum = {
   id: 'id',
   cartId: 'cartId',
+  totalPrice: 'totalPrice',
   productId: 'productId',
   quantity: 'quantity'
 };
@@ -180,6 +184,7 @@ exports.Prisma.CartItemScalarFieldEnum = {
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  totalPrice: 'totalPrice',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -188,6 +193,7 @@ exports.Prisma.OrderScalarFieldEnum = {
 exports.Prisma.OrderItemScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  totalPrice: 'totalPrice',
   productId: 'productId',
   quantity: 'quantity'
 };

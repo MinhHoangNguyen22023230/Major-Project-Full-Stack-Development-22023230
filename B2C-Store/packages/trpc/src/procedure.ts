@@ -1081,5 +1081,51 @@ export const appRouter = router({
     }),
 });
 
+/*----------------------Universal-------------------------*/
+
+/*----------------------Delete All Data-------------------------*/
+deleteAllData: publicProcedure.mutation(async ({ ctx }) => {
+  // Delete all related data in the correct order to respect relationships
+
+  // Delete all related wishlist items
+  await ctx.prisma.wishListItem.deleteMany({});
+
+  // Delete all related wishlists
+  await ctx.prisma.wishList.deleteMany({});
+
+  // Delete all related cart items
+  await ctx.prisma.cartItem.deleteMany({});
+
+  // Delete all related carts
+  await ctx.prisma.cart.deleteMany({});
+
+  // Delete all related order items
+  await ctx.prisma.orderItem.deleteMany({});
+
+  // Delete all related orders
+  await ctx.prisma.order.deleteMany({});
+
+  // Delete all related reviews
+  await ctx.prisma.review.deleteMany({});
+
+  // Delete all related products
+  await ctx.prisma.product.deleteMany({});
+
+  // Delete all related categories
+  await ctx.prisma.category.deleteMany({});
+
+  // Delete all related brands
+  await ctx.prisma.brand.deleteMany({});
+
+  // Delete all related addresses
+  await ctx.prisma.address.deleteMany({});
+
+  // Finally, delete all users
+  await ctx.prisma.user.deleteMany({});
+
+  return { message: "All data has been deleted successfully." };
+});
+
+
 // Export type definition of API
 export type AppRouter = typeof appRouter;

@@ -26,7 +26,9 @@
     "@types/node": "^22.15.18",
     "prisma": "^6.8.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/eslint-config": "workspace:*"
   },
   "exports": {
     ".": "./src/index.ts"

@@ -1,17 +1,16 @@
 {
+    "extends": "@repo/typescript-config/base.json",
     "compilerOptions": {
         "module": "NodeNext",
-        "strict": true,
         "target": "ES2017",
         "baseUrl": ".",
         "moduleResolution": "nodenext",
-        "esModuleInterop": true, // Added for compatibility
         "skipLibCheck": true, // Added to avoid type-checking issues
         "outDir": "dist"
     },
     "include": [
         "src"
-    ],
+, "eslint.config.mjs"    ],
     "exclude": [
         "node_modules",
         "dist"

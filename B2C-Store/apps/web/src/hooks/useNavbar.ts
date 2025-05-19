@@ -1,5 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 
+export function useTopNavBar() {
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const toggleMenu = () => {
+        setMenuOpen((prev) => !prev);
+    };
+
+    const closeMenu = () => {
+        setMenuOpen(false);
+    };
+
+    return { menuOpen, toggleMenu, closeMenu };
+}
+
 export function useShowCategoriesNavbar() {
     const [showCategories, setShowCategories] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);

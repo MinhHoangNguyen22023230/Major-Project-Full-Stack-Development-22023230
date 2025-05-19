@@ -1,8 +1,7 @@
 "use client";
 
 
-import { useShowCategoriesNavbar } from "@/hooks/useCategoriesNavbar";
-import { useTopNavBar } from "@/hooks/userTopNavBar";
+import { useShowCategoriesNavbar, useTopNavBar } from "@/hooks/useNavbar";
 import Link from "next/link";
 import Image from "next/image"
 import { useEffect, useState } from "react";
@@ -21,8 +20,8 @@ export default function Navbar() {
     }, []);
 
     // Fetch categories and brands using tRPC
-    const { data: brands, isLoading: brandsLoading, error: brandsError } = trpc.getBrands.useQuery();
-    const { data: categories, isLoading: categoriesLoading, error: categoriesError } = trpc.getCategories.useQuery();
+    const { data: brands, isLoading: brandsLoading, error: brandsError } = trpc.crud.getBrands.useQuery();
+    const { data: categories, isLoading: categoriesLoading, error: categoriesError } = trpc.crud.getCategories.useQuery();
 
     // Handle loading and error states
     if (!isClient || brandsLoading || categoriesLoading) {

@@ -1120,10 +1120,9 @@ deleteAllData: publicProcedure.mutation(async ({ ctx }) => {
   // Delete all related addresses
   await ctx.prisma.address.deleteMany({});
 
-  // Finally, delete all users
-  await ctx.prisma.user.deleteMany({});
 
-  return { message: "All data has been deleted successfully." };
+  // Finally, delete all users
+  return ctx.prisma.user.deleteMany({});
 });
 
 

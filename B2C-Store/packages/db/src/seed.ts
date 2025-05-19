@@ -92,7 +92,7 @@ async function main() {
         },
     })
 
-    console.log("Products seeded:", { product1, product2, product3, product4 })
+    console.log("Products seeded:", { product1, product3, product4 })
 
     // Seed Users
     const user1 = await prisma.user.create({

@@ -5,10 +5,15 @@
         "target": "ES2017",
         "baseUrl": ".",
         "moduleResolution": "nodenext",
-        "paths": {
-            "@/*": [
-                "./src/*"
-            ]
-        }
-    }
+        "esModuleInterop": true, // Added for compatibility
+        "skipLibCheck": true, // Added to avoid type-checking issues
+        "outDir": "dist"
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }

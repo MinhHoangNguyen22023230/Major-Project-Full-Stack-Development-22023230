@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "@/router";
+import { router, publicProcedure } from "./router";
 
 export const appRouter = router({
   /*----------------------Brand-------------------------*/
@@ -70,8 +70,8 @@ export const appRouter = router({
         },
       });
     }),
-
-  /*----------------------Category-------------------------*/
+    
+      /*----------------------Category-------------------------*/
   getCategories: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.category.findMany({
       include: {
@@ -169,9 +169,9 @@ export const appRouter = router({
         releaseDate: z.string().optional(),
         rating: z.number().optional(),
         categoryId: z.string(),
-        brandId: z.string(),
-      })
-    )
+        brandId: z.string()
+      }))
+
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.product.create({
         data: {
@@ -1079,50 +1079,49 @@ export const appRouter = router({
         },
       });
     }),
-});
+  /*----------------------Universal-------------------------*/
 
-/*----------------------Universal-------------------------*/
+  /*----------------------Delete All Data-------------------------*/
+  deleteAllData: publicProcedure.mutation(async ({ ctx }) => {
+    // Delete all related data in the correct order to respect relationships
 
-/*----------------------Delete All Data-------------------------*/
-deleteAllData: publicProcedure.mutation(async ({ ctx }) => {
-  // Delete all related data in the correct order to respect relationships
+    // Delete all related wishlist items
+    await ctx.prisma.wishListItem.deleteMany({});
 
-  // Delete all related wishlist items
-  await ctx.prisma.wishListItem.deleteMany({});
+    // Delete all related wishlists
+    await ctx.prisma.wishList.deleteMany({});
 
-  // Delete all related wishlists
-  await ctx.prisma.wishList.deleteMany({});
+    // Delete all related cart items
+    await ctx.prisma.cartItem.deleteMany({});
 
-  // Delete all related cart items
-  await ctx.prisma.cartItem.deleteMany({});
+    // Delete all related carts
+    await ctx.prisma.cart.deleteMany({});
 
-  // Delete all related carts
-  await ctx.prisma.cart.deleteMany({});
+    // Delete all related order items
+    await ctx.prisma.orderItem.deleteMany({});
 
-  // Delete all related order items
-  await ctx.prisma.orderItem.deleteMany({});
+    // Delete all related orders
+    await ctx.prisma.order.deleteMany({});
 
-  // Delete all related orders
-  await ctx.prisma.order.deleteMany({});
+    // Delete all related reviews
+    await ctx.prisma.review.deleteMany({});
 
-  // Delete all related reviews
-  await ctx.prisma.review.deleteMany({});
+    // Delete all related products
+    await ctx.prisma.product.deleteMany({});
 
-  // Delete all related products
-  await ctx.prisma.product.deleteMany({});
+    // Delete all related categories
+    await ctx.prisma.category.deleteMany({});
 
-  // Delete all related categories
-  await ctx.prisma.category.deleteMany({});
+    // Delete all related brands
+    await ctx.prisma.brand.deleteMany({});
 
-  // Delete all related brands
-  await ctx.prisma.brand.deleteMany({});
-
-  // Delete all related addresses
-  await ctx.prisma.address.deleteMany({});
+    // Delete all related addresses
+    await ctx.prisma.address.deleteMany({});
 
 
-  // Finally, delete all users
-  return ctx.prisma.user.deleteMany({});
+    // Finally, delete all users
+    return ctx.prisma.user.deleteMany({});
+  })
 });
 
 

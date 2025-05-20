@@ -4,7 +4,7 @@ import { verifyPassword } from "../utils/hash";
 
 // Email regex for additional validation (RFC 5322 Official Standard)
 const emailRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;;
 
 export const loginProcedure = publicProcedure
   .input(
@@ -21,7 +21,7 @@ export const loginProcedure = publicProcedure
   .mutation(async ({ ctx, input }) => {
     // Find user by email
     const user = await ctx.prisma.user.findUnique({
-      where: { email: input.email },
+      where: { email: input.email }
     });
 
     if (!user) {
@@ -34,9 +34,6 @@ export const loginProcedure = publicProcedure
       throw new Error("Invalid email or password");
     }
 
-    // Return user data (session is handled elsewhere)
-    return {
-      id: user.id,
-      email: user.email,
-    };
+    // Return only userId for session
+    return { userId: user.id };
   });

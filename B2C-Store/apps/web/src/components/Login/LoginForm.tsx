@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -11,6 +12,10 @@ export default function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
+    // Get the search params from the URL
+    // This is used to check if the user was redirected from a protected route
+    const searchParams = useSearchParams();
+    const message = searchParams.get("message");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,7 +28,7 @@ export default function LoginForm() {
             const res = await fetch("/api/session", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user.id }),
+                body: JSON.stringify({ userId: user }),
             });
 
             if (!res.ok) {
@@ -41,6 +46,12 @@ export default function LoginForm() {
 
     return (
         <div>
+            {/* Display error message if login fails */}
+            {message === "login_required" && (
+                <div className="text-red-600 text-sm mb-2">
+                    Please log in to continue.
+                </div>
+            )}
             <form className="flex flex-col h-50 gap-4" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-[var(--rangoon-green)]">

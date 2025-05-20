@@ -453,6 +453,8 @@ export const crudProcedure = router({
                 state: z.string(),
                 country: z.string(),
                 zipCode: z.string(),
+                isDefault: z.boolean().optional(),
+
             })
         )
         .mutation(async ({ ctx, input }) => {
@@ -486,6 +488,7 @@ export const crudProcedure = router({
                     state: z.string().optional(),
                     country: z.string().optional(),
                     zipCode: z.string().optional(),
+                    isDefault: z.boolean().optional()
                 }),
             })
         )
@@ -1128,5 +1131,32 @@ export const crudProcedure = router({
 
         // Finally, delete all users
         return ctx.prisma.user.deleteMany({});
-    })
+    }),
+
+    findProductByCartItemId: publicProcedure
+        .input(z.object({ cartItemId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            // Find all products by cartItemId
+            return ctx.prisma.product.findMany({
+                where: { cartItems: { some: { id: input.cartItemId } } },
+            });
+        }),
+
+    findProductByCategoryId: publicProcedure
+        .input(z.object({ categoryId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            // Find all products by categoryId
+            return ctx.prisma.product.findMany({
+                where: { categoryId: input.categoryId },
+            });
+        }),
+
+    findProductByBrandId: publicProcedure
+        .input(z.object({ brandId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            // Find all products by brandId
+            return ctx.prisma.product.findMany({
+                where: { brandId: input.brandId },
+            });
+        }),
 })

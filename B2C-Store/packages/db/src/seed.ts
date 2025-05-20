@@ -10,7 +10,7 @@ async function main() {
         data: {
             name: "Apple",
             description: "Innovative Product",
-            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/brand/apple.svg"
+            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/brand/682b0b7d587843c2fc3b075f/apple.svg"
         },
     })
 
@@ -18,7 +18,7 @@ async function main() {
         data: {
             name: "Dell",
             description: "Best computer brand",
-            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/brand/dell.svg"
+            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/brand/682b0b7d587843c2fc3b0760/dell.svg"
         },
     })
 

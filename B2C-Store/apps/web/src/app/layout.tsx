@@ -4,6 +4,8 @@ import "./styles/globals.css";
 import Navbar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import Provider from "@/app/_trpc/Provider";
+import ClientLayout from "@/app/clientLayout";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,10 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Provider><Navbar /></Provider>
-        <div className="h-34 w-full m-0 p-0"></div>
-        <Provider>{children}</Provider>
-        <Footer />
+        <Provider><ClientLayout>{children}</ClientLayout></Provider>
+
       </body>
     </html>
   );

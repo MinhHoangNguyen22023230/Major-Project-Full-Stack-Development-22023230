@@ -1,5 +1,5 @@
 "use client";
-import { logout } from "@/components/Login/logoutAction";
+
 import ProductList from "@/components/Listing/ProductList";
 export default function Home() {
   return (

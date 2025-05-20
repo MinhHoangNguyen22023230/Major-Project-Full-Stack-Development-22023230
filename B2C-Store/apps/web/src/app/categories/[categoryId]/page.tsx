@@ -1,14 +1,18 @@
 "use client";
+
 import React from "react";
+import { useParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import Image from "next/image";
-import Link from "next/link";
 import ProductListCategory from "@/components/Listing/ProductListCategory";
 
-export default function Category({ params }: { params: { categoryId: string } }) {
+export default function Category() {
+    // Use useParams to get categoryId instead of receiving it via props
+    const { categoryId } = useParams() as { categoryId: string };
+
     const { data: category, isLoading, error } = trpc.crud.findCategoryById.useQuery(
-        { id: params.categoryId },
-        { enabled: !!params.categoryId }
+        { id: categoryId },
+        { enabled: !!categoryId }
     );
 
     if (isLoading) return <div className="text-gray-500">Loading category...</div>;
@@ -16,7 +20,7 @@ export default function Category({ params }: { params: { categoryId: string } })
     if (!category) return <div className="text-gray-500">Category not found.</div>;
 
     return (
-<div className="flex flex-col items-center space-y-6 mt-30">
+        <div className="flex flex-col items-center space-y-6 mt-30">
             <div className="flex flex-col items-center gap-4">
                 {category.imageUrl && (
                     <Image
@@ -30,9 +34,7 @@ export default function Category({ params }: { params: { categoryId: string } })
                 <h1 className="text-3xl font-bold">{category.name}</h1>
                 {category.description && <p className="text-gray-700 text-center">{category.description}</p>}
             </div>
-
-
-            <ProductListCategory categoryId={params.categoryId} />
+            <ProductListCategory categoryId={categoryId} />
         </div>
     );
 }

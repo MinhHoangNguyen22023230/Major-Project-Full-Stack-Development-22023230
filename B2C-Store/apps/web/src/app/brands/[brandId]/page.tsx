@@ -1,13 +1,18 @@
 "use client";
+
 import React from "react";
+import { useParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import Image from "next/image";
 import ProductListBrand from "@/components/Listing/ProductListBrand";
 
-export default function Brand({ params }: { params: { brandId: string } }) {
+export default function Brand() {
+    // Use useParams to get brandId instead of receiving it via props
+    const { brandId } = useParams() as { brandId: string };
+
     const { data: brand, isLoading, error } = trpc.crud.findBrandById.useQuery(
-        { id: params.brandId },
-        { enabled: !!params.brandId }
+        { id: brandId },
+        { enabled: !!brandId }
     );
 
     if (isLoading) return <div className="text-gray-500">Loading brand...</div>;
@@ -29,7 +34,7 @@ export default function Brand({ params }: { params: { brandId: string } }) {
                 <h1 className="text-3xl font-bold">{brand.name}</h1>
                 {brand.description && <p className="text-gray-700 text-center">{brand.description}</p>}
             </div>
-            <ProductListBrand brandId={params.brandId} />
+            <ProductListBrand brandId={brandId} />
         </div>
     );
 }

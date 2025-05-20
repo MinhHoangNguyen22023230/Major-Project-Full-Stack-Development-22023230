@@ -11,7 +11,6 @@ export default function SignUpForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +21,6 @@ export default function SignUpForm() {
         username,
         email,
         password,
-        imgUrl: imgUrl || undefined,
       });
       router.push("/login");
     } catch (err) {

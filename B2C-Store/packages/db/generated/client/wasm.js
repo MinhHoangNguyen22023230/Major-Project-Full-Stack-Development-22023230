@@ -221,6 +221,15 @@ exports.Prisma.ReviewScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  email: 'email',
+  hashedPassword: 'hashedPassword',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -244,7 +253,8 @@ exports.Prisma.ModelName = {
   OrderItem: 'OrderItem',
   WishList: 'WishList',
   WishListItem: 'WishListItem',
-  Review: 'Review'
+  Review: 'Review',
+  Admin: 'Admin'
 };
 
 /**

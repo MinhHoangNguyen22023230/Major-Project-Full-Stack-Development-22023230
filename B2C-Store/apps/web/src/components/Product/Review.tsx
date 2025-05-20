@@ -2,15 +2,17 @@ import { useState } from "react";
 import { trpc } from "@/app/_trpc/client";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
+type ReviewType = {
+    id: string;
+    rating: number;
+    comment: string;
+    user?: { username?: string; id?: string };
+};
+
 type ReviewProps = {
-    reviews?: {
-        id: string;
-        rating: number;
-        comment: string;
-        user?: { username?: string; id?: string };
-    }[];
+    reviews?: ReviewType[];
     productId: string;
-    onReviewAdded?: (newReviews: any[]) => void;
+    onReviewAdded?: (newReviews: ReviewType[]) => void;
 };
 
 export default function Review({ reviews = [], productId, onReviewAdded }: ReviewProps) {
@@ -52,18 +54,30 @@ export default function Review({ reviews = [], productId, onReviewAdded }: Revie
                 return;
             }
             const res = await createReview.mutateAsync({ userId, productId, rating, comment });
-            // Add new review to list
-            const newReviews = [...reviews, { ...res, user: { username: res.user?.username || "You", id: userId } }];
+            // Add new review to list, ensuring rating is a number (not null) and comment is a string
+            const newReview: ReviewType = {
+                id: res.id,
+                rating: typeof res.rating === "number" ? res.rating : 0,
+                comment: res.comment ?? "",
+                user: { username: res.user?.username || "You", id: userId }
+            };
+            const newReviews: ReviewType[] = [
+                ...reviews,
+                newReview
+            ];
             // Recalculate average
-            const newAvg = (newReviews.reduce((a, b) => a + (typeof b.rating === "number" ? b.rating : 0), 0) / newReviews.length).toFixed(1);
+            const newAvg = (
+                newReviews.reduce((a, b) => a + (typeof b.rating === "number" ? b.rating : 0), 0) /
+                newReviews.length
+            ).toFixed(1);
             // Update product rating
             await updateProduct.mutateAsync({ id: productId, data: { rating: Number(newAvg) } });
             setComment("");
             setRating(5);
             if (onReviewAdded) onReviewAdded(newReviews);
             if (utils.crud.findProductById.invalidate) utils.crud.findProductById.invalidate({ id: productId });
-        } catch (err: any) {
-            setError(err?.message || "Failed to submit review");
+        } catch (err) {
+            setError((err as Error)?.message || "Failed to submit review");
         } finally {
             setSubmitting(false);
         }

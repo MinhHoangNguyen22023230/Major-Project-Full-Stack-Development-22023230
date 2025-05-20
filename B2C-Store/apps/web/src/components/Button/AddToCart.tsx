@@ -2,20 +2,32 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { trpc } from "@/app/_trpc/client";
 import { useState } from "react";
 
+// Match the backend Cart type, allowing totalPrice to be number | null
+type Cart = {
+    id: string;
+    userId: string;
+    totalPrice: number | null;
+    // other fields if needed
+};
+
+type CartItem = {
+    id: string;
+    cartId: string;
+    productId: string;
+    quantity: number;
+    totalPrice: number;
+};
+
 export default function AddToCartButton({ productId, productPrice }: { productId: string, productPrice: number }) {
-    // Get current user ID
     const userId = useCurrentUser();
     const [loading, setLoading] = useState(false);
 
-    // Mutations
     const createCartMutation = trpc.crud.createCart.useMutation();
     const createCartItemMutation = trpc.crud.createCartItem.useMutation();
     const updateCartItemMutation = trpc.crud.updateCartItem.useMutation();
     const updateCartMutation = trpc.crud.updateCart.useMutation();
     const findCartByUserId = trpc.crud.getCarts.useQuery(undefined, { staleTime: 1000 * 60 });
     const getCartItemsQuery = trpc.crud.getCartItems.useQuery();
-
-    // Add this to force a refetch of the user and carts for NavBar update
     const utils = trpc.useUtils();
 
     const handleAddToCart = async () => {
@@ -26,14 +38,13 @@ export default function AddToCartButton({ productId, productPrice }: { productId
         setLoading(true);
         try {
             // 1. Find user's cart (if exists)
-            let cart = findCartByUserId.data?.find((c: any) => c.userId === userId);
+            let cart = findCartByUserId.data?.find((c: Cart) => c.userId === userId);
 
             // 2. If no cart, create one and refetch carts to get the latest cart object
             if (!cart) {
                 await createCartMutation.mutateAsync({ userId });
-                // Refetch carts to ensure the cart is committed and available
                 const { data: cartsAfterCreate } = await findCartByUserId.refetch();
-                cart = cartsAfterCreate?.find((c: any) => c.userId === userId);
+                cart = cartsAfterCreate?.find((c: Cart) => c.userId === userId);
                 if (!cart) {
                     throw new Error("Cart creation failed. Please try again.");
                 }
@@ -41,8 +52,8 @@ export default function AddToCartButton({ productId, productPrice }: { productId
 
             // 3. Refetch cart items to ensure latest data
             await getCartItemsQuery.refetch();
-            const cartItems = getCartItemsQuery.data ?? [];
-            let cartItem = cartItems.find((item: any) => item.cartId === cart.id && item.productId === productId);
+            const cartItems: CartItem[] = getCartItemsQuery.data ?? [];
+            const cartItem = cartItems.find((item: CartItem) => item.cartId === cart!.id && item.productId === productId);
 
             if (cartItem) {
                 // 4. If exists, update quantity and totalPrice
@@ -52,7 +63,7 @@ export default function AddToCartButton({ productId, productPrice }: { productId
                     id: cartItem.id,
                     data: {
                         quantity: newQuantity,
-                        totalPrice: newTotalPrice, // always productPrice * quantity
+                        totalPrice: newTotalPrice,
                     },
                 });
             } else {
@@ -61,18 +72,18 @@ export default function AddToCartButton({ productId, productPrice }: { productId
                     cartId: cart.id,
                     productId,
                     quantity: 1,
-                    totalPrice: productPrice * 1, // always productPrice * quantity
+                    totalPrice: productPrice * 1,
                 });
             }
 
             const { data: freshCartItems } = await getCartItemsQuery.refetch();
-            const allCartItems = freshCartItems
-                ? freshCartItems.filter((item: any) => item.cartId === cart.id)
+            const allCartItems: CartItem[] = freshCartItems
+                ? freshCartItems.filter((item: CartItem) => item.cartId === cart!.id)
                 : [];
 
             // Always calculate total using cart item totalPrice
             const totalPrice = allCartItems.reduce(
-                (sum: number, item: any) => sum + (item.totalPrice || 0),
+                (sum: number, item: CartItem) => sum + (item.totalPrice || 0),
                 0
             );
 

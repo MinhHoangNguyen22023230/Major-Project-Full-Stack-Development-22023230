@@ -1,5 +1,5 @@
 "use client";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSession } from "@/app/clientLayout";
 import { trpc } from "@/app/_trpc/client";
 import { useState, useMemo } from "react";
 
@@ -30,7 +30,8 @@ type RawWishList = {
 };
 
 export default function AddToWishlist({ productId }: { productId: string }) {
-    const userId = useCurrentUser();
+    const session = useSession();
+    const userId = session.userId;
     const [loading, setLoading] = useState(false);
 
     // Get all wishlists (to find or create user's wishlist)
@@ -112,11 +113,10 @@ export default function AddToWishlist({ productId }: { productId: string }) {
 
     return (
         <button
-            className={`font-semibold px-4 py-2 rounded cursor-pointer transition ${
-                isWishlisted
+            className={`font-semibold px-4 py-2 rounded cursor-pointer transition ${isWishlisted
                     ? "bg-green-400 text-white"
                     : "bg-red-400 hover:bg-yellow-500 text-gray-900"
-            }`}
+                }`}
             onClick={handleToggleWishlist}
             disabled={loading}
         >

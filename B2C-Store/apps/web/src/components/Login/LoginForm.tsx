@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 export default function LoginForm() {
     const router = useRouter();
     const loginMutation = trpc.login.useMutation();
+    const sessionCreateMutation = trpc.session.createSession.useMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -24,16 +25,16 @@ export default function LoginForm() {
             // Authenticate with tRPC
             const user = await loginMutation.mutateAsync({ email, password });
 
-            // Set session cookie via API route
-            const res = await fetch("/api/session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user }),
+            // Set session cookie via tRPC sessionProcedure
+            await new Promise((resolve, reject) => {
+                sessionCreateMutation.mutate(
+                    { userId: user.userId },
+                    {
+                        onSuccess: () => resolve(true),
+                        onError: (err) => reject(err),
+                    }
+                );
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to create session");
-            }
 
             router.push("/");
         } catch (err) {

@@ -1,6 +1,3 @@
-"use server";
-
-import { deleteSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 /*
 const testUser = {
@@ -47,7 +44,13 @@ export async function login(prevState: LoginFormState, formData: FormData) {
   redirect("/");
 }
 */
+
 export async function logout() {
-  await deleteSession();
+  // Call tRPC session.deleteSession mutation via fetch (server action safe)
+  await fetch("/api/trpc/session.deleteSession", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: "{}",
+  });
   redirect("/login");
 }

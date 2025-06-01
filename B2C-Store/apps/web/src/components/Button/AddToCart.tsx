@@ -1,4 +1,4 @@
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useSession } from "@/app/clientLayout";
 import { trpc } from "@/app/_trpc/client";
 import { useState } from "react";
 
@@ -19,7 +19,8 @@ type CartItem = {
 };
 
 export default function AddToCartButton({ productId, productPrice }: { productId: string, productPrice: number }) {
-    const userId = useCurrentUser();
+    const session = useSession();
+    const userId = session.userId;
     const [loading, setLoading] = useState(false);
 
     const createCartMutation = trpc.crud.createCart.useMutation();

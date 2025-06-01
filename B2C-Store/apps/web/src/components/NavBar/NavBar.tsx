@@ -5,18 +5,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { logout } from "@/components/Login/logoutAction";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { trpc } from "@/app/_trpc/client";
 import React, { useState } from "react";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import { useSession } from "@/app/clientLayout";
 
 export default function Navbar() {
     const { menuOpen, toggleMenu, closeMenu } = useTopNavBar();
     const { showCategories } = useShowCategoriesNavbar();
 
-    // Use the custom hook to get current user
-    const userId = useCurrentUser();
-
+    // Use session from context
+    const session = useSession();
+    console.log("Session in Navbar:", session);
+    const userId = session?.userId;
 
     // Only fetch user if userId is available
     const { data: user, isLoading, error } = trpc.crud.findUserById.useQuery(
@@ -32,7 +33,6 @@ export default function Navbar() {
         ? userCart.cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
         : 0;
 
-    console.log("NavBar.tsx:", userId);
     // Fetch categories and brands using tRPC
     const { data: brands, isLoading: brandsLoading, error: brandsError } = trpc.crud.getBrands.useQuery();
     const { data: categories, isLoading: categoriesLoading, error: categoriesError } = trpc.crud.getCategories.useQuery();

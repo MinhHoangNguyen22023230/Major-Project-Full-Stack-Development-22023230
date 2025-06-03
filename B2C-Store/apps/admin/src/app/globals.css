@@ -1,19 +1,126 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ebebebff;
+  --foreground: ##0c0c08ff;
+  --ui-border-color: #c9c3c3;
+  --navbar-and-sidebar-bg: #f8f9fa;
+
+
+  --yukon-gold: #7e6704ff;
+  --gallery: #ebebebff;
+  --rangoon-green: #0c0c08ff;
+  --supernova: #f6ce04ff;
+
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #ededed;
-    --foreground: #0a0a0a;
+    --background: #ebebebff;
+    --foreground: ##0c0c08ff;
+    --ui-border-color: #c9c3c3;
+    --navbar-and-sidebar-bg: #f8f9fa;
+
+    --yukon-gold: #7e6704ff;
+    --gallery: #ebebebff;
+    --rangoon-green: #0c0c08ff;
+    --supernova: #f6ce04ff;
+
   }
 }
 
 body {
+  border: 1px solid var(--border-color);
   background: var(--background);
   color: var(--foreground);
+  border-color: var(--ui-border-color);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.my-border-b {
+  border-bottom: 2px solid var(--ui-border-color);
+}
+
+.my-border-r {
+  border-right: 2px solid var(--ui-border-color);
+}
+
+.four-by-four-border {
+  border: 1px solid var(--ui-border-color);
+}
+
+.ui-main {
+  background-color: var(--navbar-and-sidebar-bg);
+}
+
+.search-box {
+  background-color: var(--gallery);
+  border: 1px solid var(--ui-border-color);
+}
+
+.main-section {
+  background-color: var(--navbar-and-sidebar-bg);
+  border-radius: 8px;
+}
+
+.scrollable-sidebar {
+  overflow: clip;
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #64748b #1e293b;
+  /* thumb color, track color */
+}
+
+.scrollable-sidebar:hover {
+  overflow-y: auto;
+}
+
+/* Webkit browsers (Chrome, Edge, Safari) */
+.scrollable-sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollable-sidebar::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 8px;
+}
+
+.scrollable-sidebar::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.main-scrollable {
+  overflow: clip;
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #64748b #1e293b;
+  /* thumb color, track color */
+}
+
+.main-scrollable:hover {
+  overflow-y: overlay;
+}
+
+/* Fallback for browsers that don't support overlay */
+@supports not (overflow-y: overlay) {
+  .main-scrollable:hover {
+    overflow-y: auto;
+  }
+}
+
+/* Webkit browsers (Chrome, Edge, Safari) */
+.main-scrollable::-webkit-scrollbar {
+  position: relative;
+  top: 0;
+  right: 0;
+  width: 10px;
+}
+
+.main-scrollable::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 8px;
+}
+
+.main-scrollable::-webkit-scrollbar-track {
+  background: #1e293b;
 }

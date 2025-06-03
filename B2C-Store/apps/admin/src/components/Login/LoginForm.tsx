@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
 
 export default function AdminLoginForm() {
     const router = useRouter();
@@ -42,52 +44,92 @@ export default function AdminLoginForm() {
     const isLoading = adminLoginMutation.status === "pending";
 
     return (
-        <div>
-            {message === "login_required" && (
-                <div className="text-red-600 text-sm mb-2">
-                    Please log in to continue.
-                </div>
-            )}
-            <form className="flex flex-col h-50 gap-4" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-[var(--rangoon-green)]">
-                        Admin Email
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        required
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-[var(--rangoon-green)]">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        required
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                    />
-                </div>
-                {error && (
-                    <div className="text-red-600 text-sm">{error}</div>
+        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                <Image
+                    src="/logo.svg"
+                    alt="B2C Store Logo"
+                    width={50}
+                    height={50}
+                    className="mx-auto h-50 w-auto"
+                />
+                <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight">
+                    Sign in to your account
+                </h2>
+            </div>
+
+            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                {message === "login_required" && (
+                    <div className="text-red-600 text-sm mb-2">
+                        Please log in to continue.
+                    </div>
                 )}
-                <button
-                    type="submit"
-                    className="w-full py-2 px-4 bg-[var(--supernova)] text-[var(--gallery)] rounded hover:bg-[var(--yukon-gold)] transition"
-                    disabled={isLoading}
-                >
-                    {isLoading ? "Logging in..." : "Login"}
-                </button>
-            </form>
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="email" className="block text-sm/6 font-medium">
+                            Admin Email
+                        </label>
+                        <div className="mt-2">
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                autoComplete="email"
+                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="flex items-center justify-between">
+                            <label htmlFor="password" className="block text-sm/6 font-medium">
+                                Password
+                            </label>
+                            <div className="text-sm">
+                                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    Forgot password?
+                                </a>
+                            </div>
+                        </div>
+                        <div className="mt-2">
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                autoComplete="current-password"
+                                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {error && (
+                        <div className="text-red-600 text-sm">{error}</div>
+                    )}
+
+                    <div>
+                        <button
+                            type="submit"
+                            className="flex w-full cursor-pointer justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? <Loader2 className="animate-spin" /> : "Sign in"}
+                        </button>
+                    </div>
+                </form>
+
+                <p className="mt-10 text-center text-sm/6 text-gray-500">
+                    Not a member?{' '}
+                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        Start a 14 day free trial
+                    </a>
+                </p>
+            </div>
         </div>
     );
 }

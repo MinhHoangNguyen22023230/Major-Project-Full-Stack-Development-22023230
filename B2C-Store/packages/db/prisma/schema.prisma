@@ -157,6 +157,7 @@ model Admin {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   username       String   @unique
   email          String   @unique
+  imageUrl      String?
   hashedPassword String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

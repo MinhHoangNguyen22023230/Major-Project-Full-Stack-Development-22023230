@@ -14758,6 +14758,7 @@ export namespace Prisma {
     id: string | null
     username: string | null
     email: string | null
+    imageUrl: string | null
     hashedPassword: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14767,6 +14768,7 @@ export namespace Prisma {
     id: string | null
     username: string | null
     email: string | null
+    imageUrl: string | null
     hashedPassword: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14776,6 +14778,7 @@ export namespace Prisma {
     id: number
     username: number
     email: number
+    imageUrl: number
     hashedPassword: number
     createdAt: number
     updatedAt: number
@@ -14787,6 +14790,7 @@ export namespace Prisma {
     id?: true
     username?: true
     email?: true
+    imageUrl?: true
     hashedPassword?: true
     createdAt?: true
     updatedAt?: true
@@ -14796,6 +14800,7 @@ export namespace Prisma {
     id?: true
     username?: true
     email?: true
+    imageUrl?: true
     hashedPassword?: true
     createdAt?: true
     updatedAt?: true
@@ -14805,6 +14810,7 @@ export namespace Prisma {
     id?: true
     username?: true
     email?: true
+    imageUrl?: true
     hashedPassword?: true
     createdAt?: true
     updatedAt?: true
@@ -14887,6 +14893,7 @@ export namespace Prisma {
     id: string
     username: string
     email: string
+    imageUrl: string | null
     hashedPassword: string
     createdAt: Date
     updatedAt: Date
@@ -14913,6 +14920,7 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     email?: boolean
+    imageUrl?: boolean
     hashedPassword?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14924,12 +14932,13 @@ export namespace Prisma {
     id?: boolean
     username?: boolean
     email?: boolean
+    imageUrl?: boolean
     hashedPassword?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AdminOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "hashedPassword" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
+  export type AdminOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "imageUrl" | "hashedPassword" | "createdAt" | "updatedAt", ExtArgs["result"]["admin"]>
 
   export type $AdminPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Admin"
@@ -14938,6 +14947,7 @@ export namespace Prisma {
       id: string
       username: string
       email: string
+      imageUrl: string | null
       hashedPassword: string
       createdAt: Date
       updatedAt: Date
@@ -15336,6 +15346,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Admin", 'String'>
     readonly username: FieldRef<"Admin", 'String'>
     readonly email: FieldRef<"Admin", 'String'>
+    readonly imageUrl: FieldRef<"Admin", 'String'>
     readonly hashedPassword: FieldRef<"Admin", 'String'>
     readonly createdAt: FieldRef<"Admin", 'DateTime'>
     readonly updatedAt: FieldRef<"Admin", 'DateTime'>
@@ -15842,6 +15853,7 @@ export namespace Prisma {
     id: 'id',
     username: 'username',
     email: 'email',
+    imageUrl: 'imageUrl',
     hashedPassword: 'hashedPassword',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -16739,6 +16751,7 @@ export namespace Prisma {
     id?: StringFilter<"Admin"> | string
     username?: StringFilter<"Admin"> | string
     email?: StringFilter<"Admin"> | string
+    imageUrl?: StringNullableFilter<"Admin"> | string | null
     hashedPassword?: StringFilter<"Admin"> | string
     createdAt?: DateTimeFilter<"Admin"> | Date | string
     updatedAt?: DateTimeFilter<"Admin"> | Date | string
@@ -16748,6 +16761,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    imageUrl?: SortOrder
     hashedPassword?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16760,6 +16774,7 @@ export namespace Prisma {
     AND?: AdminWhereInput | AdminWhereInput[]
     OR?: AdminWhereInput[]
     NOT?: AdminWhereInput | AdminWhereInput[]
+    imageUrl?: StringNullableFilter<"Admin"> | string | null
     hashedPassword?: StringFilter<"Admin"> | string
     createdAt?: DateTimeFilter<"Admin"> | Date | string
     updatedAt?: DateTimeFilter<"Admin"> | Date | string
@@ -16769,6 +16784,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    imageUrl?: SortOrder
     hashedPassword?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16784,6 +16800,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Admin"> | string
     username?: StringWithAggregatesFilter<"Admin"> | string
     email?: StringWithAggregatesFilter<"Admin"> | string
+    imageUrl?: StringNullableWithAggregatesFilter<"Admin"> | string | null
     hashedPassword?: StringWithAggregatesFilter<"Admin"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Admin"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Admin"> | Date | string
@@ -17565,6 +17582,7 @@ export namespace Prisma {
     id?: string
     username: string
     email: string
+    imageUrl?: string | null
     hashedPassword: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17574,6 +17592,7 @@ export namespace Prisma {
     id?: string
     username: string
     email: string
+    imageUrl?: string | null
     hashedPassword: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17582,6 +17601,7 @@ export namespace Prisma {
   export type AdminUpdateInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     hashedPassword?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17590,6 +17610,7 @@ export namespace Prisma {
   export type AdminUncheckedUpdateInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     hashedPassword?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17599,6 +17620,7 @@ export namespace Prisma {
     id?: string
     username: string
     email: string
+    imageUrl?: string | null
     hashedPassword: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17607,6 +17629,7 @@ export namespace Prisma {
   export type AdminUpdateManyMutationInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     hashedPassword?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17615,6 +17638,7 @@ export namespace Prisma {
   export type AdminUncheckedUpdateManyInput = {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     hashedPassword?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18374,6 +18398,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    imageUrl?: SortOrder
     hashedPassword?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18383,6 +18408,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    imageUrl?: SortOrder
     hashedPassword?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18392,6 +18418,7 @@ export namespace Prisma {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
+    imageUrl?: SortOrder
     hashedPassword?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { trpc } from "@/app/_trpc/client";
 import Image from "next/image";
 import Link from "next/link";
+import { UploadButton } from "@uploadthing/react";
 
 // --- Types ---
 type WishListItem = {
@@ -75,6 +76,10 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
     const deleteAddress = trpc.crud.deleteAddress.useMutation();
     // Update address mutation
     const updateAddress = trpc.crud.updateAddress.useMutation();
+    const uploadUserImage = trpc.s3.useMutation(['uploadUserImage']);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     const [showAddForm, setShowAddForm] = useState<boolean>(false);
     const [form, setForm] = useState({
@@ -198,6 +203,43 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         }
     };
 
+    // Handler for UploadThing
+    const handleImageUpload = async (files: File[]) => {
+        if (!user || !files.length) return;
+        const file = files[0];
+        const arrayBuffer = await file.arrayBuffer();
+        await uploadUserImage.mutateAsync({
+            userId: user.id,
+            filename: file.name,
+            body: new Uint8Array(arrayBuffer),
+            contentType: file.type,
+        });
+        refetch();
+    };
+
+    // Handler for file input upload
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUploadError(null);
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+        setUploading(true);
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            await uploadUserImage.mutateAsync({
+                userId: user.id,
+                filename: file.name,
+                body: new Uint8Array(arrayBuffer),
+                contentType: file.type,
+            });
+            refetch();
+        } catch (err: any) {
+            setUploadError(err?.message || "Failed to upload image");
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
     if (isLoading) return <div className="text-gray-500">Loading profile...</div>;
     if (error) return <div className="text-red-500">Error: {error.message}</div>;
     if (!user) return <div className="text-gray-500">User not found.</div>;
@@ -207,7 +249,7 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
             {/* Profile Header */}
             <div className="flex flex-col items-center gap-4">
                 {user.imgUrl && (
-                    <Image
+                    <img
                         src={user.imgUrl}
                         alt={user.username}
                         width={120}
@@ -215,6 +257,16 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                         className="rounded-full"
                     />
                 )}
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                    className="mb-2"
+                />
+                {uploading && <div className="text-blue-600">Uploading...</div>}
+                {uploadError && <div className="text-red-500">{uploadError}</div>}
                 <h1 className="text-3xl font-bold">{user.username}</h1>
                 <p className="text-gray-700">{user.email}</p>
             </div>

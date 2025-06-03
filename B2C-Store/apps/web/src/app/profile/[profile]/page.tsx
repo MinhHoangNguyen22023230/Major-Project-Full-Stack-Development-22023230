@@ -26,7 +26,7 @@ type Address = {
     zip?: string;
     zipCode?: string;
     country?: string;
-    isDefault?: boolean;
+    default?: boolean;
 };
 
 type Review = {
@@ -73,6 +73,8 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
     const addAddress = trpc.crud.createAddress.useMutation();
     // Delete address mutation
     const deleteAddress = trpc.crud.deleteAddress.useMutation();
+    // Update address mutation
+    const updateAddress = trpc.crud.updateAddress.useMutation();
 
     const [showAddForm, setShowAddForm] = useState<boolean>(false);
     const [form, setForm] = useState({
@@ -81,7 +83,7 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         state: "",
         zip: "",
         country: "",
-        isDefault: false,
+        default: false,
     });
     const [formError, setFormError] = useState<string | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -151,9 +153,10 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                 state: form.state,
                 country: form.country,
                 zipCode: form.zip,
+                default: form.default,
             });
             setShowAddForm(false);
-            setForm({ street: "", city: "", state: "", zip: "", country: "", isDefault: false });
+            setForm({ street: "", city: "", state: "", zip: "", country: "", default: false });
             refetch();
         } catch (err: unknown) {
             if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
@@ -174,6 +177,23 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                 setDeleteError((err as { message: string }).message);
             } else {
                 setDeleteError("Failed to delete address.");
+            }
+        }
+    };
+
+    const handleSetDefaultAddress = async (addressId: string) => {
+        setDeleteError(null);
+        try {
+            await updateAddress.mutateAsync({
+                id: addressId,
+                data: { default: true },
+            });
+            refetch();
+        } catch (err: unknown) {
+            if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
+                setDeleteError((err as { message: string }).message);
+            } else {
+                setDeleteError("Failed to set default address.");
             }
         }
     };
@@ -363,11 +383,11 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id="isDefault"
-                                checked={form.isDefault}
-                                onChange={e => setForm(f => ({ ...f, isDefault: e.target.checked }))}
+                                id="default"
+                                checked={form.default}
+                                onChange={e => setForm(f => ({ ...f, default: e.target.checked }))}
                             />
-                            <label htmlFor="isDefault" className="text-sm">Set as default</label>
+                            <label htmlFor="default" className="text-sm">Set as default</label>
                         </div>
                         {formError && <div className="text-red-500">{formError}</div>}
                         <button
@@ -394,8 +414,16 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                                 <li key={address.id} className="border rounded p-3 flex items-center justify-between">
                                     <div>
                                         {fields.join(", ")}
-                                        {address.isDefault && (
+                                        {address.default ? (
                                             <span className="text-xs text-green-600 ml-2">(Default)</span>
+                                        ) : (
+                                            <button
+                                                className="ml-2 px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300"
+                                                onClick={() => handleSetDefaultAddress(address.id)}
+                                                type="button"
+                                            >
+                                                Set as default
+                                            </button>
                                         )}
                                     </div>
                                     <button

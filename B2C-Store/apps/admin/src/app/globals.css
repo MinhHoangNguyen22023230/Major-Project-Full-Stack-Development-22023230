@@ -61,7 +61,9 @@ body {
 .main-section {
   background-color: var(--navbar-and-sidebar-bg);
   border-radius: 8px;
+  width: 100%;
 }
+
 
 .scrollable-sidebar {
   overflow: clip;
@@ -123,4 +125,53 @@ body {
 
 .main-scrollable::-webkit-scrollbar-track {
   background: #1e293b;
+}
+
+.force-table-scroll {
+  table-layout: auto !important;
+  min-width: unset !important;
+  width: 100% !important;
+}
+
+.force-table-scroll table {
+  width: 100% !important;
+  min-width: unset !important;
+  table-layout: auto !important;
+}
+
+/* Alert fade-in and fade-out animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.3s forwards;
+}
+
+.animate-fade-out {
+  opacity: 1;
+  transform: scale(1);
+  animation: fadeOut 0.3s forwards;
 }

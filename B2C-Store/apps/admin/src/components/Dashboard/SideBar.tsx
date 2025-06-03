@@ -3,15 +3,18 @@
 import { logout } from "@/components/Login/logoutAction";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useSidebar } from '@/app/dashboard/SidebarContext';
+import { useSidebar } from '@/app/SidebarContext';
 import { useMediaQuery } from 'react-responsive';
 import Link from "next/link";
 import { IoIosArrowDown } from "react-icons/io";
+import { usePathname } from "next/navigation";
 
 export default function SideBar() {
     const { isOpen, setIsOpen } = useSidebar();
     const [isDataOpen, setIsDataOpen] = useState(false);
     const isMobile = useMediaQuery({ maxWidth: 767 });
+    const pathname = usePathname();
+
 
     // Auto-close sidebar on mobile
     useEffect(() => {
@@ -35,8 +38,16 @@ export default function SideBar() {
                         <ul className="space-y-2">
                             <li>
                                 <Link
+                                    href="/dashboard"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname === '/dashboard' ? 'bg-blue-100 text-blue-500' : ''}`}
+                                >
+                                    Home
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
                                     href="/dashboard/saas"
-                                    className="block w-full text-left px-3 py-2 rounded cursor-pointer hover:text-blue-500 hover:bg-blue-100 transition-colors duration-150"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/saas') ? 'bg-blue-100 text-blue-500' : ''}`}
                                 >
                                     SaaS
                                 </Link>
@@ -50,24 +61,22 @@ export default function SideBar() {
                                     <IoIosArrowDown className={`h-5 w-5 ${isDataOpen ? 'rotate-180' : ''} transition-transform duration-300`} />
                                 </button>
                             </li>
-                            <li className={`${isDataOpen ? 'block' : 'hidden'}`}>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}>
                                 <Link
                                     href="/dashboard/user"
-                                    className="block w-full text-left px-3 py-2 rounded cursor-pointer hover:bg-blue-100 hover:text-blue-500 transition-colors duration-150"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/user') ? 'bg-blue-100 text-blue-500' : ''}`}
                                 >
                                     User
                                 </Link>
                             </li>
-                            <li className={`${isDataOpen ? 'block' : 'hidden'}`}>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}>
                                 <Link
                                     href="/dashboard/order"
-                                    className="block w-full text-left px-3 py-2 rounded cursor-pointer hover:bg-blue-100 transition-colors duration-150"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/order') ? 'bg-blue-100 text-blue-500' : ''}`}
                                 >
                                     Order
                                 </Link>
                             </li>
-
-                            <li><h1>Menu</h1></li>
                             <li>
                                 <button
                                     onClick={async () => { await logout(); }}
@@ -80,7 +89,6 @@ export default function SideBar() {
                     </nav>
                 </aside>
             </div>
-            <div className={'w-70 ' + (isOpen ? 'block' : 'hidden')}></div>
         </>
     );
 }

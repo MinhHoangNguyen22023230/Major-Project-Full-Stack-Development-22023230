@@ -1,6 +1,8 @@
+'use client';
+
 import { CgPushChevronLeftR } from "react-icons/cg";
 import React from "react";
-import { useSidebar } from '@/app/dashboard/SidebarContext';
+import { useSidebar } from '@/app/SidebarContext';
 import { useMediaQuery } from 'react-responsive';
 
 
@@ -33,7 +35,7 @@ export default function NavBar() {
                     <h1>Admin Dashboard</h1>
                     <input type="text" className="search-box rounded-md p-2 ml-2" placeholder="Search..." />
                 </div>
-                <nav className="space-x-4">
+                <nav className="hidden sm:block space-x-4">
                     <a href="/dashboard" className="hover:text-gray-300">Dashboard</a>
                     <a href="/products" className="hover:text-gray-300">Products</a>
                     <a href="/orders" className="hover:text-gray-300">Orders</a>

@@ -130,7 +130,8 @@ exports.Prisma.AddressScalarFieldEnum = {
   city: 'city',
   state: 'state',
   country: 'country',
-  zipCode: 'zipCode'
+  zipCode: 'zipCode',
+  default: 'default'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -169,6 +170,7 @@ exports.Prisma.CartScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   totalPrice: 'totalPrice',
+  itemsCount: 'itemsCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -184,6 +186,7 @@ exports.Prisma.CartItemScalarFieldEnum = {
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  itemsCount: 'itemsCount',
   totalPrice: 'totalPrice',
   status: 'status',
   createdAt: 'createdAt',

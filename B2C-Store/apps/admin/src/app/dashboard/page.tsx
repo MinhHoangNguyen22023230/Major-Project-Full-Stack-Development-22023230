@@ -1,11 +1,20 @@
-"use client"
+"use client";
 
-import User from '@/components/Dashboard/User'
+import ComponentCard from '@/components/ui/ComponentCard';
+import Link from 'next/link';
+import { useSidebar } from '@/app/SidebarContext';
 
 export default function Dashboard() {
+  const { isOpen } = useSidebar();
+
   return (
-    <div className='h-200 lg:w-200 w-[80%]'>
-      <User />
-    </div>
+        <ComponentCard
+            className={`main-section ${isOpen ? "sm:w-[calc(90vw-280px)]" : "w-[90vw]"}`}
+            title="Admin Dashboard"
+        >
+          <div>
+            
+          </div>
+        </ComponentCard>
   );
 }

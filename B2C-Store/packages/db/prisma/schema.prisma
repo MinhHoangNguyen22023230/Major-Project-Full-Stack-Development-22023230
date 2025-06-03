@@ -38,6 +38,7 @@ model Address {
   state   String
   country String
   zipCode String
+  default  Boolean @default(false)
 }
 
 model Product {
@@ -85,6 +86,7 @@ model Cart {
   userId     String     @unique @db.ObjectId
   user       User       @relation(fields: [userId], references: [id])
   totalPrice Float?
+  itemsCount Int       @default(0)
   cartItems  CartItem[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -105,6 +107,7 @@ model Order {
   userId     String      @db.ObjectId
   user       User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
+  itemsCount Int       @default(0)
   totalPrice Float?
   status     String      @default("pending")
   createdAt  DateTime    @default(now())

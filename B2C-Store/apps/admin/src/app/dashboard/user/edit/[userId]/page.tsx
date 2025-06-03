@@ -1,5 +1,5 @@
 'use client';
-import { redirect, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { trpc } from '@/app/_trpc/client';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';

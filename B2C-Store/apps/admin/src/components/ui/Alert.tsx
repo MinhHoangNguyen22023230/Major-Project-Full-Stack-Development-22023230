@@ -30,8 +30,9 @@ const Alert: React.FC<AlertProps> = ({ message, type = "info", onClose }) => {
 
     // If parent unmounts alert immediately, clear timeout
     useEffect(() => {
+        const timeout = timeoutRef.current;
         return () => {
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            if (timeout) clearTimeout(timeout);
         };
     }, []);
 

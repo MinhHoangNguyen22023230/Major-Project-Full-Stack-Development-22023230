@@ -10,15 +10,15 @@ interface ComponentCardProps {
 const ComponentCard: React.FC<ComponentCardProps> = ({ children, className, title, breadcrumb }) => {
     return (
         <>
-                    {(title || breadcrumb) && (
+            {(title || breadcrumb) && (
                 <div className="w-full flex flex-row pl-10 pr-10 mb-5 justify-between">
                     {title && <h1 className="text-2xl font-bold">{title}</h1>}
-                    {breadcrumb && <div className="text-center text-gray-600 mb-6">{breadcrumb}</div>}
+                    {breadcrumb && <div className="text-center mb-6">{breadcrumb}</div>}
                 </div>
             )}
-        <main className={`h-fit min-w-50 flex flex-col gap-10 transition-all duration-300 ${className}`}>
-            {children}
-        </main>
+            <main className={`h-fit min-w-50 flex flex-col gap-10 transition-all duration-300 ${className}`}>
+                {children}
+            </main>
         </>
     );
 };

@@ -4,7 +4,7 @@ import "./globals.css";
 import "./slideDown.css";
 import Provider from "@/app/_trpc/Provider";
 import ClientLayout from "./clientLayout";
-
+import ThemeProvider from "./ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,11 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Provider><ClientLayout>{children}</ClientLayout></Provider>
+    <html lang="en" suppressHydrationWarning>
+      {/* Move font classes to html so .light/.dark is not overwritten on body */}
+      <body>
+        <ThemeProvider>
+          <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <Provider><ClientLayout>{children}</ClientLayout></Provider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

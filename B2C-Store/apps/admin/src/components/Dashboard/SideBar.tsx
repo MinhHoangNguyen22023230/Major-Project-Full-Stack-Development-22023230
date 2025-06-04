@@ -26,20 +26,21 @@ export default function SideBar() {
     return (
         <>
             <div className={
-                'w-70 block my-border-r ui-main shadow-amber-50 fixed top-0 left-0 h-screen z-40 transition-transform duration-300 ' +
-                (isOpen ? 'translate-x-0' : '-translate-x-full')
+                'w-70 block fixed top-0 left-0 h-screen z-40 transition-transform duration-300 border-r-2 ' +
+                (isOpen ? 'translate-x-0' : '-translate-x-full') +
+                ' border-[var(--ui-border-color)] bg-[var(--sidebar-bg)] text-[var(--sidebar-text)]'
             }>
-                <div className="w-full flex flex-row items-center justify-left gap-2 h-30 shadow-amber-100">
-                    <Link href="/dashboard"><Image width={100} height={100} src="/logo.svg" alt="Logo" /></Link>
-                    <h2 className="text-2xl font-bold tracking-tight block">B2C Store</h2>
+                <div className="w-full flex flex-row items-center justify-left gap-2 h-30 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)]">
+                    <Link href="/dashboard"><Image width={100} height={100} src="/logo.svg" alt="Logo" className="rounded" style={{ background: 'var(--sidebar-bg)' }} /></Link>
+                    <h2 className="text-2xl font-bold tracking-tight block text-[var(--sidebar-text)]">B2C Store</h2>
                 </div>
-                <aside className="scrollable-sidebar h-screen w-full p-4">
+                <aside className="scrollable-sidebar h-screen w-full p-4 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)]">
                     <nav>
                         <ul className="space-y-2">
                             <li>
                                 <Link
                                     href="/dashboard"
-                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname === '/dashboard' ? 'bg-blue-100 text-blue-500' : ''}`}
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname === '/dashboard' ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
                                 >
                                     Home
                                 </Link>
@@ -47,7 +48,7 @@ export default function SideBar() {
                             <li>
                                 <Link
                                     href="/dashboard/saas"
-                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/saas') ? 'bg-blue-100 text-blue-500' : ''}`}
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/saas') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
                                 >
                                     SaaS
                                 </Link>
@@ -55,24 +56,24 @@ export default function SideBar() {
                             <li>
                                 <button
                                     onClick={() => setIsDataOpen(!isDataOpen)}
-                                    className={`${isDataOpen ? 'bg-blue-100 text-blue-500' : ''} flex justify-between w-full text-left px-3 py-2 rounded cursor-pointer hover:bg-blue-100 hover:text-blue-500 transition-colors duration-150`}
+                                    className={`flex justify-between w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${isDataOpen ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
                                 >
                                     <p className="font-semibold">Data</p>
-                                    <IoIosArrowDown className={`h-5 w-5 ${isDataOpen ? 'rotate-180' : ''} transition-transform duration-300`} />
+                                    <IoIosArrowDown className={`h-5 w-5 ${isDataOpen ? 'rotate-180' : ''} transition-transform duration-300 text-[var(--sidebar-text)]`} />
                                 </button>
                             </li>
-                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}> {/* User */}
                                 <Link
                                     href="/dashboard/user"
-                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/user') ? 'bg-blue-100 text-blue-500' : ''}`}
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/user') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
                                 >
                                     User
                                 </Link>
                             </li>
-                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}> {/* Order */}
                                 <Link
                                     href="/dashboard/order"
-                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 hover:text-blue-500 hover:bg-blue-100 ${pathname.startsWith('/dashboard/order') ? 'bg-blue-100 text-blue-500' : ''}`}
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/order') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
                                 >
                                     Order
                                 </Link>
@@ -80,7 +81,7 @@ export default function SideBar() {
                             <li>
                                 <button
                                     onClick={async () => { await logout(); }}
-                                    className="block w-full text-left px-3 py-2 rounded cursor-pointer hover:bg-red-100 hover:text-red-700 transition-colors duration-150"
+                                    className="block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]"
                                 >
                                     Logout
                                 </button>

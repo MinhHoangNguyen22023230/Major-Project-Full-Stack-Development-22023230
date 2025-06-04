@@ -93,15 +93,15 @@ export default function OrderTable() {
     };
 
     return (
-        <div className="main-section p-4 flex flex-col gap-10 min-w-[50px]">
+        <div className="main-section p-4 flex flex-col gap-10 min-w-[50px] bg-[var(--navbar-and-sidebar-bg)] text-[var(--foreground)]">
             {alert && (
                 <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
             )}
-            <h1 className="font-bold">Order Management</h1>
+            <h1 className="font-bold text-[var(--card-title)]">Order Management</h1>
             <div className="flex items-center justify-between">
                 <input
                     type="text"
-                    className="search-box rounded-md p-2 ml-2"
+                    className="search-box rounded-md p-2 ml-2 text-[var(--foreground)] bg-[var(--gallery)] border border-[var(--ui-border-color)]"
                     placeholder="Search..."
                     title="Search by ID, User, or Email"
                     value={search}
@@ -119,7 +119,7 @@ export default function OrderTable() {
                             }
                         }}
                         title="delete selected orders"
-                        className="hover:bg-blue-100 hover:text-blue-500 cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors bg-[var(--gallery)] text-[var(--foreground)] border border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)]"
                     >
                         <MdDeleteOutline className="h-6 w-6" />
                     </button>
@@ -129,18 +129,18 @@ export default function OrderTable() {
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">
-                            <Loader2 className="animate-spin w-10 h-10 text-blue-500" />
+                            <Loader2 className="animate-spin w-10 h-10 text-[var(--card-title)]" />
                         </div>
                     ) : filteredData.length === 0 ? (
-                        <div className="flex justify-center items-center h-40 text-gray-500 text-lg">No order data</div>
+                        <div className="flex justify-center items-center h-40 text-lg">No order data</div>
                     ) : (
                         <Table className="overflow-x-auto min-w-[200px] max-w-full w-full">
-                            <TableHeader className="border-b">
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">
                                         <input
                                             type="checkbox"
-                                            className="accent-blue-500 w-5 h-5"
+                                            className="w-5 h-5"
                                             checked={isSelectedAll}
                                             ref={el => {
                                                 if (el) el.indeterminate = isIndeterminate;
@@ -148,24 +148,24 @@ export default function OrderTable() {
                                             onChange={handleSelectAll}
                                         />
                                     </TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Order ID</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">User</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Email</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Items</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Total Price</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Status</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Created At</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Updated At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Order ID</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">User</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Email</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Items</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Total Price</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Status</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody className="divide-y">
+                            <TableBody>
                                 {filteredData.map((order) => (
                                     <React.Fragment key={order.id}>
-                                        <TableRow key={order.id}>
+                                        <TableRow key={order.id} className="bg-[var(--table-row-bg)] text-[var(--table-row-text)] border-b border-[var(--table-row-border)]">
                                             <TableCell className="px-4 py-2 font-medium text-start text-theme-xs">
                                                 <input
                                                     type="checkbox"
-                                                    className="accent-blue-500 w-5 h-5"
+                                                    className="w-5 h-5"
                                                     checked={selected.includes(order.id)}
                                                     onChange={() => handleSelect(order.id)}
                                                 />
@@ -181,9 +181,9 @@ export default function OrderTable() {
                                         </TableRow>
                                         {/* Expandable Order Items Row */}
                                         <TableRow>
-                                            <td colSpan={9} className="bg-gray-50 px-8 py-4">
+                                            <td colSpan={9} className={`px-8 py-4 bg-[var(--table-row-alt-bg)] text-[var(--table-row-text)]`}>
                                                 <button
-                                                    className={`mr-2 px-5 py-2 rounded border border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded.includes(order.id) ? 'ring-2 ring-blue-400' : ''}`}
+                                                    className={`mr-2 px-5 py-2 rounded border font-semibold shadow-sm transition-colors duration-150 text-base bg-[var(--gallery)] text-[var(--foreground)] border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)] ${expanded.includes(order.id) ? 'ring-2' : ''}`}
                                                     onClick={() => handleExpand(order.id)}
                                                 >
                                                     {expanded.includes(order.id) ? "Hide Order Items" : "Show Order Items"}
@@ -193,22 +193,22 @@ export default function OrderTable() {
                                         {/* Expanded Content */}
                                         {expanded.includes(order.id) && order.orderItems && order.orderItems.length > 0 && (
                                             <TableRow key={order.id + "-items"}>
-                                                <td colSpan={9} style={{ padding: 0, background: "none", border: "none" }}>
+                                                <td colSpan={9} style={{ padding: 0, background: 'none', border: 'none' }}>
                                                     <div className="overflow-hidden rounded-b-lg">
-                                                        <div className="bg-gray-100 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                        <div className="bg-[var(--gallery)] border-l-4 border-[var(--yukon-gold)] px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown text-[var(--foreground)]">
                                                             <Table className="min-w-[400px] w-full">
                                                                 <TableHeader>
                                                                     <TableRow>
-                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">OrderItem ID</TableCell>
-                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product</TableCell>
-                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product Price</TableCell>
-                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Quantity</TableCell>
-                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Total Price</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">OrderItem ID</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Product</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Product Price</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Quantity</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Total Price</TableCell>
                                                                     </TableRow>
                                                                 </TableHeader>
-                                                                <TableBody className="divide-y divide-gray-200">
+                                                                <TableBody>
                                                                     {order.orderItems.map((item: OrderItem) => (
-                                                                        <TableRow key={item.id}>
+                                                                        <TableRow key={item.id} className="bg-[var(--table-row-bg)] text-[var(--table-row-text)] border-b border-[var(--table-row-border)]">
                                                                             <TableCell className="px-4 py-2 text-start">{item.id}</TableCell>
                                                                             <TableCell className="px-4 py-2 text-start">
                                                                                 {item.product?.name ? `${item.productId} - ${item.product.name}` : item.productId}

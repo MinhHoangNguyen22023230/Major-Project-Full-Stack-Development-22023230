@@ -30,22 +30,27 @@ export default function RevenueGrowthChart() {
     }, [orders]);
 
     return (
-        <div className="main-section p-4">
-            <h2 className="mb-4 font-bold">Revenue Growth (Monthly)</h2>
+        <div className="bg-[var(--navbar-and-sidebar-bg)] main-section p-4">
+            <h2 className="mb-4 font-bold text-[var(--card-title)]">Revenue Growth (Monthly)</h2>
             {isLoading ? (
                 <div className="flex justify-center items-center h-40">
-                    <Loader2 className="animate-spin w-10 h-10 text-blue-500" />
+                    <Loader2 className="animate-spin w-10 h-10 text-[var(--card-title)]" />
                 </div>
             ) : chartData.length === 0 ? (
-                <div className="text-gray-500 text-center py-8">No revenue data available.</div>
+                <div className="text-center py-8 text-[var(--foreground)]">No revenue data available.</div>
             ) : (
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis tickFormatter={v => `$${v}`} />
-                        <Tooltip formatter={v => `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`} />
-                        <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2} dot={{ r: 4 }} />
+                        <CartesianGrid stroke="var(--ui-border-color)" strokeDasharray="3 3" />
+                        <XAxis dataKey="month" stroke="var(--foreground)" tick={{ fill: 'var(--foreground)' }} />
+                        <YAxis tickFormatter={v => `$${v}`} stroke="var(--foreground)" tick={{ fill: 'var(--foreground)' }} />
+                        <Tooltip
+                            contentStyle={{ background: 'var(--gallery)', color: 'var(--foreground)', borderColor: 'var(--ui-border-color)' }}
+                            itemStyle={{ color: 'var(--foreground)' }}
+                            labelStyle={{ color: 'var(--card-title)' }}
+                            formatter={v => `$${v.toLocaleString(undefined, { maximumFractionDigits: 2 })}`}
+                        />
+                        <Line type="monotone" dataKey="revenue" stroke="var(--card-title)" strokeWidth={2} dot={{ r: 4, stroke: 'var(--card-title)', fill: 'var(--gallery)' }} />
                     </LineChart>
                 </ResponsiveContainer>
             )}

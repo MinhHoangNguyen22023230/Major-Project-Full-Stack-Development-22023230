@@ -98,15 +98,15 @@ export default function UserTable() {
     };
 
     return (
-        <div className="main-section p-4 flex flex-col gap-10 min-w-[50px]">
+        <div className="main-section p-4 flex flex-col gap-10 min-w-[50px] bg-[var(--navbar-and-sidebar-bg)] text-[var(--foreground)]">
             {alert && (
                 <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
             )}
-            <h1 className="font-bold">User Management</h1>
+            <h1 className="font-bold text-[var(--card-title)]">User Management</h1>
             <div className="flex items-center justify-between">
                 <input
                     type="text"
-                    className="search-box rounded-md p-2 ml-2"
+                    className="search-box rounded-md p-2 ml-2 text-[var(--foreground)] bg-[var(--gallery)] border border-[var(--ui-border-color)]"
                     placeholder="Search..."
                     title="Search by ID, Name, or Email"
                     value={search}
@@ -124,7 +124,7 @@ export default function UserTable() {
                             }
                         }}
                         title="edit selected users"
-                        className="hover:bg-blue-100 hover:text-blue-500 cursor-pointer h-fit w-fit p-1 flex rounded-lg transition-colors"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg transition-colors bg-[var(--gallery)] text-[var(--foreground)] border border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)]"
                     >
                         <MdOutlineEdit className="h-6 w-6" />
                     </button>
@@ -139,7 +139,7 @@ export default function UserTable() {
                             }
                         }}
                         title="delete selected users"
-                        className="hover:bg-blue-100 hover:text-blue-500 cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors bg-[var(--gallery)] text-[var(--foreground)] border border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)]"
                     >
                         <MdDeleteOutline className="h-6 w-6" />
                     </button>
@@ -149,18 +149,18 @@ export default function UserTable() {
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">
-                            <Loader2 className="animate-spin w-10 h-10 text-blue-500" />
+                            <Loader2 className="animate-spin w-10 h-10 text-[var(--card-title)]" />
                         </div>
                     ) : filteredData.length === 0 ? (
-                        <div className="flex justify-center items-center h-40 text-gray-500 text-lg">No user data</div>
+                        <div className="flex justify-center items-center h-40 text-lg">No user data</div>
                     ) : (
                         <Table className="overflow-x-auto min-w-[200px] max-w-full w-full">
-                            <TableHeader className="border-b">
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">
                                         <input
                                             type="checkbox"
-                                            className="accent-blue-500 w-5 h-5"
+                                            className="w-5 h-5"
                                             checked={isSelectedAll}
                                             ref={el => {
                                                 if (el) el.indeterminate = isIndeterminate;
@@ -168,22 +168,22 @@ export default function UserTable() {
                                             onChange={handleSelectAll}
                                         />
                                     </TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">ID</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Name</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Email</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Image</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Created At</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Updated At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">ID</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Name</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Email</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Image</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody className="divide-y">
+                            <TableBody>
                                 {filteredData.map((user) => (
                                     <React.Fragment key={user.id}>
-                                        <TableRow key={user.id}>
+                                        <TableRow key={user.id} className="bg-[var(--table-row-bg)] text-[var(--table-row-text)] border-b border-[var(--table-row-border)]">
                                             <TableCell className="px-4 py-2 font-medium text-start text-theme-xs">
                                                 <input
                                                     type="checkbox"
-                                                    className="accent-blue-500 w-5 h-5"
+                                                    className="w-5 h-5"
                                                     checked={selected.includes(user.id)}
                                                     onChange={() => handleSelect(user.id)}
                                                 />
@@ -201,28 +201,28 @@ export default function UserTable() {
                                         </TableRow>
                                         {/* Expandable Address Row */}
                                         <TableRow>
-                                            <td colSpan={7} className="bg-gray-50 px-8 py-4">
+                                            <td colSpan={7} className="px-8 py-4 bg-[var(--table-row-alt-bg)] text-[var(--table-row-text)]">
                                                 <div className="flex flex-row flex-wrap gap-4 items-center justify-start">
                                                     <button
-                                                        className={`mr-2 px-5 py-2 rounded border border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "address" && expanded.userId === user.id ? 'ring-2 ring-blue-400' : ''}`}
+                                                        className={`mr-2 px-5 py-2 rounded border font-semibold shadow-sm transition-colors duration-150 text-base bg-[var(--gallery)] text-[var(--foreground)] border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)] ${expanded?.type === "address" && expanded.userId === user.id ? 'ring-2' : ''}`}
                                                         onClick={() => setExpanded(expanded?.type === "address" && expanded.userId === user.id ? null : { type: "address", userId: user.id })}
                                                     >
                                                         {expanded?.type === "address" && expanded.userId === user.id ? "Hide Addresses" : "Show Addresses"}
                                                     </button>
                                                     <button
-                                                        className={`mr-2 px-5 py-2 rounded border border-green-500 text-green-700 bg-green-50 hover:bg-green-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "wishlist" && expanded.userId === user.id ? 'ring-2 ring-green-400' : ''}`}
+                                                        className={`mr-2 px-5 py-2 rounded border font-semibold shadow-sm transition-colors duration-150 text-base bg-[var(--gallery)] text-[var(--foreground)] border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)] ${expanded?.type === "wishlist" && expanded.userId === user.id ? 'ring-2' : ''}`}
                                                         onClick={() => setExpanded(expanded?.type === "wishlist" && expanded.userId === user.id ? null : { type: "wishlist", userId: user.id })}
                                                     >
                                                         {expanded?.type === "wishlist" && expanded.userId === user.id ? "Hide Wishlists" : "Show Wishlists"}
                                                     </button>
                                                     <button
-                                                        className={`mr-2 px-5 py-2 rounded border border-yellow-500 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "cart" && expanded.userId === user.id ? 'ring-2 ring-yellow-400' : ''}`}
+                                                        className={`mr-2 px-5 py-2 rounded border font-semibold shadow-sm transition-colors duration-150 text-base bg-[var(--gallery)] text-[var(--foreground)] border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)] ${expanded?.type === "cart" && expanded.userId === user.id ? 'ring-2' : ''}`}
                                                         onClick={() => setExpanded(expanded?.type === "cart" && expanded.userId === user.id ? null : { type: "cart", userId: user.id })}
                                                     >
                                                         {expanded?.type === "cart" && expanded.userId === user.id ? "Hide Carts" : "Show Carts"}
                                                     </button>
                                                     <button
-                                                        className={`px-5 py-2 rounded border border-purple-500 text-purple-700 bg-purple-50 hover:bg-purple-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "review" && expanded.userId === user.id ? 'ring-2 ring-purple-400' : ''}`}
+                                                        className={`px-5 py-2 rounded border font-semibold shadow-sm transition-colors duration-150 text-base bg-[var(--gallery)] text-[var(--foreground)] border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)] ${expanded?.type === "review" && expanded.userId === user.id ? 'ring-2' : ''}`}
                                                         onClick={() => setExpanded(expanded?.type === "review" && expanded.userId === user.id ? null : { type: "review", userId: user.id })}
                                                     >
                                                         {expanded?.type === "review" && expanded.userId === user.id ? "Hide Reviews" : "Show Reviews"}
@@ -235,7 +235,7 @@ export default function UserTable() {
                                             <TableRow>
                                                 <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
                                                     <div className="overflow-hidden rounded-b-lg">
-                                                        <div className="bg-blue-50 border-l-4 border-blue-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                        <div className="bg-[var(--gallery)] border-l-4 border-[var(--yukon-gold)] px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown text-[var(--foreground)]">
                                                             <Table className="min-w-[400px] w-full">
                                                                 {addresses.filter(addr => addr.userId === user.id).length === 0 ? (
                                                                     <tbody>
@@ -279,7 +279,7 @@ export default function UserTable() {
                                             <TableRow>
                                                 <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
                                                     <div className="overflow-hidden rounded-b-lg">
-                                                        <div className="bg-green-50 border-l-4 border-green-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                        <div className="bg-[var(--gallery)] border-l-4 border-[var(--yukon-gold)] px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown text-[var(--foreground)]">
                                                             <Table className="min-w-[400px] w-full">
                                                                 {wishlists.filter(wl => wl.userId === user.id).flatMap(wl => wishlistItems.filter(item => item.wishListId === wl.id)).length === 0 ? (
                                                                     <tbody>
@@ -317,7 +317,7 @@ export default function UserTable() {
                                             <TableRow>
                                                 <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
                                                     <div className="overflow-hidden rounded-b-lg">
-                                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                        <div className="bg-[var(--gallery)] border-l-4 border-[var(--yukon-gold)] px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown text-[var(--foreground)]">
                                                             <Table className="min-w-[400px] w-full">
                                                                 {carts.filter(cart => cart.userId === user.id).flatMap(cart => cartItems.filter(item => item.cartId === cart.id)).length === 0 ? (
                                                                     <tbody>
@@ -357,7 +357,7 @@ export default function UserTable() {
                                             <TableRow>
                                                 <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
                                                     <div className="overflow-hidden rounded-b-lg">
-                                                        <div className="bg-purple-50 border-l-4 border-purple-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                        <div className="bg-[var(--gallery)] border-l-4 border-[var(--yukon-gold)] px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown text-[var(--foreground)]">
                                                             <Table className="min-w-[400px] w-full">
                                                                 {reviews.filter(r => r.userId === user.id).length === 0 ? (
                                                                     <tbody>
@@ -403,7 +403,7 @@ export default function UserTable() {
                 </div>
             </div>
             <div className="mt-4">
-                <Link href="/dashboard/user/create" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                <Link href="/dashboard/user/create" className="bg-[var(--button-primary)] text-[var(--foreground)] px-4 py-2 rounded hover:bg-[var(--button-primary-hover)]">
                     Add User
                 </Link>
             </div>

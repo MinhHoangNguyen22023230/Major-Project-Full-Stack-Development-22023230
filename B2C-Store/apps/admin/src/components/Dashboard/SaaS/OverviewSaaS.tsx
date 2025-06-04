@@ -32,44 +32,44 @@ export default function OverviewSaaS() {
     const isLoading = loadingUsers || loadingOrders;
 
     return (
-        <div className="main-section p-4">
-            <h1 className="mb-5 font-bold">SaaS Overview</h1>
+        <div className="main-section p-4 bg-[var(--navbar-and-sidebar-bg)] text-[var(--foreground)]">
+            <h1 className="mb-5 font-bold text-[var(--card-title)]">SaaS Overview</h1>
             {isLoading ? (
                 <div className="flex justify-center items-center h-32">
-                    <Loader2 className="animate-spin w-10 h-10 text-blue-500" />
+                    <Loader2 className="animate-spin w-10 h-10 text-[var(--card-title)]" />
                 </div>
             ) : (
                 <div className="grid grid-cols-2 grid-rows-4 gap-2">
-                    <div className="p-4 four-by-four-border rounded-tl-lg">
-                        <p className="text-gray-600">Total Users</p>
+                    <div className="p-4 four-by-four-border rounded-tl-lg bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>Total Users</p>
                         <h1 className="text-3xl font-bold">{stats.totalUsers}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border rounded-tr-lg">
-                        <p className="text-gray-600">Active Users (30d)</p>
+                    <div className="p-4 four-by-four-border rounded-tr-lg bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>Active Users (30d)</p>
                         <h1 className="text-3xl font-bold">{stats.activeUsers}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border">
-                        <p className="text-gray-600">New Users (30d)</p>
+                    <div className="p-4 four-by-four-border bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>New Users (30d)</p>
                         <h1 className="text-3xl font-bold">{stats.newUsers}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border">
-                        <p className="text-gray-600">Churn Rate</p>
+                    <div className="p-4 four-by-four-border bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>Churn Rate</p>
                         <h1 className="text-3xl font-bold">{stats.churnRate}%</h1>
                     </div>
-                    <div className="p-4 four-by-four-border">
-                        <p className="text-gray-600">Total Revenue</p>
+                    <div className="p-4 four-by-four-border bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>Total Revenue</p>
                         <h1 className="text-3xl font-bold">${stats.totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border">
-                        <p className="text-gray-600">MRR (est.)</p>
+                    <div className="p-4 four-by-four-border bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>MRR (est.)</p>
                         <h1 className="text-3xl font-bold">${stats.mrr.toLocaleString(undefined, { maximumFractionDigits: 2 })}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border rounded-bl-lg">
-                        <p className="text-gray-600">ARPU</p>
+                    <div className="p-4 four-by-four-border rounded-bl-lg bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>ARPU</p>
                         <h1 className="text-3xl font-bold">${stats.arpu.toLocaleString(undefined, { maximumFractionDigits: 2 })}</h1>
                     </div>
-                    <div className="p-4 four-by-four-border rounded-br-lg">
-                        <p className="text-gray-600">Orders</p>
+                    <div className="p-4 four-by-four-border rounded-br-lg bg-[var(--gallery)] text-[var(--foreground)]">
+                        <p>Orders</p>
                         <h1 className="text-3xl font-bold">{orders.length}</h1>
                     </div>
                 </div>

@@ -53,7 +53,6 @@ export const sessionProcedure = router({
                     session = await decrypt(sessionCookie);
                 }
             }
-            console.log("[tRPC getSession] decrypted session:", session);
             if (!session?.userId || typeof session.userId !== "string") return { userId: null };
             return { userId: session.userId };
         } catch (err) {
@@ -100,7 +99,7 @@ export const sessionProcedure = router({
             }
             if (!session?.adminId || typeof session.adminId !== "string") return { adminId: null };
             return { adminId: session.adminId };
-        } catch (err) {
+        } catch {
             return { adminId: null };
         }
     })

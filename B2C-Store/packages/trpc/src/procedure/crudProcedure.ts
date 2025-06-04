@@ -437,6 +437,7 @@ export const crudProcedure = router({
             });
         }),
 
+    /*----------------------Admin-------------------------*/
     updateAdmin: publicProcedure
         .input(
             z.object({
@@ -445,35 +446,33 @@ export const crudProcedure = router({
                     username: z.string().optional(),
                     email: z.string().optional(),
                     hashedPassword: z.string().optional(),
-                    imgUrl: z.string().optional(),
+                    imageUrl: z.string().optional(),
                 }),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const updateData = { ...input.data };
-            if (updateData.hashedPassword) {
-                updateData.hashedPassword = await hashPassword(updateData.hashedPassword);
-            }
             return ctx.prisma.admin.update({
                 where: { id: input.id },
-                data: updateData,
+                data: input.data,
             });
         }),
 
-    findUserById: publicProcedure
+    findAdminById: publicProcedure
         .input(z.object({ id: z.string() }))
         .query(async ({ ctx, input }) => {
-            return ctx.prisma.user.findUnique({
+            return ctx.prisma.admin.findUnique({
                 where: { id: input.id },
-                include: {
-                    cart: true,
-                    orders: true,
-                    addresses: true,
-                    wishList: true,
-                    reviews: true,
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                    imageUrl: true,
+                    createdAt: true,
+                    updatedAt: true,
                 },
             });
         }),
+
     /*----------------------Address-------------------------*/
     getAddresses: publicProcedure.query(async ({ ctx }) => {
         return ctx.prisma.address.findMany({

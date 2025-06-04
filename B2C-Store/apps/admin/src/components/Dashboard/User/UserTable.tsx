@@ -124,7 +124,7 @@ export default function UserTable() {
                             }
                         }}
                         title="edit selected users"
-                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg transition-colors bg-[var(--gallery)] text-[var(--foreground)] border border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)]"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg transition-colors bg-[var(--gallery)] text-[var(--foreground)] hover:bg-[var(--hover-bg-color)]"
                     >
                         <MdOutlineEdit className="h-6 w-6" />
                     </button>
@@ -139,7 +139,7 @@ export default function UserTable() {
                             }
                         }}
                         title="delete selected users"
-                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors bg-[var(--gallery)] text-[var(--foreground)] border border-[var(--ui-border-color)] hover:bg-[var(--hover-bg-color)]"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg disabled:opacity-50 transition-colors bg-[var(--gallery)] text-[var(--foreground)] hover:bg-[var(--hover-bg-color)]"
                     >
                         <MdDeleteOutline className="h-6 w-6" />
                     </button>

@@ -34,6 +34,6 @@ export const adminLoginProcedure = publicProcedure
             throw new Error("Invalid email or password");
         }
 
-        // Return only adminId for session
-        return { adminId: admin.id };
+        // Return only userId for session
+        return { userId: admin.id };
     });

@@ -33,11 +33,11 @@ export default function ThemeSwitch() {
 
     return (
         <button
-            className="p-2 rounded-full transition-colors"
+            className="p-2 rounded-full w-fit h-fit transition-colors cursor-pointer"
             onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
             title={`Switch to ${resolvedTheme === "light" ? "dark" : "light"} mode`}
         >
-            {resolvedTheme === "light" ? <FaMoon className="h-5 w-5" /> : <FaSun className="h-5 w-5" />}
+            {resolvedTheme === "light" ? <FaMoon className="h-7 w-7" /> : <FaSun className="h-7 w-7" />}
         </button>
     );
 }

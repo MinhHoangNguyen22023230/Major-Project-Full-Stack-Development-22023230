@@ -1,6 +1,6 @@
 "use client";
 
-import { logout } from "@/components/Login/logoutAction";
+import { LogoutButton } from "../Login/LogoutButton";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useSidebar } from '@/app/SidebarContext';
@@ -79,12 +79,11 @@ export default function SideBar() {
                                 </Link>
                             </li>
                             <li>
-                                <button
-                                    onClick={async () => { await logout(); }}
+                                <LogoutButton
                                     className="block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]"
                                 >
                                     Logout
-                                </button>
+                                </LogoutButton>
                             </li>
                         </ul>
                     </nav>

@@ -11,6 +11,7 @@ import Alert from "@/components/ui/Alert";
 export default function AdminLoginForm() {
     const router = useRouter();
     const adminLoginMutation = trpc.adminLog.useMutation();
+    const adminSessionCreateMutation = trpc.adminSession.createAdminSession.useMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -24,16 +25,16 @@ export default function AdminLoginForm() {
             // Authenticate admin with tRPC
             const admin = await adminLoginMutation.mutateAsync({ email, password });
 
-            // Set session cookie via API route (customize as needed for admin)
-            const res = await fetch("/api/admin-session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ adminId: admin.adminId }),
+            // Set session cookie via tRPC adminSessionProcedure
+            await new Promise((resolve, reject) => {
+                adminSessionCreateMutation.mutate(
+                    { userId: admin.userId },
+                    {
+                        onSuccess: () => resolve(true),
+                        onError: (err) => reject(err),
+                    }
+                );
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to create admin session");
-            }
 
             router.push("/dashboard");
         } catch (err) {

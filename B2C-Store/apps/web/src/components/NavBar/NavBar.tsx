@@ -4,7 +4,7 @@ import { useShowCategoriesNavbar, useTopNavBar } from "@/hooks/useNavbar";
 import Link from "next/link";
 import Image from "next/image";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { logout } from "@/components/Login/logoutAction";
+import { LogoutButton } from "@/components/Login/LogoutButton";
 import { trpc } from "@/app/_trpc/client";
 import React, { useState } from "react";
 import SearchBar from "@/components/SearchBar/SearchBar";
@@ -20,10 +20,8 @@ export default function Navbar() {
     const userId = session?.userId;
 
     // Only fetch user if userId is available
-    const { data: user, isLoading, error } = trpc.crud.findUserById.useQuery(
-        userId ? { id: userId } : { id: "" },
-        { enabled: !!userId }
-    );
+    const { data: users, isLoading, error } = trpc.crud.getUsers.useQuery(undefined, { enabled: !!userId });
+    const user = users?.find(u => u.id === userId);
 
     const { data: carts } = trpc.crud.getCarts.useQuery(undefined, { enabled: !!userId });
     const userCart = carts?.find((c) => c.userId === userId);
@@ -90,12 +88,12 @@ export default function Navbar() {
                                     <li className="ml-10 text-xl uppercase hover:border-b">
                                         <Link href={`/profile/${user.id}`}>{user.username}</Link>
                                     </li>
-                                    <button
-                                        onClick={async () => { closeMenu(); await logout(); }}
+                                    <LogoutButton
+
                                         className="shadow-xl p-3 mx-10 text-xl cursor-pointer uppercase transition-colors bg-[var(--supernova)] hover:bg-[var(--yukon-gold)] text-[var(--rangoon-green)] rounded"
                                     >
                                         Logout
-                                    </button>
+                                    </LogoutButton>
                                 </>
                             ) : (
                                 <>
@@ -162,12 +160,11 @@ export default function Navbar() {
                                                 {user.username}
                                             </Link>
                                         </li>
-                                        <button
-                                            onClick={async () => { closeMenu(); await logout(); }}
+                                        <LogoutButton
                                             className="py-4 transition-colors bg-[var(--yukon-gold)] hover:bg-[var(--supernova)] text-[var(--rangoon-green)] rounded"
                                         >
                                             Logout
-                                        </button>
+                                        </LogoutButton>
                                     </>
                                 ) : (
                                     <>

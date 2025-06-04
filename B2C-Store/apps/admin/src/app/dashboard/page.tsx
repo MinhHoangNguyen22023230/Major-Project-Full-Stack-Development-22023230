@@ -2,17 +2,18 @@
 
 import ComponentCard from '@/components/ui/ComponentCard';
 import { useSidebar } from '@/app/SidebarContext';
+import Welcome from '@/components/Dashboard/Welcome';
 
 export default function Dashboard() {
   const { isOpen } = useSidebar();
 
   return (
     <ComponentCard
-      className={`main-section ${isOpen ? "sm:w-[calc(90vw-280px)]" : "w-[90vw]"}`}
+      className={` ${isOpen ? "sm:w-[calc(90vw-280px)]" : "w-[90vw]"}`}
       title="Admin Dashboard"
     >
-      <div>
-
+      <div className="mx-auto main-section">
+        <Welcome />
       </div>
     </ComponentCard>
   );

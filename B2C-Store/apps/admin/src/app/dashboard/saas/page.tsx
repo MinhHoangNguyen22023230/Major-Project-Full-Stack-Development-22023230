@@ -4,6 +4,8 @@ import OverviewSaaS from "@/components/Dashboard/SaaS/OverviewSaaS";
 import ComponentCard from "@/components/ui/ComponentCard";
 import { useSidebar } from "@/app/SidebarContext";
 import Link from "next/link";
+import RevenueGrowthChart from "@/components/Dashboard/SaaS/RevenueGrowthChart";
+import RecentSignUp from "@/components/Dashboard/SaaS/RecentSignUp";
 
 export default function SaaS() {
     const { isOpen } = useSidebar();
@@ -21,6 +23,8 @@ export default function SaaS() {
             }
         >
             <OverviewSaaS />
+            <RevenueGrowthChart />
+            <RecentSignUp />
         </ComponentCard>
     );
 }

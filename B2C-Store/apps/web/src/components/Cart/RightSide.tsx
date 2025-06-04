@@ -14,19 +14,14 @@ type CartItem = {
 type Cart = {
     id: string;
     totalPrice?: number;
+    itemsCount?: number;
     cartItems?: CartItem[];
 };
 
 export default function RightSide({ cart }: { cart: Cart }) {
-    // Use cart.totalPrice if available, otherwise fallback to calculated value
-    const total =
-        typeof cart.totalPrice === "number"
-            ? cart.totalPrice
-            : cart.cartItems?.reduce(
-                (sum: number, item: CartItem) => sum + (item.product?.price || 0) * (item.quantity || 1),
-                0
-            );
-    const totalItems = cart.cartItems?.reduce((sum: number, item: CartItem) => sum + (item.quantity || 0), 0) || 0;
+    // Use cart.totalPrice and cart.itemsCount directly
+    const total = typeof cart.totalPrice === "number" ? cart.totalPrice : 0;
+    const totalItems = typeof cart.itemsCount === "number" ? cart.itemsCount : 0;
 
     return (
         <div className="bg-gray-50 p-6 rounded shadow">

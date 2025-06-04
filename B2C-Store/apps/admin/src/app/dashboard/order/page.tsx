@@ -1,6 +1,6 @@
 "use client";
 
-import OverviewSaaS from "@/components/Dashboard/SaaS/OverviewSaaS";
+import OverviewOrder from "@/components/Dashboard/Order/OverviewOrder";
 import ComponentCard from "@/components/ui/ComponentCard";
 import OrderTable from "@/components/Dashboard/Order/OrderTable";
 import { useSidebar } from "@/app/SidebarContext";
@@ -21,7 +21,7 @@ export default function Order() {
                 </>
             }
         >
-            <OverviewSaaS />
+            <OverviewOrder />
             <OrderTable />
         </ComponentCard>
     );

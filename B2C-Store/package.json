@@ -25,5 +25,8 @@
     "overrides": {
       "typescript": "^5.8.3"
     }
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.821.0"
   }
 }

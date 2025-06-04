@@ -56,7 +56,7 @@ model Product {
   orderItems    OrderItem[]
   cartItems     CartItem[]
   releaseDate   DateTime?
-  stock         Int
+  stock         Int            @default(0)
   rating        Float?
   reviews       Review[]
   createdAt     DateTime       @default(now())

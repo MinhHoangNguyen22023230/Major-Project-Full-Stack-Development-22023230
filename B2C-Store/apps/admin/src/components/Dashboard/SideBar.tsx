@@ -30,7 +30,7 @@ export default function SideBar() {
                 (isOpen ? 'translate-x-0' : '-translate-x-full')
             }>
                 <div className="w-full flex flex-row items-center justify-left gap-2 h-30 shadow-amber-100">
-                    <Image width={100} height={100} src="/logo.svg" alt="Logo" />
+                    <Link href="/dashboard"><Image width={100} height={100} src="/logo.svg" alt="Logo" /></Link>
                     <h2 className="text-2xl font-bold tracking-tight block">B2C Store</h2>
                 </div>
                 <aside className="scrollable-sidebar h-screen w-full p-4">

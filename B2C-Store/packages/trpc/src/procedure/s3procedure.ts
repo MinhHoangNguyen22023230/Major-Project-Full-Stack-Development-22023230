@@ -1,12 +1,13 @@
 import { router, publicProcedure } from "../router";
 import { z } from "zod";
 
-export const s3Procedure: any = router({
+export const s3Procedure = router({
     // --- Admin ---
     uploadAdminImage: publicProcedure
-        .input(z.object({ adminId: z.string(), filename: z.string(), body: z.instanceof(Uint8Array), contentType: z.string().optional() }))
+        .input(z.object({ adminId: z.string(), filename: z.string(), body: z.array(z.number()), contentType: z.string().optional() }))
         .mutation(async ({ input, ctx }) => {
-            const imageUrl = await ctx.S3Utils.uploadAdminImage(input.adminId, input.filename, input.body, input.contentType);
+            const uint8Body = new Uint8Array(input.body);
+            const imageUrl = await ctx.S3Utils.uploadAdminImage(input.adminId, input.filename, uint8Body, input.contentType);
             await ctx.prisma.admin.update({
                 where: { id: input.adminId },
                 data: { imageUrl },
@@ -16,12 +17,12 @@ export const s3Procedure: any = router({
     getAdminImage: publicProcedure
         .input(z.object({ adminId: z.string(), filename: z.string() }))
         .query(async ({ input, ctx }) => {
-            return ctx.S3Utils.getAdminImage(input.adminId, input.filename);
+            return ctx.S3Utils.getAdminImage(input.adminId, input.filename); // returns string (URL)
         }),
     deleteAdminImage: publicProcedure
-        .input(z.object({ adminId: z.string(), filename: z.string() }))
+        .input(z.object({ adminId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            await ctx.S3Utils.deleteAdminImage(input.adminId, input.filename);
+            await ctx.S3Utils.deleteAdminImage(input.adminId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png";
             await ctx.prisma.admin.update({
                 where: { id: input.adminId },
@@ -32,14 +33,14 @@ export const s3Procedure: any = router({
     listAdminImages: publicProcedure
         .input(z.object({ adminId: z.string() }))
         .query(async ({ input, ctx }) => {
-            return ctx.S3Utils.listAdminImages(input.adminId);
+            return ctx.S3Utils.listAdminImages(input.adminId); // returns string[]
         }),
-
     // --- Brand ---
     uploadBrandImage: publicProcedure
-        .input(z.object({ brandId: z.string(), filename: z.string(), body: z.instanceof(Uint8Array), contentType: z.string().optional() }))
+        .input(z.object({ brandId: z.string(), filename: z.string(), body: z.array(z.number()), contentType: z.string().optional() }))
         .mutation(async ({ input, ctx }) => {
-            const imageUrl = await ctx.S3Utils.uploadBrandImage(input.brandId, input.filename, input.body, input.contentType);
+            const uint8Body = new Uint8Array(input.body);
+            const imageUrl = await ctx.S3Utils.uploadBrandImage(input.brandId, input.filename, uint8Body, input.contentType);
             await ctx.prisma.brand.update({
                 where: { id: input.brandId },
                 data: { imageUrl },
@@ -52,9 +53,9 @@ export const s3Procedure: any = router({
             return ctx.S3Utils.getBrandImage(input.brandId, input.filename);
         }),
     deleteBrandImage: publicProcedure
-        .input(z.object({ brandId: z.string(), filename: z.string() }))
+        .input(z.object({ brandId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            await ctx.S3Utils.deleteBrandImage(input.brandId, input.filename);
+            await ctx.S3Utils.deleteBrandImage(input.brandId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+available.jpg";
             await ctx.prisma.brand.update({
                 where: { id: input.brandId },
@@ -67,12 +68,12 @@ export const s3Procedure: any = router({
         .query(async ({ input, ctx }) => {
             return ctx.S3Utils.listBrandImages(input.brandId);
         }),
-
     // --- Category ---
     uploadCategoryImage: publicProcedure
-        .input(z.object({ categoryId: z.string(), filename: z.string(), body: z.instanceof(Uint8Array), contentType: z.string().optional() }))
+        .input(z.object({ categoryId: z.string(), filename: z.string(), body: z.array(z.number()), contentType: z.string().optional() }))
         .mutation(async ({ input, ctx }) => {
-            const imageUrl = await ctx.S3Utils.uploadCategoryImage(input.categoryId, input.filename, input.body, input.contentType);
+            const uint8Body = new Uint8Array(input.body);
+            const imageUrl = await ctx.S3Utils.uploadCategoryImage(input.categoryId, input.filename, uint8Body, input.contentType);
             await ctx.prisma.category.update({
                 where: { id: input.categoryId },
                 data: { imageUrl },
@@ -85,9 +86,9 @@ export const s3Procedure: any = router({
             return ctx.S3Utils.getCategoryImage(input.categoryId, input.filename);
         }),
     deleteCategoryImage: publicProcedure
-        .input(z.object({ categoryId: z.string(), filename: z.string() }))
+        .input(z.object({ categoryId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            await ctx.S3Utils.deleteCategoryImage(input.categoryId, input.filename);
+            await ctx.S3Utils.deleteCategoryImage(input.categoryId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+available.jpg";
             await ctx.prisma.category.update({
                 where: { id: input.categoryId },
@@ -100,12 +101,12 @@ export const s3Procedure: any = router({
         .query(async ({ input, ctx }) => {
             return ctx.S3Utils.listCategoryImages(input.categoryId);
         }),
-
     // --- User ---
     uploadUserImage: publicProcedure
-        .input(z.object({ userId: z.string(), filename: z.string(), body: z.instanceof(Uint8Array), contentType: z.string().optional() }))
+        .input(z.object({ userId: z.string(), filename: z.string(), body: z.array(z.number()), contentType: z.string().optional() }))
         .mutation(async ({ input, ctx }) => {
-            const imageUrl = await ctx.S3Utils.uploadUserImage(input.userId, input.filename, input.body, input.contentType);
+            const uint8Body = new Uint8Array(input.body);
+            const imageUrl = await ctx.S3Utils.uploadUserImage(input.userId, input.filename, uint8Body, input.contentType);
             await ctx.prisma.user.update({
                 where: { id: input.userId },
                 data: { imgUrl: imageUrl },
@@ -118,9 +119,9 @@ export const s3Procedure: any = router({
             return ctx.S3Utils.getUserImage(input.userId, input.filename);
         }),
     deleteUserImage: publicProcedure
-        .input(z.object({ userId: z.string(), filename: z.string() }))
+        .input(z.object({ userId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            await ctx.S3Utils.deleteUserImage(input.userId, input.filename);
+            await ctx.S3Utils.deleteUserImage(input.userId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png";
             await ctx.prisma.user.update({
                 where: { id: input.userId },
@@ -133,12 +134,12 @@ export const s3Procedure: any = router({
         .query(async ({ input, ctx }) => {
             return ctx.S3Utils.listUserImages(input.userId);
         }),
-
     // --- Product ---
     uploadProductImage: publicProcedure
-        .input(z.object({ productId: z.string(), filename: z.string(), body: z.instanceof(Uint8Array), contentType: z.string().optional() }))
+        .input(z.object({ productId: z.string(), filename: z.string(), body: z.array(z.number()), contentType: z.string().optional() }))
         .mutation(async ({ input, ctx }) => {
-            const imageUrl = await ctx.S3Utils.uploadProductImage(input.productId, input.filename, input.body, input.contentType);
+            const uint8Body = new Uint8Array(input.body);
+            const imageUrl = await ctx.S3Utils.uploadProductImage(input.productId, input.filename, uint8Body, input.contentType);
             await ctx.prisma.product.update({
                 where: { id: input.productId },
                 data: { imageUrl },
@@ -151,9 +152,9 @@ export const s3Procedure: any = router({
             return ctx.S3Utils.getProductImage(input.productId, input.filename);
         }),
     deleteProductImage: publicProcedure
-        .input(z.object({ productId: z.string(), filename: z.string() }))
+        .input(z.object({ productId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            await ctx.S3Utils.deleteProductImage(input.productId, input.filename);
+            await ctx.S3Utils.deleteProductImage(input.productId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+product+image.png";
             await ctx.prisma.product.update({
                 where: { id: input.productId },
@@ -166,7 +167,6 @@ export const s3Procedure: any = router({
         .query(async ({ input, ctx }) => {
             return ctx.S3Utils.listProductImages(input.productId);
         }),
-
     // --- Default ---
     getDefaultImage: publicProcedure
         .input(z.object({ filename: z.string() }))

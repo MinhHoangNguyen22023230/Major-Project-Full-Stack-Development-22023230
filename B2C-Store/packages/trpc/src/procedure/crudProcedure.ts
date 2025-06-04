@@ -420,9 +420,13 @@ export const crudProcedure = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
+            const updateData = { ...input.data };
+            if (updateData.hashedPassword) {
+                updateData.hashedPassword = await hashPassword(updateData.hashedPassword);
+            }
             return ctx.prisma.user.update({
                 where: { id: input.id },
-                data: input.data,
+                data: updateData,
                 include: {
                     cart: true,
                     orders: true,
@@ -430,6 +434,29 @@ export const crudProcedure = router({
                     wishList: true,
                     reviews: true,
                 },
+            });
+        }),
+
+    updateAdmin: publicProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                data: z.object({
+                    username: z.string().optional(),
+                    email: z.string().optional(),
+                    hashedPassword: z.string().optional(),
+                    imgUrl: z.string().optional(),
+                }),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const updateData = { ...input.data };
+            if (updateData.hashedPassword) {
+                updateData.hashedPassword = await hashPassword(updateData.hashedPassword);
+            }
+            return ctx.prisma.admin.update({
+                where: { id: input.id },
+                data: updateData,
             });
         }),
 
@@ -651,27 +678,32 @@ export const crudProcedure = router({
         .mutation(async ({ ctx, input }) => {
             // Default quantity to 1 if not provided or invalid
             const quantity = typeof input.quantity === 'number' && input.quantity > 0 ? input.quantity : 1;
+            // Fetch product to get price
+            const product = await ctx.prisma.product.findUnique({ where: { id: input.productId } });
+            if (!product) throw new Error('Product not found');
+            const itemTotalPrice = product.price * quantity;
             const cartItem = await ctx.prisma.cartItem.create({
                 data: {
                     cartId: input.cartId,
                     productId: input.productId,
                     quantity,
-                    totalPrice: input.totalPrice ?? 0, // Default to 0 if not provided
+                    totalPrice: itemTotalPrice,
                 },
                 include: {
                     cart: true, // Include the related cart
                     product: true, // Include the related product
                 },
             });
-            // Update the cart's itemsCount
+            // Update the cart's itemsCount and totalPrice
             const allItems = await ctx.prisma.cartItem.findMany({
                 where: { cartId: input.cartId },
-                select: { quantity: true },
+                select: { quantity: true, totalPrice: true },
             });
-            const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
             await ctx.prisma.cart.update({
                 where: { id: input.cartId },
-                data: { itemsCount },
+                data: { itemsCount, totalPrice },
             });
             return cartItem;
         }),
@@ -679,24 +711,25 @@ export const crudProcedure = router({
     deleteCartItem: publicProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            // Find the cartId before deleting
+            // Find the cartId and totalPrice before deleting
             const cartItem = await ctx.prisma.cartItem.findUnique({
                 where: { id: input.id },
-                select: { cartId: true },
+                select: { cartId: true, totalPrice: true },
             });
             const deleted = await ctx.prisma.cartItem.delete({
                 where: { id: input.id },
             });
-            // After deletion, recalculate itemsCount for the cart
+            // After deletion, recalculate itemsCount and totalPrice for the cart
             if (cartItem && cartItem.cartId) {
                 const allItems = await ctx.prisma.cartItem.findMany({
                     where: { cartId: cartItem.cartId },
-                    select: { quantity: true },
+                    select: { quantity: true, totalPrice: true },
                 });
-                const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+                const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
                 await ctx.prisma.cart.update({
                     where: { id: cartItem.cartId },
-                    data: { itemsCount },
+                    data: { itemsCount, totalPrice },
                 });
             }
             return deleted;
@@ -724,6 +757,18 @@ export const crudProcedure = router({
             if ('quantity' in updateData && (typeof updateData.quantity !== 'number' || updateData.quantity < 1)) {
                 updateData.quantity = 1;
             }
+            // Fetch the cart item and product
+            const cartItem = await ctx.prisma.cartItem.findUnique({
+                where: { id: input.id },
+                include: { product: true },
+            });
+            if (!cartItem) throw new Error('Cart item not found');
+            // If quantity or productId is being updated, recalculate totalPrice
+            const newQuantity = updateData.quantity ?? cartItem.quantity;
+            const product = updateData.productId && updateData.productId !== cartItem.productId
+                ? (await ctx.prisma.product.findUnique({ where: { id: updateData.productId } }) ?? (() => { throw new Error('Product not found'); })())
+                : cartItem.product;
+            updateData.totalPrice = product.price * newQuantity;
             const updatedCartItem = await ctx.prisma.cartItem.update({
                 where: { id: input.id },
                 data: updateData,
@@ -732,16 +777,17 @@ export const crudProcedure = router({
                     product: true, // Include the related product
                 },
             });
-            // After update, recalculate itemsCount for the cart
+            // After update, recalculate itemsCount and totalPrice for the cart
             const cartId = updateData.cartId || updatedCartItem.cartId;
             const allItems = await ctx.prisma.cartItem.findMany({
                 where: { cartId },
-                select: { quantity: true },
+                select: { quantity: true, totalPrice: true },
             });
-            const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
             await ctx.prisma.cart.update({
                 where: { id: cartId },
-                data: { itemsCount },
+                data: { itemsCount, totalPrice },
             });
             return updatedCartItem;
         }),
@@ -878,58 +924,57 @@ export const crudProcedure = router({
                 orderId: z.string(),
                 productId: z.string(),
                 quantity: z.number().optional(),
-                totalPrice: z.number().optional(), // Optional field
+                totalPrice: z.number().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
             // Default quantity to 1 if not provided or invalid
             const quantity = typeof input.quantity === 'number' && input.quantity > 0 ? input.quantity : 1;
-            const orderItem = await ctx.prisma.orderItem.create({
+            // Deduct stock from product
+            const product = await ctx.prisma.product.findUnique({ where: { id: input.productId } });
+            if (!product) throw new Error('Product not found');
+            if ((product.stock ?? 0) < quantity) throw new Error('Not enough stock');
+            await ctx.prisma.product.update({
+                where: { id: input.productId },
+                data: { stock: { decrement: quantity } },
+            });
+            // Create order item
+            return ctx.prisma.orderItem.create({
                 data: {
                     orderId: input.orderId,
                     productId: input.productId,
                     quantity,
-                    totalPrice: input.totalPrice ?? 0, // Default to 0 if not provided
+                    totalPrice: input.totalPrice ?? 0,
                 },
                 include: {
-                    order: true, // Include the related order
-                    product: true, // Include the related product
+                    order: true,
+                    product: true,
                 },
             });
-            // Update the order's itemsCount
-            const allItems = await ctx.prisma.orderItem.findMany({
-                where: { orderId: input.orderId },
-                select: { quantity: true },
-            });
-            const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
-            await ctx.prisma.order.update({
-                where: { id: input.orderId },
-                data: { itemsCount },
-            });
-            return orderItem;
         }),
 
     deleteOrderItem: publicProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            // Find the orderId before deleting
+            // Find the orderId and totalPrice before deleting
             const orderItem = await ctx.prisma.orderItem.findUnique({
                 where: { id: input.id },
-                select: { orderId: true },
+                select: { orderId: true, totalPrice: true },
             });
             const deleted = await ctx.prisma.orderItem.delete({
                 where: { id: input.id },
             });
-            // After deletion, recalculate itemsCount for the order
+            // After deletion, recalculate itemsCount and totalPrice for the order
             if (orderItem && orderItem.orderId) {
                 const allItems = await ctx.prisma.orderItem.findMany({
                     where: { orderId: orderItem.orderId },
-                    select: { quantity: true },
+                    select: { quantity: true, totalPrice: true },
                 });
-                const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+                const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
                 await ctx.prisma.order.update({
                     where: { id: orderItem.orderId },
-                    data: { itemsCount },
+                    data: { itemsCount, totalPrice },
                 });
             }
             return deleted;
@@ -947,34 +992,50 @@ export const crudProcedure = router({
                     orderId: z.string().optional(),
                     productId: z.string().optional(),
                     quantity: z.number().optional(),
-                    totalPrice: z.number().optional(), // Optional field
+                    totalPrice: z.number().optional(),
                 }),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            // If quantity is provided and invalid, default to 1
-            const updateData = { ...input.data };
-            if ('quantity' in updateData && (typeof updateData.quantity !== 'number' || updateData.quantity < 1)) {
-                updateData.quantity = 1;
+            // Find the existing order item
+            const orderItem = await ctx.prisma.orderItem.findUnique({ where: { id: input.id }, include: { product: true } });
+            if (!orderItem) throw new Error('Order item not found');
+            // If quantity is being updated, adjust product stock accordingly
+            const newQuantity = input.data.quantity ?? orderItem.quantity;
+            const oldQuantity = orderItem.quantity;
+            const product = input.data.productId && input.data.productId !== orderItem.productId
+                ? (await ctx.prisma.product.findUnique({ where: { id: input.data.productId } }) ?? (() => { throw new Error('Product not found'); })())
+                : orderItem.product;
+            if (newQuantity !== oldQuantity) {
+                const diff = newQuantity - oldQuantity;
+                if (diff > 0 && (product.stock ?? 0) < diff) throw new Error('Not enough stock');
+                await ctx.prisma.product.update({
+                    where: { id: product.id },
+                    data: { stock: { decrement: diff } },
+                });
             }
+            // Always recalculate totalPrice
+            const updateData = { ...input.data };
+            updateData.totalPrice = product.price * newQuantity;
             const updatedOrderItem = await ctx.prisma.orderItem.update({
                 where: { id: input.id },
                 data: updateData,
                 include: {
-                    order: true, // Include the related order
-                    product: true, // Include the related product
+                    order: true,
+                    product: true,
                 },
             });
-            // After update, recalculate itemsCount for the order
+            // After update, recalculate itemsCount and totalPrice for the order
             const orderId = updateData.orderId || updatedOrderItem.orderId;
             const allItems = await ctx.prisma.orderItem.findMany({
                 where: { orderId },
-                select: { quantity: true },
+                select: { quantity: true, totalPrice: true },
             });
-            const itemsCount = allItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
             await ctx.prisma.order.update({
                 where: { id: orderId },
-                data: { itemsCount },
+                data: { itemsCount, totalPrice },
             });
             return updatedOrderItem;
         }),

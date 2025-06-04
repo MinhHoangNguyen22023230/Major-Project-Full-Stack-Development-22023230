@@ -27,13 +27,14 @@ export default function UserTable() {
     const [search, setSearch] = useState("");
     const [alert, setAlert] = useState<{ message: string; type?: "info" | "success" | "warning" | "error" } | null>(null);
     const alertTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [expanded, setExpanded] = useState<null | { type: "address" | "wishlist" | "cart", userId: string }>(null);
+    const [expanded, setExpanded] = useState<null | { type: "address" | "wishlist" | "cart" | "review", userId: string }>(null);
 
     const { data: addresses = [] } = trpc.crud.getAddresses.useQuery();
     const { data: wishlists = [] } = trpc.crud.getWishLists.useQuery();
     const { data: wishlistItems = [] } = trpc.crud.getWishListItems.useQuery();
     const { data: carts = [] } = trpc.crud.getCarts.useQuery();
     const { data: cartItems = [] } = trpc.crud.getCartItems.useQuery();
+    const { data: reviews = [] } = trpc.crud.getReviews.useQuery();
 
     const isSelectedAll = data.length > 0 && selected.length === data.length;
     const isIndeterminate = selected.length > 0 && selected.length < data.length;
@@ -201,104 +202,196 @@ export default function UserTable() {
                                         {/* Expandable Address Row */}
                                         <TableRow>
                                             <td colSpan={7} className="bg-gray-50 px-8 py-4">
-                                                <button
-                                                    className="mr-4 text-blue-600 underline"
-                                                    onClick={() => setExpanded(expanded?.type === "address" && expanded.userId === user.id ? null : { type: "address", userId: user.id })}
-                                                >
-                                                    {expanded?.type === "address" && expanded.userId === user.id ? "Hide Addresses" : "Show Addresses"}
-                                                </button>
-                                                <button
-                                                    className="mr-4 text-blue-600 underline"
-                                                    onClick={() => setExpanded(expanded?.type === "wishlist" && expanded.userId === user.id ? null : { type: "wishlist", userId: user.id })}
-                                                >
-                                                    {expanded?.type === "wishlist" && expanded.userId === user.id ? "Hide Wishlists" : "Show Wishlists"}
-                                                </button>
-                                                <button
-                                                    className="text-blue-600 underline"
-                                                    onClick={() => setExpanded(expanded?.type === "cart" && expanded.userId === user.id ? null : { type: "cart", userId: user.id })}
-                                                >
-                                                    {expanded?.type === "cart" && expanded.userId === user.id ? "Hide Carts" : "Show Carts"}
-                                                </button>
+                                                <div className="flex flex-row flex-wrap gap-4 items-center justify-start">
+                                                    <button
+                                                        className={`mr-2 px-5 py-2 rounded border border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "address" && expanded.userId === user.id ? 'ring-2 ring-blue-400' : ''}`}
+                                                        onClick={() => setExpanded(expanded?.type === "address" && expanded.userId === user.id ? null : { type: "address", userId: user.id })}
+                                                    >
+                                                        {expanded?.type === "address" && expanded.userId === user.id ? "Hide Addresses" : "Show Addresses"}
+                                                    </button>
+                                                    <button
+                                                        className={`mr-2 px-5 py-2 rounded border border-green-500 text-green-700 bg-green-50 hover:bg-green-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "wishlist" && expanded.userId === user.id ? 'ring-2 ring-green-400' : ''}`}
+                                                        onClick={() => setExpanded(expanded?.type === "wishlist" && expanded.userId === user.id ? null : { type: "wishlist", userId: user.id })}
+                                                    >
+                                                        {expanded?.type === "wishlist" && expanded.userId === user.id ? "Hide Wishlists" : "Show Wishlists"}
+                                                    </button>
+                                                    <button
+                                                        className={`mr-2 px-5 py-2 rounded border border-yellow-500 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "cart" && expanded.userId === user.id ? 'ring-2 ring-yellow-400' : ''}`}
+                                                        onClick={() => setExpanded(expanded?.type === "cart" && expanded.userId === user.id ? null : { type: "cart", userId: user.id })}
+                                                    >
+                                                        {expanded?.type === "cart" && expanded.userId === user.id ? "Hide Carts" : "Show Carts"}
+                                                    </button>
+                                                    <button
+                                                        className={`px-5 py-2 rounded border border-purple-500 text-purple-700 bg-purple-50 hover:bg-purple-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded?.type === "review" && expanded.userId === user.id ? 'ring-2 ring-purple-400' : ''}`}
+                                                        onClick={() => setExpanded(expanded?.type === "review" && expanded.userId === user.id ? null : { type: "review", userId: user.id })}
+                                                    >
+                                                        {expanded?.type === "review" && expanded.userId === user.id ? "Hide Reviews" : "Show Reviews"}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </TableRow>
                                         {/* Expanded Content */}
                                         {expanded?.userId === user.id && expanded.type === "address" && (
                                             <TableRow>
-                                                <td colSpan={7} className="bg-gray-100 px-8 py-4">
-                                                    <Table className="min-w-[400px] w-full">
-                                                        <TableHeader>
-                                                            <TableRow>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Address</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">City</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">State</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Country</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Zip Code</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Default</TableCell>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody className="divide-y divide-gray-200">
-                                                            {addresses.filter(addr => addr.userId === user.id).map(addr => (
-                                                                <TableRow key={addr.id}>
-                                                                    <TableCell className="px-4 py-2 text-start">{addr.address}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{addr.city}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{addr.state}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{addr.country}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{addr.zipCode}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{typeof addr.default === 'boolean' ? (addr.default ? "Yes" : "No") : ""}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
+                                                <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
+                                                    <div className="overflow-hidden rounded-b-lg">
+                                                        <div className="bg-blue-50 border-l-4 border-blue-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                            <Table className="min-w-[400px] w-full">
+                                                                {addresses.filter(addr => addr.userId === user.id).length === 0 ? (
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colSpan={6} className="text-center text-gray-500">No data</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                ) : (
+                                                                    <>
+                                                                        <TableHeader>
+                                                                            <TableRow>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Address</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">City</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">State</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Country</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Zip Code</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Default</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHeader>
+                                                                        <TableBody className="divide-y divide-gray-200">
+                                                                            {addresses.filter(addr => addr.userId === user.id).map(addr => (
+                                                                                <TableRow key={addr.id}>
+                                                                                    <TableCell className="px-4 py-2 text-start">{addr.address}</TableCell>
+                                                                                    <TableCell className="px-4 py-2 text-start">{addr.city}</TableCell>
+                                                                                    <TableCell className="px-4 py-2 text-start">{addr.state}</TableCell>
+                                                                                    <TableCell className="px-4 py-2 text-start">{addr.country}</TableCell>
+                                                                                    <TableCell className="px-4 py-2 text-start">{addr.zipCode}</TableCell>
+                                                                                    <TableCell className="px-4 py-2 text-start">{typeof addr.default === 'boolean' ? (addr.default ? "Yes" : "No") : ""}</TableCell>
+                                                                                </TableRow>
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </>
+                                                                )}
+                                                            </Table>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </TableRow>
                                         )}
                                         {expanded?.userId === user.id && expanded.type === "wishlist" && (
                                             <TableRow>
-                                                <td colSpan={7} className="bg-gray-100 px-8 py-4">
-                                                    <Table className="min-w-[400px] w-full">
-                                                        <TableHeader>
-                                                            <TableRow>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Wishlist ID</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product ID</TableCell>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody className="divide-y divide-gray-200">
-                                                            {wishlists.filter(wl => wl.userId === user.id).flatMap(wl =>
-                                                                wishlistItems.filter(item => item.wishListId === wl.id).map(item => (
-                                                                    <TableRow key={item.id}>
-                                                                        <TableCell className="px-4 py-2 text-start">{wl.id}</TableCell>
-                                                                        <TableCell className="px-4 py-2 text-start">{item.productId}</TableCell>
-                                                                    </TableRow>
-                                                                ))
-                                                            )}
-                                                        </TableBody>
-                                                    </Table>
+                                                <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
+                                                    <div className="overflow-hidden rounded-b-lg">
+                                                        <div className="bg-green-50 border-l-4 border-green-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                            <Table className="min-w-[400px] w-full">
+                                                                {wishlists.filter(wl => wl.userId === user.id).flatMap(wl => wishlistItems.filter(item => item.wishListId === wl.id)).length === 0 ? (
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colSpan={2} className="text-center text-gray-500">No data</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                ) : (
+                                                                    <>
+                                                                        <TableHeader>
+                                                                            <TableRow>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Wishlist ID</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product ID</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHeader>
+                                                                        <TableBody className="divide-y divide-gray-200">
+                                                                            {wishlists.filter(wl => wl.userId === user.id).flatMap(wl =>
+                                                                                wishlistItems.filter(item => item.wishListId === wl.id).map(item => (
+                                                                                    <TableRow key={item.id}>
+                                                                                        <TableCell className="px-4 py-2 text-start">{wl.id}</TableCell>
+                                                                                        <TableCell className="px-4 py-2 text-start">{item.productId}</TableCell>
+                                                                                    </TableRow>
+                                                                                ))
+                                                                            )}
+                                                                        </TableBody>
+                                                                    </>
+                                                                )}
+                                                            </Table>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </TableRow>
                                         )}
                                         {expanded?.userId === user.id && expanded.type === "cart" && (
                                             <TableRow>
-                                                <td colSpan={7} className="bg-gray-100 px-8 py-4">
-                                                    <Table className="min-w-[400px] w-full">
-                                                        <TableHeader>
-                                                            <TableRow>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Cart ID</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product ID</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Quantity</TableCell>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody className="divide-y divide-gray-200">
-                                                            {carts.filter(cart => cart.userId === user.id).flatMap(cart =>
-                                                                cartItems.filter(item => item.cartId === cart.id).map(item => (
-                                                                    <TableRow key={item.id}>
-                                                                        <TableCell className="px-4 py-2 text-start">{cart.id}</TableCell>
-                                                                        <TableCell className="px-4 py-2 text-start">{item.productId}</TableCell>
-                                                                        <TableCell className="px-4 py-2 text-start">{item.quantity}</TableCell>
-                                                                    </TableRow>
-                                                                ))
-                                                            )}
-                                                        </TableBody>
-                                                    </Table>
+                                                <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
+                                                    <div className="overflow-hidden rounded-b-lg">
+                                                        <div className="bg-yellow-50 border-l-4 border-yellow-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                            <Table className="min-w-[400px] w-full">
+                                                                {carts.filter(cart => cart.userId === user.id).flatMap(cart => cartItems.filter(item => item.cartId === cart.id)).length === 0 ? (
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colSpan={3} className="text-center text-gray-500">No data</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                ) : (
+                                                                    <>
+                                                                        <TableHeader>
+                                                                            <TableRow>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Cart ID</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product ID</TableCell>
+                                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Quantity</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHeader>
+                                                                        <TableBody className="divide-y divide-gray-200">
+                                                                            {carts.filter(cart => cart.userId === user.id).flatMap(cart =>
+                                                                                cartItems.filter(item => item.cartId === cart.id).map(item => (
+                                                                                    <TableRow key={item.id}>
+                                                                                        <TableCell className="px-4 py-2 text-start">{cart.id}</TableCell>
+                                                                                        <TableCell className="px-4 py-2 text-start">{item.productId}</TableCell>
+                                                                                        <TableCell className="px-4 py-2 text-start">{item.quantity}</TableCell>
+                                                                                    </TableRow>
+                                                                                ))
+                                                                            )}
+                                                                        </TableBody>
+                                                                    </>
+                                                                )}
+                                                            </Table>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </TableRow>
+                                        )}
+                                        {expanded?.userId === user.id && expanded.type === "review" && (
+                                            <TableRow>
+                                                <td colSpan={7} style={{ padding: 0, background: "none", border: "none" }}>
+                                                    <div className="overflow-hidden rounded-b-lg">
+                                                        <div className="bg-purple-50 border-l-4 border-purple-400 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                            <Table className="min-w-[400px] w-full">
+                                                                {reviews.filter(r => r.userId === user.id).length === 0 ? (
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colSpan={5} className="text-center text-gray-500">No data</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                ) : (
+                                                                    <>
+                                                                        <TableHeader>
+                                                                            <TableRow>
+                                                                                <TableCell isHeader>Review ID</TableCell>
+                                                                                <TableCell isHeader>Product</TableCell>
+                                                                                <TableCell isHeader>Rating</TableCell>
+                                                                                <TableCell isHeader>Comment</TableCell>
+                                                                                <TableCell isHeader>Created At</TableCell>
+                                                                            </TableRow>
+                                                                        </TableHeader>
+                                                                        <TableBody className="divide-y divide-gray-200">
+                                                                            {reviews.filter(r => r.userId === user.id).map(r => (
+                                                                                <TableRow key={r.id}>
+                                                                                    <TableCell>{r.id}</TableCell>
+                                                                                    <TableCell>{r.productId}</TableCell>
+                                                                                    <TableCell>{r.rating}</TableCell>
+                                                                                    <TableCell>{r.comment}</TableCell>
+                                                                                    <TableCell>{r.createdAt ? new Date(r.createdAt).toLocaleString() : ""}</TableCell>
+                                                                                </TableRow>
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </>
+                                                                )}
+                                                            </Table>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </TableRow>
                                         )}

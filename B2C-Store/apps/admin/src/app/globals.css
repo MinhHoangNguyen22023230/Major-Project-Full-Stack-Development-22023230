@@ -2,10 +2,11 @@
 
 :root {
   --background: #ebebebff;
-  --foreground: ##0c0c08ff;
+  --foreground: #0c0c08ff;
   --ui-border-color: #c9c3c3;
   --navbar-and-sidebar-bg: #f8f9fa;
-
+  --hover-text-color: oklch(62.3% 0.214 259.815);
+  --hover-bg-color: #dbeafe;
 
   --yukon-gold: #7e6704ff;
   --gallery: #ebebebff;
@@ -20,6 +21,8 @@
     --foreground: ##0c0c08ff;
     --ui-border-color: #c9c3c3;
     --navbar-and-sidebar-bg: #f8f9fa;
+    --hover-text-color: oklch(62.3% 0.214 259.815);
+    --hover-bg-color: #dbeafe;
 
     --yukon-gold: #7e6704ff;
     --gallery: #ebebebff;
@@ -35,6 +38,10 @@ body {
   color: var(--foreground);
   border-color: var(--ui-border-color);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.hover-text:hover {
+  color: var(--hover-text-color);
 }
 
 .my-border-b {

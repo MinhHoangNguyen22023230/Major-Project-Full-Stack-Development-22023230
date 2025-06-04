@@ -19,45 +19,55 @@ export default function ProductList() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <>
-      <h1 className=" text-4xl font-bold text-center py-8">Our Products</h1>
-      <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 pl-6 pr-6 pt-30 pb-30">
-        {products?.map((product) => (
-          <div className="block w-full shadow-xl" key={product.id}>
-            <Link href={`/products/${product.id}`}>
-              <div className="bg-[var(--gallery)] overflow-hidden">
-                <div className="bg-[var(--gallery)] h-100">
-                  <Image
-                    width={500}
-                    height={500}
-                    src={product.imageUrl || "/no-product-image.png"}
-                    alt={product.name}
-                    className="w-full h-100 object-cover object-center"
-                  />
-                </div>
-                <div className="bg-[var(--gallery)] p-4">
-                  <h2 className="text-xl font-bold mb-2">{product.name}</h2>
-                  <p className="text-gray-700 mb-2">{product.description}</p>
-                  <p className="text-sm text-gray-500 mb-2">
-                    Category: {product.category?.name || "Unknown"}
-                  </p>
-                  <p className=" text-sm text-gray-500 mb-4">
-                    Brand: {product.brand?.name || "Unknown"}
-                  </p>
-                  <p className="text-lg font-semibold text-blue-600">
-                    ${product.price.toFixed(2)}
-                  </p>
+    <div className="bg-white z-10 shadow-md">
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Our Products</h2>
+        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {products?.map((product) => (
+            <div key={product.id} className="group relative ">
 
+              <Link href={`/products/${product.id}`}>
+                <Image
+                  alt={product.name}
+                  src={product.imageUrl || "/no-product-image.png"}
+                  className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+                  width={500}
+                  height={500}
+                />
+              </Link>
+              <div className="mt-4 flex justify-between">
+                <div>
+                  <h3 className="text-sm text-gray-700">
+                    <Link href={`/products/${product.id}`}>
+                      <span aria-hidden="true" className="absolute inset-0" />
+                      {product.name}
+                    </Link>
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">{product.category?.name || "Unknown"}</p>
+                  <p className="mt-1 h-5 text-sm text-gray-500 flex items-center">
+                    {product.brand?.imageUrl && (
+                      <Image
+                        src={product.brand.imageUrl}
+                        alt={product.brand.name + ' logo'}
+                        width={20}
+                        height={20}
+                        className="inline-block mr-2 rounded-full bg-gray-100 object-contain"
+                      />
+                    )}
+                    {product.brand?.name || "Unknown"}
+                  </p>
                 </div>
+                <p className="text-sm font-medium text-gray-900">${product.price.toFixed(2)}</p>
               </div>
-            </Link>
-            <div className="flex items-center bg-[var(--gallery)] justify-between px-4 pb-4">
-              <AddToWishlistButton productId={product.id} />
-              <AddToCartButton productId={product.id} productPrice={product.price} />
+              <div className="flex items-center mt-5 justify-between mb-2 z-10 relative">
+                <AddToWishlistButton productId={product.id} />
+                <AddToCartButton productId={product.id} productPrice={product.price} />
+              </div>
             </div>
-          </div>
-        ))}
+
+          ))}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

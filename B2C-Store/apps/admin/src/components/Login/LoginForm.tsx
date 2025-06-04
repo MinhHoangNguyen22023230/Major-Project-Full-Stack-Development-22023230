@@ -6,6 +6,7 @@ import { trpc } from "@/app/_trpc/client";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import Alert from "@/components/ui/Alert";
 
 export default function AdminLoginForm() {
     const router = useRouter();
@@ -60,9 +61,7 @@ export default function AdminLoginForm() {
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 {message === "login_required" && (
-                    <div className="text-red-600 text-sm mb-2">
-                        Please log in to continue.
-                    </div>
+                    <Alert message="Please log in to continue." type="error" onClose={() => router.replace("/", { scroll: false })} />
                 )}
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
@@ -109,7 +108,7 @@ export default function AdminLoginForm() {
                     </div>
 
                     {error && (
-                        <div className="text-red-600 text-sm">{error}</div>
+                        <Alert message={error} type="error" onClose={() => setError(null)} />
                     )}
 
                     <div>
@@ -122,13 +121,6 @@ export default function AdminLoginForm() {
                         </button>
                     </div>
                 </form>
-
-                <p className="mt-10 text-center text-sm/6 text-gray-500">
-                    Not a member?{' '}
-                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                        Start a 14 day free trial
-                    </a>
-                </p>
             </div>
         </div>
     );

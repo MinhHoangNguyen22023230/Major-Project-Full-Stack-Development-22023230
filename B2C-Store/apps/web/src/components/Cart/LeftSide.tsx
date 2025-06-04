@@ -10,6 +10,7 @@ type Product = {
     price: number;
     imageUrl?: string;
     description?: string;
+    stock?: number; // Add stock property for type safety
 };
 
 type CartItem = {
@@ -33,15 +34,14 @@ export default function LeftSide({ cart }: { cart: Cart }) {
     // Mutations
     const updateCartItem = trpc.crud.updateCartItem.useMutation();
     const deleteCartItem = trpc.crud.deleteCartItem.useMutation();
-    const updateCart = trpc.crud.updateCart.useMutation();
 
     // Fetch missing product data for cart items if not present
     const [productsById, setProductsById] = useState<Record<string, Product>>({});
     useEffect(() => {
         const fetchMissingProducts = async () => {
-            const missing = cart.cartItems.filter((item) => !item.product && item.id);
+            const missing = cart.cartItems.filter((item: CartItem) => !item.product && item.id);
             if (missing.length === 0) return;
-            const promises = missing.map(async (item) => {
+            const promises = missing.map(async (item: CartItem) => {
                 try {
                     // Fetch product by cartItemId with fetch
                     const products: Product[] = await utils.crud.findProductByCartItemId.fetch({ cartItemId: item.id });
@@ -64,32 +64,46 @@ export default function LeftSide({ cart }: { cart: Cart }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cart.cartItems]);
 
+    // Local state for input values
+    const [inputQuantities, setInputQuantities] = useState<Record<string, number>>({});
+
+    useEffect(() => {
+        // Sync inputQuantities with cart items on cart change
+        setInputQuantities(
+            cart.cartItems.reduce((acc, item) => {
+                acc[item.id] = item.quantity;
+                return acc;
+            }, {} as Record<string, number>)
+        );
+    }, [cart.cartItems]);
+
     const handleQuantityChange = async (
         cartItemId: string,
-        newQuantity: number,
-        product: Product,
-        currentQuantity: number
+        newQuantity: number
     ) => {
         if (newQuantity < 1) return;
         setLoadingId(cartItemId);
         try {
-            // Calculate price increment or decrement
-            const price = product?.price || 0;
-            const priceDiff = newQuantity > currentQuantity ? price : -price;
-            // Calculate new cart item total price by adding/subtracting one unit price
-            const oldItemTotal = (product?.price || 0) * currentQuantity;
-            const newCartItemTotalPrice = oldItemTotal + priceDiff;
-            // Update cart item
+            // Find the product for this cart item
+            const item = cart.cartItems.find(i => i.id === cartItemId);
+            const product = item?.product || productsById[item?.productId || ''];
+            if (!product) {
+                alert('Product not found.');
+                return;
+            }
+            // Check stock
+            if (typeof product.stock === 'number' && newQuantity > product.stock) {
+                alert(`Only ${product.stock} in stock.`);
+                setInputQuantities(q => ({ ...q, [cartItemId]: item?.quantity ?? 1 }));
+                return;
+            }
+            // Only update quantity, backend will handle totalPrice and cart total
             await updateCartItem.mutateAsync({
                 id: cartItemId,
                 data: {
                     quantity: newQuantity,
-                    totalPrice: newCartItemTotalPrice,
                 },
             });
-            // Update cart total price by adding/subtracting the price difference
-            const newCartTotal = (typeof cart.totalPrice === 'number' ? cart.totalPrice : 0) + priceDiff;
-            await updateCart.mutateAsync({ id: cart.id, data: { totalPrice: newCartTotal } });
             await utils.crud.findCartById.invalidate({ id: cart.id });
             await utils.crud.getCarts.invalidate();
         } finally {
@@ -97,13 +111,10 @@ export default function LeftSide({ cart }: { cart: Cart }) {
         }
     };
 
-    const handleDelete = async (cartItemId: string, cartItemTotalPrice: number) => {
+    const handleDelete = async (cartItemId: string) => {
         setLoadingId(cartItemId);
         try {
             await deleteCartItem.mutateAsync({ id: cartItemId });
-            // Subtract the deleted item's total price from cart total
-            const newCartTotal = (typeof cart.totalPrice === 'number' ? cart.totalPrice : 0) - (cartItemTotalPrice || 0);
-            await updateCart.mutateAsync({ id: cart.id, data: { totalPrice: Math.max(newCartTotal, 0) } });
             await utils.crud.findCartById.invalidate({ id: cart.id });
             await utils.crud.getCarts.invalidate();
         } finally {
@@ -118,7 +129,7 @@ export default function LeftSide({ cart }: { cart: Cart }) {
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">Cart Items</h2>
-            <ul className="space-y-4">
+            <ul className="space-y-4 overflow-y-auto h-[100vh]">
                 {cart.cartItems.map((item) => {
                     const product = item.product || productsById[item.productId] || {};
                     return (
@@ -140,20 +151,30 @@ export default function LeftSide({ cart }: { cart: Cart }) {
                                 <div className="text-gray-800 mt-1">Price: ${product.price?.toFixed(2) || '0.00'}</div>
                                 <div className="text-gray-800 mt-1">Item Total: ${(item.totalPrice || ((product.price || 0) * item.quantity)).toFixed(2)}</div>
                                 <div className="flex items-center mt-2 gap-2">
-                                    <button
-                                        className="px-2 py-1 bg-gray-200 rounded"
-                                        onClick={() => handleQuantityChange(item.id, item.quantity - 1, product as Product, item.quantity)}
-                                        disabled={loadingId === item.id || item.quantity <= 1}
-                                    >-</button>
-                                    <span className="px-2">{item.quantity}</span>
-                                    <button
-                                        className="px-2 py-1 bg-gray-200 rounded"
-                                        onClick={() => handleQuantityChange(item.id, item.quantity + 1, product as Product, item.quantity)}
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        step={1}
+                                        pattern="[0-9]*"
+                                        className="w-16 px-2 py-1 border rounded text-center"
+                                        value={inputQuantities[item.id] ?? item.quantity}
+                                        onChange={e => {
+                                            const val = parseInt(e.target.value, 10);
+                                            setInputQuantities(q => ({ ...q, [item.id]: isNaN(val) ? 1 : val }));
+                                        }}
+                                        onBlur={e => {
+                                            const val = parseInt(e.target.value, 10);
+                                            if (!isNaN(val) && val > 0 && val !== item.quantity) {
+                                                handleQuantityChange(item.id, val);
+                                            } else if (val <= 0 || isNaN(val)) {
+                                                setInputQuantities(q => ({ ...q, [item.id]: item.quantity }));
+                                            }
+                                        }}
                                         disabled={loadingId === item.id}
-                                    >+</button>
+                                    />
                                     <button
-                                        className="ml-4 px-2 py-1 bg-red-500 text-white rounded"
-                                        onClick={() => handleDelete(item.id, item.totalPrice || ((product.price || 0) * item.quantity))}
+                                        className="ml-4 px-2 py-1 cursor-pointer hover:bg-red-800 transition-color duration-100 bg-red-500 text-white rounded"
+                                        onClick={() => handleDelete(item.id)}
                                         disabled={loadingId === item.id}
                                     >Delete</button>
                                 </div>

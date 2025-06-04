@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./slideDown.css";
 import Provider from "@/app/_trpc/Provider";
 import ClientLayout from "./clientLayout";
 

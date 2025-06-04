@@ -183,7 +183,7 @@ export default function OrderTable() {
                                         <TableRow>
                                             <td colSpan={9} className="bg-gray-50 px-8 py-4">
                                                 <button
-                                                    className="text-blue-600 underline"
+                                                    className={`mr-2 px-5 py-2 rounded border border-blue-500 text-blue-700 bg-blue-50 hover:bg-blue-100 font-semibold shadow-sm transition-colors duration-150 text-base ${expanded.includes(order.id) ? 'ring-2 ring-blue-400' : ''}`}
                                                     onClick={() => handleExpand(order.id)}
                                                 >
                                                     {expanded.includes(order.id) ? "Hide Order Items" : "Show Order Items"}
@@ -193,33 +193,37 @@ export default function OrderTable() {
                                         {/* Expanded Content */}
                                         {expanded.includes(order.id) && order.orderItems && order.orderItems.length > 0 && (
                                             <TableRow key={order.id + "-items"}>
-                                                <td colSpan={9} className="bg-gray-100 px-8 py-4">
-                                                    <Table className="min-w-[400px] w-full">
-                                                        <TableHeader>
-                                                            <TableRow>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">OrderItem ID</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product Price</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Quantity</TableCell>
-                                                                <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Total Price</TableCell>
-                                                            </TableRow>
-                                                        </TableHeader>
-                                                        <TableBody className="divide-y divide-gray-200">
-                                                            {order.orderItems.map((item: OrderItem) => (
-                                                                <TableRow key={item.id}>
-                                                                    <TableCell className="px-4 py-2 text-start">{item.id}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">
-                                                                        {item.product?.name ? `${item.productId} - ${item.product.name}` : item.productId}
-                                                                    </TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">
-                                                                        {typeof item.product?.price === 'number' ? `$${item.product.price.toFixed(2)}` : '-'}
-                                                                    </TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">{item.quantity}</TableCell>
-                                                                    <TableCell className="px-4 py-2 text-start">${typeof item.totalPrice === "number" ? item.totalPrice.toFixed(2) : "-"}</TableCell>
-                                                                </TableRow>
-                                                            ))}
-                                                        </TableBody>
-                                                    </Table>
+                                                <td colSpan={9} style={{ padding: 0, background: "none", border: "none" }}>
+                                                    <div className="overflow-hidden rounded-b-lg">
+                                                        <div className="bg-gray-100 px-8 py-4 shadow-inner transition-all duration-500 ease-in-out transform-gpu animate-slideDown">
+                                                            <Table className="min-w-[400px] w-full">
+                                                                <TableHeader>
+                                                                    <TableRow>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">OrderItem ID</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Product Price</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Quantity</TableCell>
+                                                                        <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs">Total Price</TableCell>
+                                                                    </TableRow>
+                                                                </TableHeader>
+                                                                <TableBody className="divide-y divide-gray-200">
+                                                                    {order.orderItems.map((item: OrderItem) => (
+                                                                        <TableRow key={item.id}>
+                                                                            <TableCell className="px-4 py-2 text-start">{item.id}</TableCell>
+                                                                            <TableCell className="px-4 py-2 text-start">
+                                                                                {item.product?.name ? `${item.productId} - ${item.product.name}` : item.productId}
+                                                                            </TableCell>
+                                                                            <TableCell className="px-4 py-2 text-start">
+                                                                                {typeof item.product?.price === 'number' ? `$${item.product.price.toFixed(2)}` : '-'}
+                                                                            </TableCell>
+                                                                            <TableCell className="px-4 py-2 text-start">{item.quantity}</TableCell>
+                                                                            <TableCell className="px-4 py-2 text-start">${typeof item.totalPrice === "number" ? item.totalPrice.toFixed(2) : "-"}</TableCell>
+                                                                        </TableRow>
+                                                                    ))}
+                                                                </TableBody>
+                                                            </Table>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </TableRow>
                                         )}

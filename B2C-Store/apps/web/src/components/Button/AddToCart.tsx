@@ -1,6 +1,9 @@
 import { useSession } from "@/app/clientLayout";
 import { trpc } from "@/app/_trpc/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { BsCartPlus } from "react-icons/bs";
+import { BsFillCartCheckFill } from "react-icons/bs";
+import Alert from "@repo/ui/Alert";
 
 // Match the backend Cart type, allowing totalPrice to be number | null
 type Cart = {
@@ -18,18 +21,28 @@ type CartItem = {
     totalPrice: number;
 };
 
-export default function AddToCartButton({ productId, productPrice }: { productId: string, productPrice: number }) {
+export default function AddToCartButton({ productId }: { productId: string }) {
     const session = useSession();
     const userId = session.userId;
     const [loading, setLoading] = useState(false);
+    const [alert, setAlert] = useState<{ message: string; type?: "info" | "success" | "warning" | "error" } | null>(null);
 
     const createCartMutation = trpc.crud.createCart.useMutation();
     const createCartItemMutation = trpc.crud.createCartItem.useMutation();
     const updateCartItemMutation = trpc.crud.updateCartItem.useMutation();
-    const updateCartMutation = trpc.crud.updateCart.useMutation();
     const findCartByUserId = trpc.crud.getCarts.useQuery(undefined, { staleTime: 1000 * 60 });
     const getCartItemsQuery = trpc.crud.getCartItems.useQuery();
     const utils = trpc.useUtils();
+
+    useEffect(() => {
+        if (alert) {
+            // Show alert for 2 seconds, then fade out
+            const timeout = setTimeout(() => {
+                setAlert(null);
+            }, 2000);
+            return () => clearTimeout(timeout);
+        }
+    }, [alert]);
 
     const handleAddToCart = async () => {
         if (!userId) {
@@ -57,41 +70,21 @@ export default function AddToCartButton({ productId, productPrice }: { productId
             const cartItem = cartItems.find((item: CartItem) => item.cartId === cart!.id && item.productId === productId);
 
             if (cartItem) {
-                // 4. If exists, update quantity and totalPrice
-                const newQuantity = cartItem.quantity + 1;
-                const newTotalPrice = productPrice * newQuantity;
+                // 4. If exists, just update quantity (totalPrice and cart total handled in backend)
                 await updateCartItemMutation.mutateAsync({
                     id: cartItem.id,
                     data: {
-                        quantity: newQuantity,
-                        totalPrice: newTotalPrice,
+                        quantity: cartItem.quantity + 1,
                     },
                 });
             } else {
-                // 5. If not exists, create new cart item
+                // 5. If not exists, create new cart item (totalPrice and cart total handled in backend)
                 await createCartItemMutation.mutateAsync({
                     cartId: cart.id,
                     productId,
                     quantity: 1,
-                    totalPrice: productPrice * 1,
                 });
             }
-
-            const { data: freshCartItems } = await getCartItemsQuery.refetch();
-            const allCartItems: CartItem[] = freshCartItems
-                ? freshCartItems.filter((item: CartItem) => item.cartId === cart!.id)
-                : [];
-
-            // Always calculate total using cart item totalPrice
-            const totalPrice = allCartItems.reduce(
-                (sum: number, item: CartItem) => sum + (item.totalPrice || 0),
-                0
-            );
-
-            await updateCartMutation.mutateAsync({
-                id: cart.id,
-                data: { totalPrice },
-            });
 
             // Invalidate user and carts queries so NavBar rerenders with updated cart
             await Promise.all([
@@ -100,22 +93,41 @@ export default function AddToCartButton({ productId, productPrice }: { productId
                 utils.crud.getCartItems.invalidate(),
             ]);
 
-            alert("Product added to cart!");
+            setAlert({ message: "Product added to cart!", type: "success" });
         } catch (error) {
             console.error("Error adding to cart:", error);
-            alert("Failed to add product to cart.");
+            setAlert({ message: "Failed to add product to cart.", type: "error" });
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded cursor-pointer transition"
-            onClick={handleAddToCart}
-            disabled={loading}
-        >
-            {loading ? "Adding..." : "Add to Cart"}
-        </button>
+        <>
+            {alert && (
+                <Alert
+                    message={alert.message}
+                    type={alert.type}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+            <button
+                className="bg-blue-600 h-10 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded cursor-pointer transition flex items-center justify-center"
+                onClick={handleAddToCart}
+                disabled={loading}
+                aria-label="Add to cart"
+            >
+                <span
+                    className={`transition-transform duration-300 ${loading ? 'scale-125' : 'scale-100'}`}
+                    style={{ display: 'flex', alignItems: 'center' }}
+                >
+                    {loading ? (
+                        <BsFillCartCheckFill size={30} />
+                    ) : (
+                        <BsCartPlus size={30} />
+                    )}
+                </span>
+            </button>
+        </>
     );
 }

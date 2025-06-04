@@ -16972,7 +16972,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16994,7 +16994,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17052,7 +17052,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20109,7 +20109,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20129,7 +20129,7 @@ export namespace Prisma {
     imageUrl: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20191,7 +20191,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20211,7 +20211,7 @@ export namespace Prisma {
     imageUrl: string
     categoryId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20386,7 +20386,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20407,7 +20407,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20637,7 +20637,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20658,7 +20658,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20861,7 +20861,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20882,7 +20882,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21026,7 +21026,7 @@ export namespace Prisma {
     description: string
     imageUrl: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21047,7 +21047,7 @@ export namespace Prisma {
     categoryId: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21359,7 +21359,7 @@ export namespace Prisma {
     imageUrl: string
     brandId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21424,7 +21424,7 @@ export namespace Prisma {
     imageUrl: string
     categoryId: string
     releaseDate?: Date | string | null
-    stock: number
+    stock?: number
     rating?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string

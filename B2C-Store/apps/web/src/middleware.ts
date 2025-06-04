@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/session";
 
 const protectedRoutes = ["/cart", "/checkout", "/profile", "/order"];
-const publicRoutes = ["/"];
+const publicRoutes = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -17,6 +17,7 @@ export default async function middleware(req: NextRequest) {
   if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL("/login?message=login_required", req.nextUrl));
   }
+
   if (isPublicRoute && session?.userId) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }

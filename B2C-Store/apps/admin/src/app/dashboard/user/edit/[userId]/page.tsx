@@ -5,9 +5,10 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSidebar } from '@/app/SidebarContext';
 import ComponentCard from '@/components/ui/ComponentCard';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Alert from '@/components/ui/Alert';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function User() {
     const userId = useParams<{ userId: string }>().userId;
@@ -36,6 +37,10 @@ export default function User() {
             }
         }
     });
+    const uploadUserImage = trpc.s3.uploadUserImage.useMutation();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (data) {
@@ -66,6 +71,33 @@ export default function User() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUploadError(null);
+        const file = e.target.files?.[0];
+        if (!file || !data) return;
+        setUploading(true);
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
+            const imageUrl = await uploadUserImage.mutateAsync({
+                userId: data.id,
+                filename: file.name,
+                body: Array.from(uint8Array),
+                contentType: file.type,
+            });
+            setForm(f => ({ ...f, imgUrl: imageUrl }));
+        } catch (err) {
+            if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
+                setUploadError((err as { message: string }).message);
+            } else {
+                setUploadError("Failed to upload image");
+            }
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -143,17 +175,44 @@ export default function User() {
                             placeholder="Leave blank to keep current password"
                         />
                     </label>
-                    <label className="font-semibold">
-                        Image URL
+                    <label
+                        htmlFor="profile-image-upload"
+                        className={`inline-block px-5 py-2 mt-2 mb-2 rounded font-semibold cursor-pointer transition-colors bg-blue-500 text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 ${uploading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                        tabIndex={0}
+                        style={{ width: 'fit-content', margin: '0 auto', display: 'block' }}
+                    >
+                        {uploading ? (
+                            <span className="flex items-center gap-2">
+                                <Loader2 className="animate-spin h-5 w-5 text-white" />
+                                Uploading...
+                            </span>
+                        ) : (
+                            <span>Change Profile Image</span>
+                        )}
                         <input
-                            type="text"
-                            name="imgUrl"
-                            value={form.imgUrl}
-                            onChange={handleChange}
-                            className="border rounded px-3 py-2 w-full mt-1"
-                            placeholder={data.imgUrl || 'Image URL'}
+                            id="profile-image-upload"
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            disabled={uploading}
+                            className="hidden"
+                            aria-label="Upload profile image"
                         />
                     </label>
+                    {uploadError && <span className="text-red-500 ml-2 block text-center">{uploadError}</span>}
+                    {form.imgUrl && (
+                        <div className="mt-4 flex justify-center">
+                            <Image
+                                src={form.imgUrl}
+                                alt="Profile"
+                                width={300}
+                                height={300}
+                                className="border object-contain"
+                                style={{ aspectRatio: '1 / 1', borderRadius: 8, display: 'block' }}
+                            />
+                        </div>
+                    )}
                     <button
                         type="submit"
                         className="bg-blue-500 text-white px-4 cursor-pointer py-2 rounded hover:bg-blue-600 disabled:opacity-50"

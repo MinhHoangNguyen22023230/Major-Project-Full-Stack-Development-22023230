@@ -60,5 +60,48 @@ export const sessionProcedure = router({
             console.log("[tRPC getSession] error:", err);
             return { userId: null };
         }
+    }),
+
+    // --- Admin session procedures ---
+    createAdminSession: publicProcedure
+        .input(z.object({ adminId: z.string() }))
+        .mutation(async ({ input }) => {
+            try {
+                await createSession(input.adminId, "admin_session");
+                return { ok: true };
+            } catch {
+                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create admin session" });
+            }
+        }),
+
+    deleteAdminSession: publicProcedure.mutation(async () => {
+        try {
+            await deleteSession("admin_session");
+            return { ok: true };
+        } catch {
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to delete admin session" });
+        }
+    }),
+
+    getAdminSession: publicProcedure.query(async () => {
+        try {
+            let session = null;
+            if (typeof window === "undefined") {
+                session = await getSessionUtil("admin_session");
+            } else {
+                let sessionCookie: string | undefined = undefined;
+                if (typeof document !== "undefined" && document.cookie) {
+                    const cookies = parseCookies(document.cookie);
+                    sessionCookie = cookies["admin_session"];
+                }
+                if (sessionCookie) {
+                    session = await decrypt(sessionCookie);
+                }
+            }
+            if (!session?.adminId || typeof session.adminId !== "string") return { adminId: null };
+            return { adminId: session.adminId };
+        } catch (err) {
+            return { adminId: null };
+        }
     })
 });

@@ -4,7 +4,6 @@ import React, { useState, useRef } from "react";
 import { trpc } from "@/app/_trpc/client";
 import Image from "next/image";
 import Link from "next/link";
-import { UploadButton } from "@uploadthing/react";
 
 // --- Types ---
 type WishListItem = {
@@ -76,7 +75,8 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
     const deleteAddress = trpc.crud.deleteAddress.useMutation();
     // Update address mutation
     const updateAddress = trpc.crud.updateAddress.useMutation();
-    const uploadUserImage = trpc.s3.useMutation(['uploadUserImage']);
+    // Upload user image mutation (fix):
+    const uploadUserImage = trpc.s3.uploadUserImage.useMutation();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -203,20 +203,6 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         }
     };
 
-    // Handler for UploadThing
-    const handleImageUpload = async (files: File[]) => {
-        if (!user || !files.length) return;
-        const file = files[0];
-        const arrayBuffer = await file.arrayBuffer();
-        await uploadUserImage.mutateAsync({
-            userId: user.id,
-            filename: file.name,
-            body: new Uint8Array(arrayBuffer),
-            contentType: file.type,
-        });
-        refetch();
-    };
-
     // Handler for file input upload
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         setUploadError(null);
@@ -224,16 +210,23 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         if (!file || !user) return;
         setUploading(true);
         try {
+            // Read file as ArrayBuffer, then convert to Uint8Array
             const arrayBuffer = await file.arrayBuffer();
+            // Correct: ArrayBuffer can be directly passed to Uint8Array
+            const uint8Array = new Uint8Array(arrayBuffer);
             await uploadUserImage.mutateAsync({
                 userId: user.id,
                 filename: file.name,
-                body: new Uint8Array(arrayBuffer),
+                body: Array.from(uint8Array), // <-- send as array
                 contentType: file.type,
             });
             refetch();
-        } catch (err: any) {
-            setUploadError(err?.message || "Failed to upload image");
+        } catch (err) {
+            if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
+                setUploadError((err as { message: string }).message);
+            } else {
+                setUploadError("Failed to upload image");
+            }
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -249,23 +242,39 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
             {/* Profile Header */}
             <div className="flex flex-col items-center gap-4">
                 {user.imgUrl && (
-                    <img
+                    <Image
                         src={user.imgUrl}
                         alt={user.username}
-                        width={120}
-                        height={120}
-                        className="rounded-full"
+                        width={300}
+                        height={300}
+                        className="rounded-full border-4 border-[var(--supernova)] shadow-lg"
                     />
                 )}
-                <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    disabled={uploading}
-                    className="mb-2"
-                />
-                {uploading && <div className="text-blue-600">Uploading...</div>}
+                <label
+                    htmlFor="profile-image-upload"
+                    className={`inline-block px-5 py-2 mt-2 mb-2 rounded-full font-semibold cursor-pointer transition-colors bg-[var(--supernova)] text-[var(--rangoon-green)] shadow hover:bg-[var(--yukon-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yukon-gold)] focus:ring-offset-2 ${uploading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    tabIndex={0}
+                >
+                    {uploading ? (
+                        <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-[var(--rangoon-green)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                            Uploading...
+                        </span>
+                    ) : (
+                        <span>Change Profile Image</span>
+                    )}
+                    <input
+                        id="profile-image-upload"
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        disabled={uploading}
+                        className="hidden"
+                        aria-label="Upload profile image"
+                    />
+                </label>
+                
                 {uploadError && <div className="text-red-500">{uploadError}</div>}
                 <h1 className="text-3xl font-bold">{user.username}</h1>
                 <p className="text-gray-700">{user.email}</p>

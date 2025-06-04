@@ -28,10 +28,8 @@ export default function Navbar() {
     const { data: carts } = trpc.crud.getCarts.useQuery(undefined, { enabled: !!userId });
     const userCart = carts?.find((c) => c.userId === userId);
 
-    // Count total quantity of all cart items
-    const cartItemCount = Array.isArray(userCart?.cartItems)
-        ? userCart.cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
-        : 0;
+    // Use itemsCount directly from cart
+    const cartItemCount = userCart?.itemsCount || 0;
 
     // Fetch categories and brands using tRPC
     const { data: brands, isLoading: brandsLoading, error: brandsError } = trpc.crud.getBrands.useQuery();
@@ -39,6 +37,9 @@ export default function Navbar() {
 
     // Local state to ensure consistent rendering
     const [isClient, setIsClient] = useState(false);
+    // State for dropdowns
+    const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
+    const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
     React.useEffect(() => setIsClient(true), []);
 
     // Handle loading and error states
@@ -54,7 +55,7 @@ export default function Navbar() {
     }
 
     return (
-        <header className={`${showCategories ? "sm:h-34" : ""} bg-[var(--gallery)] shadow-xl fixed w-full h-24`}>
+        <header className={`${showCategories ? "sm:h-34" : ""} bg-[var(--gallery)] shadow-xl fixed w-full h-24 z-50`}>
             <nav className="w-full h-24">
                 <div className="bg-[var(--gallery)] flex justify-between items-center h-full w-full px-2 2xl:px-16">
                     <ul className="hidden sm:flex items-center">
@@ -202,37 +203,56 @@ export default function Navbar() {
                     <div className={`${menuOpen ? "hidden" : "flex"} w-full h-10 bg-[var(--gallery)]`}>
                         <ul className="flex w-full">
                             {/* Brands Dropdown */}
-                            <li className="relative group flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
-                                Brand
-                                <ul className="absolute hidden group-hover:block bg-[var(--gallery)] w-full left-0 top-10">
-                                    {brands?.map((brand) => (
-                                        <Link key={brand.id} href={`/brands/${brand.id}`}>
-                                            <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
-                                                {brand.name}
-                                            </li>
-                                        </Link>
-                                    ))}
-                                </ul>
+                            <li className="relative flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
+                                <button
+                                    type="button"
+                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold"
+                                    onClick={() => setBrandDropdownOpen((open) => !open)}
+                                    onBlur={() => setTimeout(() => setBrandDropdownOpen(false), 150)}
+                                    tabIndex={0}
+                                >
+                                    Brand
+                                </button>
+                                {brandDropdownOpen && (
+                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg">
+                                        {brands?.map((brand) => (
+                                            <Link key={brand.id} href={`/brands/${brand.id}`}>
+                                                <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
+                                                    {brand.name}
+                                                </li>
+                                            </Link>
+                                        ))}
+                                    </ul>
+                                )}
                             </li>
 
                             {/* Categories Dropdown */}
-                            <li className="relative group flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
-                                Product
-                                <ul className="absolute hidden group-hover:block bg-[var(--gallery)] w-full left-0 top-10">
-                                    {categories?.map((category) => (
-                                        <Link key={category.id} href={`/categories/${category.id}`}>
-                                            <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
-                                                {category.name}
-                                            </li>
-                                        </Link>
-                                    ))}
-                                </ul>
-                            </li >
-                        </ul >
-                    </div >
-                )
-                }
-            </div >
+                            <li className="relative flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
+                                <button
+                                    type="button"
+                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold"
+                                    onClick={() => setCategoryDropdownOpen((open) => !open)}
+                                    onBlur={() => setTimeout(() => setCategoryDropdownOpen(false), 150)}
+                                    tabIndex={0}
+                                >
+                                    Product
+                                </button>
+                                {categoryDropdownOpen && (
+                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg">
+                                        {categories?.map((category) => (
+                                            <Link key={category.id} href={`/categories/${category.id}`}>
+                                                <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
+                                                    {category.name}
+                                                </li>
+                                            </Link>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        </ul>
+                    </div>
+                )}
+            </div>
 
         </header >
     );

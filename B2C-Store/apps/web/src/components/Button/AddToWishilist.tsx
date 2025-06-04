@@ -2,6 +2,9 @@
 import { useSession } from "@/app/clientLayout";
 import { trpc } from "@/app/_trpc/client";
 import { useState, useMemo } from "react";
+import { GoHeart } from "react-icons/go";
+import { GoHeartFill } from "react-icons/go";
+
 
 // Define types to avoid 'any'
 type WishListItem = {
@@ -113,14 +116,21 @@ export default function AddToWishlist({ productId }: { productId: string }) {
 
     return (
         <button
-            className={`font-semibold px-4 py-2 rounded cursor-pointer transition ${isWishlisted
-                    ? "bg-green-400 text-white"
-                    : "bg-red-400 hover:bg-yellow-500 text-gray-900"
-                }`}
+            className="font-semibold px-4 py-2 h-10 rounded cursor-pointer transition flex items-center justify-center"
             onClick={handleToggleWishlist}
             disabled={loading}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
-            {isWishlisted ? "Wishlisted" : loading ? "Adding..." : "Add to Wishlist"}
+            <span
+                className={`transition-transform duration-300 ${loading ? 'scale-125' : 'scale-100'}`}
+                style={{ display: 'flex', alignItems: 'center' }}
+            >
+                {isWishlisted ? (
+                    <GoHeartFill size={30} color="#ec4899" />
+                ) : (
+                    <GoHeart size={30} color="#ec4899" />
+                )}
+            </span>
         </button>
     );
 }

@@ -25,6 +25,7 @@ export default function BrandTable() {
     const deleteBrand = trpc.crud.deleteBrand.useMutation({
         onSuccess: () => utils.crud.getBrands.invalidate()
     });
+    const deleteBrandImage = trpc.s3.deleteBrandImage.useMutation();
     const [selected, setSelected] = useState<string[]>([]);
     const [search, setSearch] = useState("");
     const [alert, setAlert] = useState<{ message: string; type?: "info" | "success" | "warning" | "error" } | null>(null);
@@ -54,6 +55,10 @@ export default function BrandTable() {
             alertTimeoutRef.current = setTimeout(() => setAlert(null), 3000);
             return;
         }
+        // Delete brand images from S3 before deleting brands
+        await Promise.all(selected.map((id) =>
+            deleteBrandImage.mutateAsync({ brandId: id })
+        ));
         await Promise.all(selected.map((id) => deleteBrand.mutateAsync({ id })));
         setAlert({ message: "Brand(s) deleted successfully!", type: "success" });
         if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
@@ -137,7 +142,7 @@ export default function BrandTable() {
                     </button>
                 </div>
             </div>
-            <div className="max-w-full overflow-x-auto min-w-0">
+            <div className="max-w-full overflow-x-auto overflow-y-auto max-h-150 min-w-0">
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">
@@ -161,12 +166,12 @@ export default function BrandTable() {
                                         />
                                     </TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">ID</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Name</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Image</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Description</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Name</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Image</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Description</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]"># Products</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

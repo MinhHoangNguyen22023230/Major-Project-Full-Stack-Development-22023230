@@ -125,7 +125,7 @@ export default function OrderTable() {
                     </button>
                 </div>
             </div>
-            <div className="max-w-full overflow-x-auto min-w-0">
+            <div className="max-w-full overflow-x-auto min-w-0 overflow-y-auto max-h-150">
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">

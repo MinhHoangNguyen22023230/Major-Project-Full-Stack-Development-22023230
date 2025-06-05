@@ -42,8 +42,12 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         <SessionContext.Provider value={session}>
             {!hideNavAndFooter && <Navbar />}
             {!hideNavAndFooter && <div className="h-34 w-full m-0 p-0"></div>}
-            {children}
-            {!hideNavAndFooter && <Footer />}
+            <main className="flex flex-col min-h-screen">
+                <div className="flex-1 flex flex-col">
+                    {children}
+                </div>
+                {!hideNavAndFooter && <Footer />}
+            </main>
         </SessionContext.Provider>
     );
 }

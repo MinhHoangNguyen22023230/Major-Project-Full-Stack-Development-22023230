@@ -25,6 +25,7 @@ export default function CategoryTable() {
     const deleteCategory = trpc.crud.deleteCategory.useMutation({
         onSuccess: () => utils.crud.getCategories.invalidate()
     });
+    const deleteCategoryImage = trpc.s3.deleteCategoryImage.useMutation();
     const [selected, setSelected] = useState<string[]>([]);
     const [search, setSearch] = useState("");
     const [alert, setAlert] = useState<{ message: string; type?: "info" | "success" | "warning" | "error" } | null>(null);
@@ -54,6 +55,10 @@ export default function CategoryTable() {
             alertTimeoutRef.current = setTimeout(() => setAlert(null), 3000);
             return;
         }
+        // Delete category images from S3 before deleting categories
+        await Promise.all(selected.map((id) =>
+            deleteCategoryImage.mutateAsync({ categoryId: id })
+        ));
         await Promise.all(selected.map((id) => deleteCategory.mutateAsync({ id })));
         setAlert({ message: "Category(s) deleted successfully!", type: "success" });
         if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
@@ -137,7 +142,7 @@ export default function CategoryTable() {
                     </button>
                 </div>
             </div>
-            <div className="max-w-full overflow-x-auto min-w-0">
+            <div className="max-w-full overflow-x-auto overflow-y-auto max-h-150 min-w-0">
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">

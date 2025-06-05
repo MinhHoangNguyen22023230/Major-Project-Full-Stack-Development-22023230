@@ -31,6 +31,7 @@ export default function ProductTable() {
     const deleteProduct = trpc.crud.deleteProduct.useMutation({
         onSuccess: () => utils.crud.getProducts.invalidate()
     });
+    const deleteProductImage = trpc.s3.deleteProductImage.useMutation();
     const [selected, setSelected] = useState<string[]>([]);
     const [search, setSearch] = useState("");
     const [alert, setAlert] = useState<{ message: string; type?: "info" | "success" | "warning" | "error" } | null>(null);
@@ -60,6 +61,10 @@ export default function ProductTable() {
             alertTimeoutRef.current = setTimeout(() => setAlert(null), 3000);
             return;
         }
+        // Delete product images from S3 before deleting products
+        await Promise.all(selected.map((id) =>
+            deleteProductImage.mutateAsync({ productId: id })
+        ));
         await Promise.all(selected.map((id) => deleteProduct.mutateAsync({ id })));
         setAlert({ message: "Product(s) deleted successfully!", type: "success" });
         if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
@@ -143,7 +148,7 @@ export default function ProductTable() {
                     </button>
                 </div>
             </div>
-            <div className="max-w-full overflow-x-auto min-w-0">
+            <div className="max-w-full overflow-x-auto overflow-y-auto max-h-150 min-w-0">
                 <div className="min-w-[200px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-40">

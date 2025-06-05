@@ -56,14 +56,14 @@ export default function Navbar() {
         <header className={`${showCategories ? "sm:h-34" : ""} bg-[var(--gallery)] shadow-xl fixed w-full h-24 z-50`}>
             <nav className="w-full h-24">
                 <div className="bg-[var(--gallery)] flex justify-between items-center h-full w-full px-2 2xl:px-16">
-                    <ul className="hidden sm:flex items-center">
+                    <ul className="flex items-center">
                         <div className="item-center flex-row justify-center gap-3 sm:flex">
-                            <li className="l-10 text-xl flex items-center"><Link href="/">
+                            <li className="text-xl flex items-center h-20 w-30"><Link href="/">
                                 <Image
                                     src="/logo.svg"
                                     alt="Logo"
                                     width={200}
-                                    height={50}
+                                    height={200}
                                     className="cursor-pointer"
                                 />
                             </Link></li>
@@ -107,9 +107,9 @@ export default function Navbar() {
                             )}
                         </ul>
                     </div>
-
                     {/* Hamburger Icon */}
-                    <div onClick={toggleMenu} className="sm:hidden cursor-pointer pl-24">
+                    
+                    <div onClick={toggleMenu} className="sm:hidden relative cursor-pointer">
                         <AiOutlineMenu size={25} />
                     </div>
 
@@ -161,7 +161,7 @@ export default function Navbar() {
                                             </Link>
                                         </li>
                                         <LogoutButton
-                                            className="py-4 transition-colors bg-[var(--yukon-gold)] hover:bg-[var(--supernova)] text-[var(--rangoon-green)] rounded"
+                                            className="px-4 py-2 font-semibold transition-colors bg-[var(--supernova)] text-[var(--rangoon-green)] active:bg-[var(--rangoon-green)] rounded"
                                         >
                                             Logout
                                         </LogoutButton>
@@ -200,7 +200,7 @@ export default function Navbar() {
                     <div className={`${menuOpen ? "hidden" : "flex"} w-full h-10 bg-[var(--gallery)]`}>
                         <ul className="flex w-full">
                             {/* Brands Dropdown */}
-                            <li className="relative flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
+                            <li className={`${brandDropdownOpen ? "bg-[var(--rangoon-green)] text-[var(--gallery)]" : "text-[var(--rangoon-green)] bg-[var(--supernova)]"} relative flex-1 flex justify-center items-center hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color`}>
                                 <button
                                     type="button"
                                     className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold"
@@ -224,10 +224,10 @@ export default function Navbar() {
                             </li>
 
                             {/* Categories Dropdown */}
-                            <li className="relative flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
+                            <li className={`${categoryDropdownOpen ? "bg-[var(--rangoon-green)] text-[var(--gallery)]" : "text-[var(--rangoon-green)] bg-[var(--supernova)]"} relative flex-1 flex justify-center items-center hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color`}>
                                 <button
                                     type="button"
-                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold"
+                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold "
                                     onClick={() => setCategoryDropdownOpen((open) => !open)}
                                     onBlur={() => setTimeout(() => setCategoryDropdownOpen(false), 150)}
                                     tabIndex={0}
@@ -235,7 +235,7 @@ export default function Navbar() {
                                     Product
                                 </button>
                                 {categoryDropdownOpen && (
-                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg">
+                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg ">
                                         {categories?.map((category) => (
                                             <Link key={category.id} href={`/categories/${category.id}`}>
                                                 <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">

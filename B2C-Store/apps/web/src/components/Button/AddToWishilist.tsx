@@ -116,7 +116,7 @@ export default function AddToWishlist({ productId }: { productId: string }) {
 
     return (
         <button
-            className="font-semibold px-4 py-2 h-10 rounded cursor-pointer transition flex items-center justify-center"
+            className="font-semibold px-4 py-2 h-10 rounded hover:bg-pink-100 cursor-pointer transition flex items-center justify-center"
             onClick={handleToggleWishlist}
             disabled={loading}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}

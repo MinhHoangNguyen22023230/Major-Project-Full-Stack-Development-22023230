@@ -31,12 +31,12 @@ export async function getAdminImage(adminId: string, filename: string) {
 }
 export async function deleteAdminImage(adminId: string) {
     const prefix = `admin/${adminId}/`;
+    // Delete the entire folder and all its contents
     const keys = await listFiles(prefix);
     if (keys.length > 0) {
-        for (const key of keys) {
-            if (key) await deleteFile(key);
-        }
+        await Promise.all(keys.map((key) => key && deleteFile(key)));
     }
+    // Optionally, you could try to delete the folder marker itself, but S3 folders are virtual
     return true;
 }
 export async function listAdminImages(adminId: string) {
@@ -57,9 +57,7 @@ export async function deleteBrandImage(brandId: string) {
     const prefix = `brand/${brandId}/`;
     const keys = await listFiles(prefix);
     if (keys.length > 0) {
-        for (const key of keys) {
-            if (key) await deleteFile(key);
-        }
+        await Promise.all(keys.map((key) => key && deleteFile(key)));
     }
     return true;
 }
@@ -81,9 +79,7 @@ export async function deleteCategoryImage(categoryId: string) {
     const prefix = `category/${categoryId}/`;
     const keys = await listFiles(prefix);
     if (keys.length > 0) {
-        for (const key of keys) {
-            if (key) await deleteFile(key);
-        }
+        await Promise.all(keys.map((key) => key && deleteFile(key)));
     }
     return true;
 }
@@ -105,9 +101,7 @@ export async function deleteUserImage(userId: string) {
     const prefix = `user/${userId}/`;
     const keys = await listFiles(prefix);
     if (keys.length > 0) {
-        for (const key of keys) {
-            if (key) await deleteFile(key);
-        }
+        await Promise.all(keys.map((key) => key && deleteFile(key)));
     }
     return true;
 }
@@ -129,9 +123,7 @@ export async function deleteProductImage(productId: string) {
     const prefix = `product/${productId}/`;
     const keys = await listFiles(prefix);
     if (keys.length > 0) {
-        for (const key of keys) {
-            if (key) await deleteFile(key);
-        }
+        await Promise.all(keys.map((key) => key && deleteFile(key)));
     }
     return true;
 }

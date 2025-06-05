@@ -22,6 +22,7 @@ export const s3Procedure = router({
     deleteAdminImage: publicProcedure
         .input(z.object({ adminId: z.string() }))
         .mutation(async ({ input, ctx }) => {
+            // Delete all images in the admin's folder
             await ctx.S3Utils.deleteAdminImage(input.adminId);
             const defaultUrl = "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png";
             await ctx.prisma.admin.update({

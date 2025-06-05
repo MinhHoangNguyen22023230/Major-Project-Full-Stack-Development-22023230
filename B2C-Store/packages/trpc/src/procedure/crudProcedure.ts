@@ -434,6 +434,21 @@ export const crudProcedure = router({
             });
         }),
 
+    findUserById: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.prisma.user.findUnique({
+                where: { id: input.id },
+                include: {
+                    cart: true,
+                    orders: true,
+                    addresses: true,
+                    wishList: true,
+                    reviews: true,
+                },
+            });
+        }),
+
     /*----------------------Admin-------------------------*/
     updateAdmin: publicProcedure
         .input(
@@ -1130,7 +1145,11 @@ export const crudProcedure = router({
         }),
     /*----------------------WishListItem-------------------------*/
     getWishListItems: publicProcedure.query(async ({ ctx }) => {
+        // Only return wishlist items where the related product exists
         return ctx.prisma.wishListItem.findMany({
+            where: {
+                productId: { not: undefined }, // Only include items with a valid productId
+            },
             include: {
                 product: true, // Include the related product
                 WishList: true, // Include the related wishlist
@@ -1336,18 +1355,26 @@ export const crudProcedure = router({
     findProductByCategoryId: publicProcedure
         .input(z.object({ categoryId: z.string() }))
         .query(async ({ ctx, input }) => {
-            // Find all products by categoryId
+            // Find all products by categoryId, include category and brand for UI
             return ctx.prisma.product.findMany({
                 where: { categoryId: input.categoryId },
+                include: {
+                    category: true,
+                    brand: true,
+                },
             });
         }),
 
     findProductByBrandId: publicProcedure
         .input(z.object({ brandId: z.string() }))
         .query(async ({ ctx, input }) => {
-            // Find all products by brandId
+            // Find all products by brandId, include category and brand for UI
             return ctx.prisma.product.findMany({
                 where: { brandId: input.brandId },
+                include: {
+                    category: true,
+                    brand: true,
+                },
             });
         }),
 })

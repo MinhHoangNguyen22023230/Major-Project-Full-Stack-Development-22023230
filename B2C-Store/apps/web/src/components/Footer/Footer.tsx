@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Footer() {
     return (
-        <footer className="bg-[var(--supernova)] text-[var(--rangoon-green)] py-6">
+        <footer className="bg-[var(--supernova)] w-full h-fit sm:px-3 text-[var(--rangoon-green)] py-6">
             <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <Link href="/">

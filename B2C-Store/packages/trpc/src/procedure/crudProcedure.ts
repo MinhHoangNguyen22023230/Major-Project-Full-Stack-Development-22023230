@@ -76,7 +76,7 @@ export const crudProcedure = router({
     getCategories: publicProcedure.query(async ({ ctx }) => {
         return ctx.prisma.category.findMany({
             include: {
-                products: true, // Include related products
+                products: true,
             },
         });
     }),
@@ -103,16 +103,13 @@ export const crudProcedure = router({
             await ctx.prisma.product.deleteMany({
                 where: { categoryId: input.id },
             });
-
             return ctx.prisma.category.delete({
                 where: { id: input.id },
             });
         }),
 
     deleteAllCategories: publicProcedure.mutation(async ({ ctx }) => {
-
         await ctx.prisma.product.deleteMany({});
-
         return ctx.prisma.category.deleteMany({});
     }),
 
@@ -140,7 +137,7 @@ export const crudProcedure = router({
             return ctx.prisma.category.findUnique({
                 where: { id: input.id },
                 include: {
-                    products: true, // Include related products
+                    products: true,
                 },
             });
         }),

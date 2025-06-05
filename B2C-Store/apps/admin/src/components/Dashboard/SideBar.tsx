@@ -78,6 +78,30 @@ export default function SideBar() {
                                     Order
                                 </Link>
                             </li>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}> {/* Order */}
+                                <Link
+                                    href="/dashboard/product"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/product') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
+                                >
+                                    Product
+                                </Link>
+                            </li>
+                            <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}> {/* Order */}
+                                <Link
+                                    href="/dashboard/brand"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/brand') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
+                                >
+                                    Brand
+                                </Link>
+                            </li>
+                                                        <li className={`ml-5 ${isDataOpen ? 'block' : 'hidden'}`}> {/* Order */}
+                                <Link
+                                    href="/dashboard/category"
+                                    className={`block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] ${pathname.startsWith('/dashboard/category') ? 'bg-[var(--sidebar-active-bg)] font-semibold border border-[var(--ui-border-color)]' : 'bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]'}`}
+                                >
+                                    Category
+                                </Link>
+                            </li>
                             <li>
                                 <LogoutButton
                                     className="block w-full text-left px-3 py-2 rounded cursor-pointer transition-colors duration-150 text-[var(--sidebar-text)] bg-[var(--sidebar-bg)] hover:bg-[var(--hover-bg-color)]"

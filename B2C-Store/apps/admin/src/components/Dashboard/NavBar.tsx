@@ -75,7 +75,7 @@ export default function NavBar() {
                 </div>
                 <div className="flex space-x-4 relative items-center">
                     {/* Use ThemeSwitch for theme toggling */}
-                    <div className="w-7 cursor-pointer items-center flex hover:opacity-80 opacity-100 transition-opacity duration-100 h-7">
+                    <div className="w-fit cursor-pointer items-center flex hover:opacity-80 opacity-100 transition-opacity duration-100 h-fit">
                     <ThemeSwitch />
                     </div>
                     {/* Profile Image and Menu */}
@@ -84,7 +84,7 @@ export default function NavBar() {
                         alt="Profile"
                         width={40}
                         height={40}
-                        className="rounded-full group cursor-pointer hover:opacity-80 transition-opacity duration-300 border border-[var(--ui-border-color)] bg-[var(--navbar-bg)]"
+                        className="rounded-full group mr-2 cursor-pointer hover:opacity-80 transition-opacity duration-300 border border-[var(--ui-border-color)] bg-[var(--navbar-bg)]"
                         onClick={() => setProfileMenuOpen((v) => !v)}
                     />
                     {profileMenuOpen && (

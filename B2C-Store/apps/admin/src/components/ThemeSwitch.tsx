@@ -15,7 +15,7 @@ export default function ThemeSwitch() {
 
     if (!mounted) return (
         <Image
-            src={resolvedTheme === "light" ? "/sun.png" : "/moon.png"}
+            src={resolvedTheme === "light" ? "/logo.svg" : "/logo.svg"}
             alt="Loading Light/Dark Theme Icon"
             width={36}
             height={36}

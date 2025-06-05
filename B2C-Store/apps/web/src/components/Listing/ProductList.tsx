@@ -5,14 +5,15 @@ import Link from "next/link";
 import { trpc } from "@/app/_trpc/client";
 import AddToCartButton from "@/components/Button/AddToCart";
 import AddToWishlistButton from "@/components/Button/AddToWishilist";
+import { Loader2 } from "lucide-react";
 
 export default function ProductList() {
   const { data: products, isLoading, error } = trpc.crud.getProducts.useQuery();
 
   if (isLoading) return (
     <div className="shadow-md rounded-lg overflow-hidden">
-      <div className="p-4">
-        <h2 className="text-xl font-bold mb-2">...Loading</h2>
+      <div className="p-4 flex items-center gap-2">
+        <Loader2 className="animate-spin w-6 h-6 text-gray-500" />
       </div>
     </div>
   );
@@ -26,11 +27,11 @@ export default function ProductList() {
           {products?.map((product) => (
             <div key={product.id} className="group relative ">
 
-              <Link href={`/products/${product.id}`}>
+              <Link href={`/products/${product.id}`} className="block sm:w-70 sm:h-70">
                 <Image
                   alt={product.name}
                   src={product.imageUrl || "/no-product-image.png"}
-                  className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+                  className="aspect-square w-full rounded-md bg-gray-200 object-fit group-hover:opacity-75 lg:aspect-auto lg:h-80"
                   width={500}
                   height={500}
                 />
@@ -61,7 +62,7 @@ export default function ProductList() {
               </div>
               <div className="flex items-center mt-5 justify-between mb-2 z-10 relative">
                 <AddToWishlistButton productId={product.id} />
-                <AddToCartButton productId={product.id} productPrice={product.price} />
+                <AddToCartButton productId={product.id} />
               </div>
             </div>
 

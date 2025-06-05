@@ -35,6 +35,11 @@
   --button-primary-hover: #364fc7;
   --button-secondary: #b5bfc9;
   --button-secondary-hover: #a5adb8;
+  --select-bg: #fff;
+  --select-text: #23272f;
+  --select-border: #b0b6be;
+  --select-hover-bg: #f3f4f6;
+  --select-hover-text: #1d4ed8;
 }
 
 html.light {
@@ -72,6 +77,11 @@ html.light {
   --button-primary-hover: #364fc7;
   --button-secondary: #b5bfc9;
   --button-secondary-hover: #a5adb8;
+  --select-bg: #fff;
+  --select-text: #23272f;
+  --select-border: #b0b6be;
+  --select-hover-bg: #f3f4f6;
+  --select-hover-text: #1d4ed8;
 }
 
 html.dark {
@@ -109,6 +119,11 @@ html.dark {
   --button-primary-hover: #364fc7;
   --button-secondary: #232a36;
   --button-secondary-hover: #2c3440;
+  --select-bg: #232a36;
+  --select-text: #f3f6fa;
+  --select-border: #364fc7;
+  --select-hover-bg: #181e29;
+  --select-hover-text: #ffe066;
 }
 
 /* Remove .light and .dark from anywhere but html to avoid specificity issues */
@@ -262,4 +277,15 @@ body {
   opacity: 1;
   transform: scale(1);
   animation: fadeOut 0.3s forwards;
+}
+
+select, select option {
+  background-color: var(--select-bg);
+  color: var(--select-text);
+  border-color: var(--select-border);
+}
+
+select:focus, select:hover {
+  background-color: var(--select-hover-bg);
+  color: var(--select-hover-text);
 }

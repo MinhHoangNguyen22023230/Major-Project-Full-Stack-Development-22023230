@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Prisma Client JS version: 6.9.0
+ * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
  */
 Prisma.prismaVersion = {
-  client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  client: "6.9.0",
+  engine: "81e4af48011447c3cc503a190e86995b66d2a28e"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -118,6 +118,7 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   hashedPassword: 'hashedPassword',
+  lastLogin: 'lastLogin',
   imgUrl: 'imgUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -130,7 +131,8 @@ exports.Prisma.AddressScalarFieldEnum = {
   city: 'city',
   state: 'state',
   country: 'country',
-  zipCode: 'zipCode'
+  zipCode: 'zipCode',
+  default: 'default'
 };
 
 exports.Prisma.ProductScalarFieldEnum = {
@@ -153,7 +155,9 @@ exports.Prisma.CategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  imageUrl: 'imageUrl'
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.BrandScalarFieldEnum = {
@@ -169,6 +173,7 @@ exports.Prisma.CartScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   totalPrice: 'totalPrice',
+  itemsCount: 'itemsCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -184,6 +189,7 @@ exports.Prisma.CartItemScalarFieldEnum = {
 exports.Prisma.OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  itemsCount: 'itemsCount',
   totalPrice: 'totalPrice',
   status: 'status',
   createdAt: 'createdAt',
@@ -221,6 +227,21 @@ exports.Prisma.ReviewScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phoneNumber: 'phoneNumber',
+  email: 'email',
+  imageUrl: 'imageUrl',
+  hashedPassword: 'hashedPassword',
+  role: 'role',
+  lastLogin: 'lastLogin',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -244,7 +265,8 @@ exports.Prisma.ModelName = {
   OrderItem: 'OrderItem',
   WishList: 'WishList',
   WishListItem: 'WishListItem',
-  Review: 'Review'
+  Review: 'Review',
+  Admin: 'Admin'
 };
 
 /**

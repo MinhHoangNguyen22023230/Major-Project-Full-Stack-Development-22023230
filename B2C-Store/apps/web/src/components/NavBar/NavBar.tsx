@@ -4,41 +4,40 @@ import { useShowCategoriesNavbar, useTopNavBar } from "@/hooks/useNavbar";
 import Link from "next/link";
 import Image from "next/image";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { logout } from "@/components/Login/logoutAction";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { LogoutButton } from "@/components/Login/LogoutButton";
 import { trpc } from "@/app/_trpc/client";
 import React, { useState } from "react";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import { useSession } from "@/app/clientLayout";
 
 export default function Navbar() {
     const { menuOpen, toggleMenu, closeMenu } = useTopNavBar();
     const { showCategories } = useShowCategoriesNavbar();
 
-    // Use the custom hook to get current user
-    const userId = useCurrentUser();
-
+    // Use session from context
+    const session = useSession();
+    console.log("Session in Navbar:", session);
+    const userId = session?.userId;
 
     // Only fetch user if userId is available
-    const { data: user, isLoading, error } = trpc.crud.findUserById.useQuery(
-        userId ? { id: userId } : { id: "" },
-        { enabled: !!userId }
-    );
+    const { data: users, isLoading, error } = trpc.crud.getUsers.useQuery(undefined, { enabled: !!userId });
+    const user = users?.find(u => u.id === userId);
 
     const { data: carts } = trpc.crud.getCarts.useQuery(undefined, { enabled: !!userId });
     const userCart = carts?.find((c) => c.userId === userId);
 
-    // Count total quantity of all cart items
-    const cartItemCount = Array.isArray(userCart?.cartItems)
-        ? userCart.cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
-        : 0;
+    // Use itemsCount directly from cart
+    const cartItemCount = userCart?.itemsCount || 0;
 
-    console.log("NavBar.tsx:", userId);
     // Fetch categories and brands using tRPC
     const { data: brands, isLoading: brandsLoading, error: brandsError } = trpc.crud.getBrands.useQuery();
     const { data: categories, isLoading: categoriesLoading, error: categoriesError } = trpc.crud.getCategories.useQuery();
 
     // Local state to ensure consistent rendering
     const [isClient, setIsClient] = useState(false);
+    // State for dropdowns
+    const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
+    const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
     React.useEffect(() => setIsClient(true), []);
 
     // Handle loading and error states
@@ -54,17 +53,17 @@ export default function Navbar() {
     }
 
     return (
-        <header className={`${showCategories ? "sm:h-34" : ""} bg-[var(--gallery)] shadow-xl fixed w-full h-24`}>
+        <header className={`${showCategories ? "sm:h-34" : ""} bg-[var(--gallery)] shadow-xl fixed w-full h-24 z-50`}>
             <nav className="w-full h-24">
                 <div className="bg-[var(--gallery)] flex justify-between items-center h-full w-full px-2 2xl:px-16">
-                    <ul className="hidden sm:flex items-center">
+                    <ul className="flex items-center">
                         <div className="item-center flex-row justify-center gap-3 sm:flex">
-                            <li className="l-10 text-xl flex items-center"><Link href="/">
+                            <li className="text-xl flex items-center h-20 w-30"><Link href="/">
                                 <Image
                                     src="/logo.svg"
                                     alt="Logo"
                                     width={200}
-                                    height={50}
+                                    height={200}
                                     className="cursor-pointer"
                                 />
                             </Link></li>
@@ -89,12 +88,12 @@ export default function Navbar() {
                                     <li className="ml-10 text-xl uppercase hover:border-b">
                                         <Link href={`/profile/${user.id}`}>{user.username}</Link>
                                     </li>
-                                    <button
-                                        onClick={async () => { closeMenu(); await logout(); }}
+                                    <LogoutButton
+
                                         className="shadow-xl p-3 mx-10 text-xl cursor-pointer uppercase transition-colors bg-[var(--supernova)] hover:bg-[var(--yukon-gold)] text-[var(--rangoon-green)] rounded"
                                     >
                                         Logout
-                                    </button>
+                                    </LogoutButton>
                                 </>
                             ) : (
                                 <>
@@ -108,9 +107,9 @@ export default function Navbar() {
                             )}
                         </ul>
                     </div>
-
                     {/* Hamburger Icon */}
-                    <div onClick={toggleMenu} className="sm:hidden cursor-pointer pl-24">
+                    
+                    <div onClick={toggleMenu} className="sm:hidden relative cursor-pointer">
                         <AiOutlineMenu size={25} />
                     </div>
 
@@ -142,9 +141,6 @@ export default function Navbar() {
                                 <li onClick={closeMenu} className="py-4 cursor-pointer hover:border-b">
                                     <Link className="block w-full h-full" href="/contact">Contact Us</Link>
                                 </li>
-                                <li onClick={closeMenu} className="py-4 cursor-pointer hover:border-b">
-                                    <Link className="block w-full h-full" href="/profile">Profile</Link>
-                                </li>
                                 {user ? (
                                     <>
                                         {/* Mobile Cart Link: Only show if user has a cart */}
@@ -161,12 +157,11 @@ export default function Navbar() {
                                                 {user.username}
                                             </Link>
                                         </li>
-                                        <button
-                                            onClick={async () => { closeMenu(); await logout(); }}
-                                            className="py-4 transition-colors bg-[var(--yukon-gold)] hover:bg-[var(--supernova)] text-[var(--rangoon-green)] rounded"
+                                        <LogoutButton
+                                            className="px-4 py-2 font-semibold transition-colors bg-[var(--supernova)] text-[var(--rangoon-green)] active:bg-[var(--rangoon-green)] rounded"
                                         >
                                             Logout
-                                        </button>
+                                        </LogoutButton>
                                     </>
                                 ) : (
                                     <>
@@ -202,37 +197,56 @@ export default function Navbar() {
                     <div className={`${menuOpen ? "hidden" : "flex"} w-full h-10 bg-[var(--gallery)]`}>
                         <ul className="flex w-full">
                             {/* Brands Dropdown */}
-                            <li className="relative group flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
-                                Brand
-                                <ul className="absolute hidden group-hover:block bg-[var(--gallery)] w-full left-0 top-10">
-                                    {brands?.map((brand) => (
-                                        <Link key={brand.id} href={`/brands/${brand.id}`}>
-                                            <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
-                                                {brand.name}
-                                            </li>
-                                        </Link>
-                                    ))}
-                                </ul>
+                            <li className={`${brandDropdownOpen ? "bg-[var(--rangoon-green)] text-[var(--gallery)]" : "text-[var(--rangoon-green)] bg-[var(--supernova)]"} relative flex-1 flex justify-center items-center hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color`}>
+                                <button
+                                    type="button"
+                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold"
+                                    onClick={() => setBrandDropdownOpen((open) => !open)}
+                                    onBlur={() => setTimeout(() => setBrandDropdownOpen(false), 150)}
+                                    tabIndex={0}
+                                >
+                                    Brand
+                                </button>
+                                {brandDropdownOpen && (
+                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg">
+                                        {brands?.map((brand) => (
+                                            <Link key={brand.id} href={`/brands/${brand.id}`}>
+                                                <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
+                                                    {brand.name}
+                                                </li>
+                                            </Link>
+                                        ))}
+                                    </ul>
+                                )}
                             </li>
 
                             {/* Categories Dropdown */}
-                            <li className="relative group flex-1 flex justify-center items-center bg-[var(--supernova)] hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color">
-                                Product
-                                <ul className="absolute hidden group-hover:block bg-[var(--gallery)] w-full left-0 top-10">
-                                    {categories?.map((category) => (
-                                        <Link key={category.id} href={`/categories/${category.id}`}>
-                                            <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
-                                                {category.name}
-                                            </li>
-                                        </Link>
-                                    ))}
-                                </ul>
-                            </li >
-                        </ul >
-                    </div >
-                )
-                }
-            </div >
+                            <li className={`${categoryDropdownOpen ? "bg-[var(--rangoon-green)] text-[var(--gallery)]" : "text-[var(--rangoon-green)] bg-[var(--supernova)]"} relative flex-1 flex justify-center items-center hover:bg-[var(--rangoon-green)] font-semibold hover:text-[var(--gallery)] transition-color`}>
+                                <button
+                                    type="button"
+                                    className="w-full h-full flex justify-center items-center bg-transparent border-none outline-none font-semibold "
+                                    onClick={() => setCategoryDropdownOpen((open) => !open)}
+                                    onBlur={() => setTimeout(() => setCategoryDropdownOpen(false), 150)}
+                                    tabIndex={0}
+                                >
+                                    Product
+                                </button>
+                                {categoryDropdownOpen && (
+                                    <ul className="absolute bg-[var(--gallery)] w-full left-0 top-10 z-10 shadow-lg ">
+                                        {categories?.map((category) => (
+                                            <Link key={category.id} href={`/categories/${category.id}`}>
+                                                <li className="hover:bg-[var(--rangoon-green)] text-[var(--rangoon-green)] px-4 py-2 cursor-pointer font-semibold hover:text-[var(--gallery)] transition-color">
+                                                    {category.name}
+                                                </li>
+                                            </Link>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+                        </ul>
+                    </div>
+                )}
+            </div>
 
         </header >
     );

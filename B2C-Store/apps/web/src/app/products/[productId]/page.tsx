@@ -1,126 +1,77 @@
-"use client";
+'use client'
 
-import { useParams } from "next/navigation";
 import { trpc } from "@/app/_trpc/client";
-import LeftSide from "@/components/Product/LeftSide";
-import RightSide from "@/components/Product/RightSide";
-import Review from "@/components/Product/Review";
-import { useState } from "react";
-
-
-type ReviewType = {
-  id: string;
-  rating: number;
-  comment: string;
-  user?: { username: string; id?: string };
-};
+import { useParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import AddToCartButton from "@/components/Button/AddToCart";
+import AddToWishlist from "@/components/Button/AddToWishilist";
+import Image from "next/image";
+import { useState } from "react"
+import Review, { normalizeReview, ReviewType } from "@/components/Product/Review";
 
 export default function Product() {
   const params = useParams();
-  const productId = params.productId as string;
+  const productId = typeof params.productId === "string" ? params.productId : Array.isArray(params.productId) ? params.productId[0] : undefined;
 
-  // Fetch product details using tRPC
-  const { data: product, isLoading, error } = trpc.crud.findProductById.useQuery({ id: productId });
+  // Fetch all reviews, then filter for this product
+  const { data: allReviewsData = [] } = trpc.crud.getReviews.useQuery();
+  const reviews: ReviewType[] = Array.isArray(allReviewsData)
+    ? allReviewsData
+      .filter(r => r.productId === productId)
+      .map(r => normalizeReview(r as Record<string, unknown>))
+    : [];
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
-  // Always call useState, even before product is loaded
-  const [localReviews, setLocalReviews] = useState<ReviewType[]>([]);
+  // Only run the query if productId is defined
+  const { data: product, isLoading, error } = trpc.crud.findProductById.useQuery(
+    { id: productId as string },
+    { enabled: !!productId }
+  );
 
-  // Only access product fields after confirming product is loaded and not null
-  let safeImageUrl: string | undefined,
-    safeBrand: { name: string; imageUrl?: string } | undefined,
-    safeRating: number | undefined,
-    safeSalePrice: number | undefined,
-    safeStock: number | undefined,
-    safeDescription: string | undefined,
-    safeReviews: ReviewType[];
-
-  if (product) {
-    safeImageUrl = product.imageUrl ?? undefined;
-    safeBrand = product.brand
-      ? {
-        ...product.brand,
-        imageUrl: product.brand.imageUrl ?? undefined,
-      }
-      : undefined;
-    safeRating = product.rating ?? undefined;
-    safeSalePrice = product.salePrice ?? undefined;
-    safeStock = product.stock ?? undefined;
-    safeDescription = product.description ?? undefined;
-    // Fix: Map backend review type to ReviewType
-    safeReviews =
-      product.reviews?.map((review: {
-        id: string;
-        rating: number | null;
-        comment: string | null;
-        user?: { username?: string; id?: string };
-      }) => ({
-        id: review.id,
-        rating: review.rating ?? 0,
-        comment: review.comment ?? "",
-        user: review.user
-          ? { username: review.user.username ?? "Anonymous", id: review.user.id }
-          : undefined,
-      })) ?? [];
-  } else {
-    safeImageUrl = undefined;
-    safeBrand = undefined;
-    safeRating = undefined;
-    safeSalePrice = undefined;
-    safeStock = undefined;
-    safeDescription = undefined;
-    safeReviews = [];
-  }
-
-  // If localReviews is empty and product is loaded, initialize it
-  if (product && localReviews.length === 0 && safeReviews.length > 0) {
-    setLocalReviews(safeReviews);
-  }
-
-  // Calculate local average rating for RightSide
-  const localAvgRating =
-    localReviews.length
-      ? localReviews.reduce((a, b) => a + (typeof b.rating === "number" ? b.rating : 0), 0) /
-      localReviews.length
-      : safeRating;
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <span className="text-xl font-semibold">Loading product...</span>
-      </div>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <span className="text-xl text-red-600 font-semibold">Product not found.</span>
-      </div>
-    );
-  }
+  if (!productId) return <div>Product not found.</div>;
+  if (isLoading) return <div className="w-full h-full flex items-center"><Loader2 className="animate-spin duration-100" /></div>;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!product) return <div>Product not found.</div>;
 
   return (
-    <div className="w-[80%] mx-auto h-full bg-white shadow-lg pt-30 pr-8 pl-8 pb-30">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <LeftSide imageUrl={safeImageUrl} name={product.name} />
-        <RightSide
-          id={product.id}
-          name={product.name}
-          brand={safeBrand}
-          rating={localAvgRating ? Number(localAvgRating.toFixed(1)) : safeRating}
-          price={product.price}
-          salePrice={safeSalePrice}
-          stock={safeStock}
-          description={safeDescription}
-        />
+    <div className="w-full flex justify-center pt-10 pb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] px-2 xl:w-[calc(100vw-20rem)] lg:w-[calc(100vw-15rem)] md:w-[calc(100vw-10rem)] w-full gap-8">
+        {/* Product Image and Description */}
+        <div className="flex flex-col bg-white rounded-lg shadow-lg h-fit w-full p-6">
+          <div className="w-full lg:w-100 h-100 flex items-center mb-8 justify-center">
+            <Image src={product.stock <= 0 ? "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/out-of-stock.png" : product.imageUrl} alt={product.name} width={1000} height={1000} className="rounded-lg border border-gray-200 bg-[var(--gallery)]" />
+          </div>
+          <AddToWishlist productId={product.id} className="sm:hidden my-5" />
+          <button className="w-full h-14 bg-[var(--rangoon-green)] hover:bg-[var(--supernova)] text-center text-[var(--gallery)] hover:text-[var(--rangoon-green)] font-semibold text-xl rounded transition-colors mb-4" onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}>
+            {isDescriptionOpen ? "Hide Description" : "Show Description"}
+          </button>
+          {isDescriptionOpen && <p className="text-base text-gray-700 bg-[var(--gallery)] rounded p-4 border border-gray-200 mt-2">{product.description}</p>}
+          <Review productId={product.id} reviews={reviews} />
+        </div>
+        {/* Product Name and price Section */}
+        <div className="p-6 hidden sm:flex shadow-xl flex-col bg-white h-fit w-full rounded-lg border border-gray-100">
+          <div className="flex flex-row justify-start items-center gap-4 mb-4">
+            <Image src={product.brand.imageUrl ?? "/placeholder.png"} alt={product.brand.name} width={60} height={60} className="object-contain" />
+            <p className="text-lg font-semibold text-gray-800">{product.brand.name}</p>
+          </div>
+          <p className="text-base font-semibold text-[var(--supernova)] mb-2">
+            {typeof product.rating === "number" && product.rating > 0
+              ? `${product.rating.toFixed(1)} / 5`
+              : "No Rating"}
+          </p>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">{product.name}</h1>
+          <h2 className="text-xl font-semibold mt-2 text-gray-700">$ {product.price.toFixed(2)}</h2>
+          <div className="flex flex-row mt-10 justify-between items-center gap-4 px-2">
+            <AddToWishlist productId={product.id} />
+            <AddToCartButton productId={product.id} className="w-full" disabled={product.stock <= 0} />
+          </div>
+        </div>
       </div>
-      <br />
-      <hr />
-      <Review
-        reviews={localReviews}
-        productId={product.id}
-        onReviewAdded={setLocalReviews}
-      />
+      {/* Mobile Bottom Bar */}
+      <div className="sm:hidden fixed left-0 bottom-0 w-full h-20 bg-[var(--rangoon-green)] text-[var(--gallery)] flex items-center justify-between px-6 z-20 shadow-2xl rounded-t-lg">
+        <h1 className="text-xl font-bold">$ {product.price.toFixed(2)}</h1>
+        <AddToCartButton productId={product.id} className="w-36" disabled={product.stock <= 0} />
+      </div>
     </div>
   );
 }

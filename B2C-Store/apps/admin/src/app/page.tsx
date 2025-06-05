@@ -1,8 +1,11 @@
 
+import LoginForm from "@/components/Login/LoginForm";
 
 export default function Home() {
 
   return (
-    <main className="max-w-3xl mx-auto mt-5"></main>
+    <main className="h-full w-full">
+      <LoginForm />
+    </main>
   );
 }

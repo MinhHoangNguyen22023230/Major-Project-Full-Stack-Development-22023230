@@ -137,8 +137,17 @@ async function main() {
             zipCode: "67890",
         },
     })
-
     console.log("Addresses seeded", { address1, address2 })
+
+    // Seed Admin
+
+    const admin1 = await prisma.admin.create({
+        data: {
+            username: "admin",
+            email: "admin@example.com",
+            hashedPassword: "$2b$10$dHxT2SChpe8TuYHklkYnZuhYa6ex4bLhrbUtdYtDb8qvdSKZW1feq"
+        },
+    })
 
     console.log("Seeding completed!")
 }

@@ -76,7 +76,7 @@ export const crudProcedure = router({
     getCategories: publicProcedure.query(async ({ ctx }) => {
         return ctx.prisma.category.findMany({
             include: {
-                products: true, // Include related products
+                products: true,
             },
         });
     }),
@@ -103,16 +103,13 @@ export const crudProcedure = router({
             await ctx.prisma.product.deleteMany({
                 where: { categoryId: input.id },
             });
-
             return ctx.prisma.category.delete({
                 where: { id: input.id },
             });
         }),
 
     deleteAllCategories: publicProcedure.mutation(async ({ ctx }) => {
-
         await ctx.prisma.product.deleteMany({});
-
         return ctx.prisma.category.deleteMany({});
     }),
 
@@ -140,7 +137,7 @@ export const crudProcedure = router({
             return ctx.prisma.category.findUnique({
                 where: { id: input.id },
                 include: {
-                    products: true, // Include related products
+                    products: true,
                 },
             });
         }),
@@ -336,12 +333,24 @@ export const crudProcedure = router({
                 where: { userId: input.id },
             });
 
+            // Delete related orderItems for all user's orders
+            const userOrders = await ctx.prisma.order.findMany({
+                where: { userId: input.id },
+                select: { id: true },
+            });
+            const orderIds = userOrders.map((order) => order.id);
+            if (orderIds.length > 0) {
+                await ctx.prisma.orderItem.deleteMany({
+                    where: { orderId: { in: orderIds } },
+                });
+            }
+
             // Delete related orders
             await ctx.prisma.order.deleteMany({
                 where: { userId: input.id },
             });
 
-            // Delete related wish list and its items
+            // Delete related wish list items and wish list
             const wishList = await ctx.prisma.wishList.findUnique({
                 where: { userId: input.id },
             });
@@ -350,11 +359,11 @@ export const crudProcedure = router({
                     where: { wishListId: wishList.id },
                 });
                 await ctx.prisma.wishList.delete({
-                    where: { userId: input.id },
+                    where: { id: wishList.id },
                 });
             }
 
-            // Delete related cart and its items
+            // Delete related cart items and cart
             const cart = await ctx.prisma.cart.findUnique({
                 where: { userId: input.id },
             });
@@ -363,7 +372,7 @@ export const crudProcedure = router({
                     where: { cartId: cart.id },
                 });
                 await ctx.prisma.cart.delete({
-                    where: { userId: input.id },
+                    where: { id: cart.id },
                 });
             }
 
@@ -404,6 +413,7 @@ export const crudProcedure = router({
                     email: z.string().optional(),
                     hashedPassword: z.string().optional(),
                     imgUrl: z.string().optional(),
+                    lastLogin: z.string().optional(), // Added lastLogin
                 }),
             })
         )
@@ -411,13 +421,6 @@ export const crudProcedure = router({
             return ctx.prisma.user.update({
                 where: { id: input.id },
                 data: input.data,
-                include: {
-                    cart: true,
-                    orders: true,
-                    addresses: true,
-                    wishList: true,
-                    reviews: true,
-                },
             });
         }),
 
@@ -435,6 +438,110 @@ export const crudProcedure = router({
                 },
             });
         }),
+
+    /*----------------------Admin-------------------------*/
+
+        createAdmin: publicProcedure
+        .input(
+            z.object({
+                username: z.string(),
+                email: z.string(),
+                password: z.string(), // Accept plain password from input
+                imageUrl: z.string().optional(),
+                firstName: z.string().optional(),
+                lastName: z.string().optional(),
+                phoneNumber: z.string().optional(),
+                role: z.string().optional(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const hashedPassword = await hashPassword(input.password);
+            return ctx.prisma.admin.create({
+                data: {
+                    username: input.username,
+                    email: input.email,
+                    hashedPassword,
+                    imageUrl: input.imageUrl,
+                    firstName: input.firstName,
+                    lastName: input.lastName,
+                    phoneNumber: input.phoneNumber,
+                    role: input.role ?? "Admin",
+                },
+            });
+        }),
+
+    updateAdmin: publicProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                data: z.object({
+                    username: z.string().optional(),
+                    email: z.string().optional(),
+                    hashedPassword: z.string().optional(),
+                    imageUrl: z.string().optional(),
+                    firstName: z.string().optional(), // Added firstName
+                    lastName: z.string().optional(),  // Added lastName
+                    phoneNumber: z.string().optional(),
+                    role: z.string().optional(),      // Added role
+                    lastLogin: z.string().optional(), // Added lastLogin
+                }),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            return ctx.prisma.admin.update({
+                where: { id: input.id },
+                data: input.data,
+            });
+        }),
+
+    findAdminById: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.prisma.admin.findUnique({
+                where: { id: input.id },
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    phoneNumber: true,
+                    role: true,
+                    lastLogin: true, // Added lastLogin
+                    username: true,
+                    email: true,
+                    imageUrl: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+        }),
+
+    getAdmins: publicProcedure.query(async ({ ctx }) => {
+        return ctx.prisma.admin.findMany({
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                phoneNumber: true,
+                imageUrl: true,
+                lastLogin: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+    }),
+
+    deleteAdmin: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            // Optionally: Remove or transfer related data if needed
+            return ctx.prisma.admin.delete({
+                where: { id: input.id },
+            });
+        }),
+
     /*----------------------Address-------------------------*/
     getAddresses: publicProcedure.query(async ({ ctx }) => {
         return ctx.prisma.address.findMany({
@@ -453,16 +560,28 @@ export const crudProcedure = router({
                 state: z.string(),
                 country: z.string(),
                 zipCode: z.string(),
-                isDefault: z.boolean().optional(),
-
+                default: z.boolean().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
+            // If default is true, unset default for all other addresses for this user
+            if (input.default) {
+                await ctx.prisma.address.updateMany({
+                    where: { userId: input.userId },
+                    data: { default: false },
+                });
+            }
             return ctx.prisma.address.create({
-                data: input,
-                include: {
-                    user: true, // Include the related user
+                data: {
+                    userId: input.userId,
+                    address: input.address,
+                    city: input.city,
+                    state: input.state,
+                    country: input.country,
+                    zipCode: input.zipCode,
+                    default: input.default ?? false,
                 },
+                include: { user: true },
             });
         }),
 
@@ -488,17 +607,26 @@ export const crudProcedure = router({
                     state: z.string().optional(),
                     country: z.string().optional(),
                     zipCode: z.string().optional(),
-                    isDefault: z.boolean().optional()
+                    default: z.boolean().optional(),
                 }),
             })
         )
         .mutation(async ({ ctx, input }) => {
+            // If setting this address as default, unset default for all other addresses for this user
+            if (input.data.default) {
+                // Find the address to get userId
+                const addr = await ctx.prisma.address.findUnique({ where: { id: input.id } });
+                if (addr) {
+                    await ctx.prisma.address.updateMany({
+                        where: { userId: addr.userId, NOT: { id: input.id } },
+                        data: { default: false },
+                    });
+                }
+            }
             return ctx.prisma.address.update({
                 where: { id: input.id },
                 data: input.data,
-                include: {
-                    user: true, // Include the related user
-                },
+                include: { user: true },
             });
         }),
 
@@ -533,11 +661,11 @@ export const crudProcedure = router({
             return ctx.prisma.cart.create({
                 data: {
                     userId: input.userId,
-                    totalPrice: input.totalPrice || 0, // Default to 0 if not provided
+                    totalPrice: input.totalPrice || 0,
+                    itemsCount: 0,
                 },
                 include: {
-                    user: true, // Include the related user
-                    cartItems: true, // Include related cart items
+                    user: true, cartItems: true,
                 },
             });
         }),
@@ -571,6 +699,7 @@ export const crudProcedure = router({
                 data: z.object({
                     userId: z.string().optional(),
                     totalPrice: z.number().optional(), // Optional field
+                    itemsCount: z.number().optional(),
                 }),
             })
         )
@@ -579,8 +708,7 @@ export const crudProcedure = router({
                 where: { id: input.id },
                 data: input.data,
                 include: {
-                    user: true, // Include the related user
-                    cartItems: true, // Include related cart items
+                    user: true, cartItems: true,
                 },
             });
         }),
@@ -611,31 +739,68 @@ export const crudProcedure = router({
             z.object({
                 cartId: z.string(),
                 productId: z.string(),
-                quantity: z.number(),
+                quantity: z.number().optional(),
                 totalPrice: z.number().optional(), // Optional field
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.cartItem.create({
+            // Default quantity to 1 if not provided or invalid
+            const quantity = typeof input.quantity === 'number' && input.quantity > 0 ? input.quantity : 1;
+            // Fetch product to get price
+            const product = await ctx.prisma.product.findUnique({ where: { id: input.productId } });
+            if (!product) throw new Error('Product not found');
+            const itemTotalPrice = product.price * quantity;
+            const cartItem = await ctx.prisma.cartItem.create({
                 data: {
                     cartId: input.cartId,
                     productId: input.productId,
-                    quantity: input.quantity,
-                    totalPrice: input.totalPrice || 0, // Default to 0 if not provided
+                    quantity,
+                    totalPrice: itemTotalPrice,
                 },
                 include: {
                     cart: true, // Include the related cart
                     product: true, // Include the related product
                 },
             });
+            // Update the cart's itemsCount and totalPrice
+            const allItems = await ctx.prisma.cartItem.findMany({
+                where: { cartId: input.cartId },
+                select: { quantity: true, totalPrice: true },
+            });
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            await ctx.prisma.cart.update({
+                where: { id: input.cartId },
+                data: { itemsCount, totalPrice },
+            });
+            return cartItem;
         }),
 
     deleteCartItem: publicProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.cartItem.delete({
+            // Find the cartId and totalPrice before deleting
+            const cartItem = await ctx.prisma.cartItem.findUnique({
+                where: { id: input.id },
+                select: { cartId: true, totalPrice: true },
+            });
+            const deleted = await ctx.prisma.cartItem.delete({
                 where: { id: input.id },
             });
+            // After deletion, recalculate itemsCount and totalPrice for the cart
+            if (cartItem && cartItem.cartId) {
+                const allItems = await ctx.prisma.cartItem.findMany({
+                    where: { cartId: cartItem.cartId },
+                    select: { quantity: true, totalPrice: true },
+                });
+                const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+                await ctx.prisma.cart.update({
+                    where: { id: cartItem.cartId },
+                    data: { itemsCount, totalPrice },
+                });
+            }
+            return deleted;
         }),
 
     deleteAllCartItems: publicProcedure.mutation(async ({ ctx }) => {
@@ -655,14 +820,44 @@ export const crudProcedure = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.cartItem.update({
+            // If quantity is provided and invalid, default to 1
+            const updateData = { ...input.data };
+            if ('quantity' in updateData && (typeof updateData.quantity !== 'number' || updateData.quantity < 1)) {
+                updateData.quantity = 1;
+            }
+            // Fetch the cart item and product
+            const cartItem = await ctx.prisma.cartItem.findUnique({
                 where: { id: input.id },
-                data: input.data,
+                include: { product: true },
+            });
+            if (!cartItem) throw new Error('Cart item not found');
+            // If quantity or productId is being updated, recalculate totalPrice
+            const newQuantity = updateData.quantity ?? cartItem.quantity;
+            const product = updateData.productId && updateData.productId !== cartItem.productId
+                ? (await ctx.prisma.product.findUnique({ where: { id: updateData.productId } }) ?? (() => { throw new Error('Product not found'); })())
+                : cartItem.product;
+            updateData.totalPrice = product.price * newQuantity;
+            const updatedCartItem = await ctx.prisma.cartItem.update({
+                where: { id: input.id },
+                data: updateData,
                 include: {
                     cart: true, // Include the related cart
                     product: true, // Include the related product
                 },
             });
+            // After update, recalculate itemsCount and totalPrice for the cart
+            const cartId = updateData.cartId || updatedCartItem.cartId;
+            const allItems = await ctx.prisma.cartItem.findMany({
+                where: { cartId },
+                select: { quantity: true, totalPrice: true },
+            });
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            await ctx.prisma.cart.update({
+                where: { id: cartId },
+                data: { itemsCount, totalPrice },
+            });
+            return updatedCartItem;
         }),
 
     findCartItemById: publicProcedure
@@ -680,9 +875,19 @@ export const crudProcedure = router({
     getOrders: publicProcedure.query(async ({ ctx }) => {
         return ctx.prisma.order.findMany({
             include: {
-                user: true, // Include the related user
-                orderItems: true, // Include related order items
-            },
+                user: true,
+                orderItems: {
+                    include: {
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                price: true
+                            }
+                        }
+                    }
+                }
+            }
         });
     }),
 
@@ -690,8 +895,9 @@ export const crudProcedure = router({
         .input(
             z.object({
                 userId: z.string(),
-                totalPrice: z.number().optional(), // Optional field
-                status: z.string().optional(), // Optional field
+                totalPrice: z.number().optional(),
+                status: z.string().optional(),
+                itemsCount: z.number().optional(),
                 orderItems: z.array(
                     z.object({
                         productId: z.string(),
@@ -702,24 +908,21 @@ export const crudProcedure = router({
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.order.create({
+            const order = await ctx.prisma.order.create({
                 data: {
                     userId: input.userId,
-                    totalPrice: input.totalPrice || 0, // Default to 0 if not provided
-                    status: input.status || "pending", // Default to "pending" if not provided
+                    totalPrice: input.totalPrice,
+                    status: input.status,
+                    itemsCount: input.itemsCount ?? input.orderItems.reduce((sum, item) => sum + item.quantity, 0),
                     orderItems: {
-                        create: input.orderItems.map((item) => ({
-                            productId: item.productId,
-                            quantity: item.quantity,
-                            totalPrice: item.totalPrice,
-                        })),
+                        create: input.orderItems,
                     },
                 },
                 include: {
-                    user: true, // Include the related user
-                    orderItems: true, // Include related order items
+                    orderItems: true,
                 },
             });
+            return order;
         }),
 
     deleteOrder: publicProcedure
@@ -751,6 +954,7 @@ export const crudProcedure = router({
                 data: z.object({
                     totalPrice: z.number().optional(),
                     status: z.string().optional(),
+                    itemsCount: z.number().optional(),
                 }),
             })
         )
@@ -758,10 +962,6 @@ export const crudProcedure = router({
             return ctx.prisma.order.update({
                 where: { id: input.id },
                 data: input.data,
-                include: {
-                    user: true, // Include the related user
-                    orderItems: true, // Include related order items
-                },
             });
         }),
 
@@ -791,21 +991,32 @@ export const crudProcedure = router({
             z.object({
                 orderId: z.string(),
                 productId: z.string(),
-                quantity: z.number(),
-                totalPrice: z.number(), // Required field
+                quantity: z.number().optional(),
+                totalPrice: z.number().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
+            // Default quantity to 1 if not provided or invalid
+            const quantity = typeof input.quantity === 'number' && input.quantity > 0 ? input.quantity : 1;
+            // Deduct stock from product
+            const product = await ctx.prisma.product.findUnique({ where: { id: input.productId } });
+            if (!product) throw new Error('Product not found');
+            if ((product.stock ?? 0) < quantity) throw new Error('Not enough stock');
+            await ctx.prisma.product.update({
+                where: { id: input.productId },
+                data: { stock: { decrement: quantity } },
+            });
+            // Create order item
             return ctx.prisma.orderItem.create({
                 data: {
                     orderId: input.orderId,
                     productId: input.productId,
-                    quantity: input.quantity,
-                    totalPrice: input.totalPrice,
+                    quantity,
+                    totalPrice: input.totalPrice ?? 0,
                 },
                 include: {
-                    order: true, // Include the related order
-                    product: true, // Include the related product
+                    order: true,
+                    product: true,
                 },
             });
         }),
@@ -813,9 +1024,28 @@ export const crudProcedure = router({
     deleteOrderItem: publicProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.orderItem.delete({
+            // Find the orderId and totalPrice before deleting
+            const orderItem = await ctx.prisma.orderItem.findUnique({
+                where: { id: input.id },
+                select: { orderId: true, totalPrice: true },
+            });
+            const deleted = await ctx.prisma.orderItem.delete({
                 where: { id: input.id },
             });
+            // After deletion, recalculate itemsCount and totalPrice for the order
+            if (orderItem && orderItem.orderId) {
+                const allItems = await ctx.prisma.orderItem.findMany({
+                    where: { orderId: orderItem.orderId },
+                    select: { quantity: true, totalPrice: true },
+                });
+                const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+                const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+                await ctx.prisma.order.update({
+                    where: { id: orderItem.orderId },
+                    data: { itemsCount, totalPrice },
+                });
+            }
+            return deleted;
         }),
 
     deleteAllOrderItems: publicProcedure.mutation(async ({ ctx }) => {
@@ -830,19 +1060,52 @@ export const crudProcedure = router({
                     orderId: z.string().optional(),
                     productId: z.string().optional(),
                     quantity: z.number().optional(),
-                    totalPrice: z.number().optional(), // Optional field
+                    totalPrice: z.number().optional(),
                 }),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.orderItem.update({
+            // Find the existing order item
+            const orderItem = await ctx.prisma.orderItem.findUnique({ where: { id: input.id }, include: { product: true } });
+            if (!orderItem) throw new Error('Order item not found');
+            // If quantity is being updated, adjust product stock accordingly
+            const newQuantity = input.data.quantity ?? orderItem.quantity;
+            const oldQuantity = orderItem.quantity;
+            const product = input.data.productId && input.data.productId !== orderItem.productId
+                ? (await ctx.prisma.product.findUnique({ where: { id: input.data.productId } }) ?? (() => { throw new Error('Product not found'); })())
+                : orderItem.product;
+            if (newQuantity !== oldQuantity) {
+                const diff = newQuantity - oldQuantity;
+                if (diff > 0 && (product.stock ?? 0) < diff) throw new Error('Not enough stock');
+                await ctx.prisma.product.update({
+                    where: { id: product.id },
+                    data: { stock: { decrement: diff } },
+                });
+            }
+            // Always recalculate totalPrice
+            const updateData = { ...input.data };
+            updateData.totalPrice = product.price * newQuantity;
+            const updatedOrderItem = await ctx.prisma.orderItem.update({
                 where: { id: input.id },
-                data: input.data,
+                data: updateData,
                 include: {
-                    order: true, // Include the related order
-                    product: true, // Include the related product
+                    order: true,
+                    product: true,
                 },
             });
+            // After update, recalculate itemsCount and totalPrice for the order
+            const orderId = updateData.orderId || updatedOrderItem.orderId;
+            const allItems = await ctx.prisma.orderItem.findMany({
+                where: { orderId },
+                select: { quantity: true, totalPrice: true },
+            });
+            const itemsCount = allItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+            const totalPrice = allItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+            await ctx.prisma.order.update({
+                where: { id: orderId },
+                data: { itemsCount, totalPrice },
+            });
+            return updatedOrderItem;
         }),
 
     findOrderItemById: publicProcedure
@@ -939,7 +1202,11 @@ export const crudProcedure = router({
         }),
     /*----------------------WishListItem-------------------------*/
     getWishListItems: publicProcedure.query(async ({ ctx }) => {
+        // Only return wishlist items where the related product exists
         return ctx.prisma.wishListItem.findMany({
+            where: {
+                productId: { not: undefined }, // Only include items with a valid productId
+            },
             include: {
                 product: true, // Include the related product
                 WishList: true, // Include the related wishlist
@@ -1027,22 +1294,33 @@ export const crudProcedure = router({
                 userId: z.string(),
                 productId: z.string(),
                 rating: z.number(),
-                comment: z.string().optional(), // Optional field
+                comment: z.string().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.review.create({
+            // Create the review
+            const review = await ctx.prisma.review.create({
                 data: {
                     userId: input.userId,
                     productId: input.productId,
                     rating: input.rating,
-                    comment: input.comment || null, // Default to null if not provided
-                },
-                include: {
-                    user: true, // Include the related user
-                    product: true, // Include the related product
+                    comment: input.comment,
                 },
             });
+            // Get all reviews for the product (exclude null/invalid ratings)
+            const allReviews = await ctx.prisma.review.findMany({
+                where: { productId: input.productId, rating: { gte: 1, lte: 5 } },
+                select: { rating: true },
+            });
+            // Calculate average rating using only valid ratings
+            const ratings = allReviews.map(r => typeof r.rating === 'number' ? r.rating : 0).filter(r => r > 0);
+            const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+            // Update the product's rating
+            await ctx.prisma.product.update({
+                where: { id: input.productId },
+                data: { rating: avgRating },
+            });
+            return review;
         }),
 
     deleteReview: publicProcedure
@@ -1145,18 +1423,28 @@ export const crudProcedure = router({
     findProductByCategoryId: publicProcedure
         .input(z.object({ categoryId: z.string() }))
         .query(async ({ ctx, input }) => {
-            // Find all products by categoryId
+            // Find all products by categoryId, include category and brand for UI
             return ctx.prisma.product.findMany({
                 where: { categoryId: input.categoryId },
+                include: {
+                    category: true,
+                    brand: true,
+                },
             });
         }),
 
     findProductByBrandId: publicProcedure
         .input(z.object({ brandId: z.string() }))
         .query(async ({ ctx, input }) => {
-            // Find all products by brandId
+            // Find all products by brandId, include category and brand for UI
             return ctx.prisma.product.findMany({
                 where: { brandId: input.brandId },
+                include: {
+                    category: true,
+                    brand: true,
+                },
             });
         }),
+
+
 })

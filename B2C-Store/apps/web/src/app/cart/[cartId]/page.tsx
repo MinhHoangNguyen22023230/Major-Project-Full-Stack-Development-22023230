@@ -25,12 +25,18 @@ export default function Cart() {
         return null;
     }
 
+    // Patch: convert totalPrice null to 0 for type safety
+    const safeCart = {
+        ...cart,
+        totalPrice: cart.totalPrice === null || cart.totalPrice === undefined ? 0 : cart.totalPrice,
+    } as Omit<typeof cart, 'totalPrice'> & { totalPrice: number };
+
     return (
         <div className="w-[80%] mx-auto h-full bg-white shadow-lg pt-10 pr-8 pl-8 pb-10">
             <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <LeftSide cart={cart} />
-                <RightSide cart={cart} />
+                <LeftSide cart={safeCart} />
+                <RightSide cart={safeCart} />
             </div>
         </div>
     );

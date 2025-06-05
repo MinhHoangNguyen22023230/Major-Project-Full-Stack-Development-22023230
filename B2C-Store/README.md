@@ -84,5 +84,3 @@ Learn more about the power of Turborepo:
 - [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
 
 
-# Remove all node_modules in project
-find . -name "node_modules" -type d -prune -exec rm -rf '{}' +

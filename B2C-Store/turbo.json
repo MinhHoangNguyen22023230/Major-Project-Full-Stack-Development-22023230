@@ -2,7 +2,12 @@
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "globalEnv": [
-    "DATABASE_URL"
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "AWS_BUCKET_NAME",
+    "AWS_BUCKET_REGION",
+    "AWS_ACCESS_KEY",
+    "AWS_SECRET_ACCESS_KEY"
   ],
   "tasks": {
     "db:generate": {
@@ -41,6 +46,7 @@
         ".env*"
       ],
       "outputs": [
+        "dist/**",
         ".next/**",
         "!.next/cache/**"
       ]

@@ -24,20 +24,22 @@ model User {
   addresses      Address[]
   wishList       WishList?
   reviews        Review[]
-  imgUrl         String?
+  lastLogin      DateTime?
+  imgUrl         String?   @default("https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
 
 model Address {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String @db.ObjectId
-  user    User   @relation(fields: [userId], references: [id])
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @db.ObjectId
+  user    User    @relation(fields: [userId], references: [id])
   address String
   city    String
   state   String
   country String
   zipCode String
+  default Boolean @default(false)
 }
 
 model Product {
@@ -55,7 +57,7 @@ model Product {
   orderItems    OrderItem[]
   cartItems     CartItem[]
   releaseDate   DateTime?
-  stock         Int
+  stock         Int            @default(0)
   rating        Float?
   reviews       Review[]
   createdAt     DateTime       @default(now())
@@ -68,6 +70,8 @@ model Category {
   description String?
   imageUrl    String?
   products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Brand {
@@ -85,6 +89,7 @@ model Cart {
   userId     String     @unique @db.ObjectId
   user       User       @relation(fields: [userId], references: [id])
   totalPrice Float?
+  itemsCount Int        @default(0)
   cartItems  CartItem[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -105,6 +110,7 @@ model Order {
   userId     String      @db.ObjectId
   user       User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
+  itemsCount Int         @default(0)
   totalPrice Float?
   status     String      @default("pending")
   createdAt  DateTime    @default(now())
@@ -148,4 +154,19 @@ model Review {
   comment   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  username       String   @unique
+  firstName      String?
+  lastName       String?
+  phoneNumber    String?  @unique
+  email          String   @unique
+  imageUrl       String?  @default("https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png")
+  hashedPassword String
+  role           String   @default("admin")
+  lastLogin      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }

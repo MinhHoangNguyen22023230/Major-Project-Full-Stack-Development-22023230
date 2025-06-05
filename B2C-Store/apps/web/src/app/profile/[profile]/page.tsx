@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { trpc } from "@/app/_trpc/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -26,7 +26,7 @@ type Address = {
     zip?: string;
     zipCode?: string;
     country?: string;
-    isDefault?: boolean;
+    default?: boolean;
 };
 
 type Review = {
@@ -73,6 +73,13 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
     const addAddress = trpc.crud.createAddress.useMutation();
     // Delete address mutation
     const deleteAddress = trpc.crud.deleteAddress.useMutation();
+    // Update address mutation
+    const updateAddress = trpc.crud.updateAddress.useMutation();
+    // Upload user image mutation (fix):
+    const uploadUserImage = trpc.s3.uploadUserImage.useMutation();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     const [showAddForm, setShowAddForm] = useState<boolean>(false);
     const [form, setForm] = useState({
@@ -81,7 +88,7 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         state: "",
         zip: "",
         country: "",
-        isDefault: false,
+        default: false,
     });
     const [formError, setFormError] = useState<string | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -151,9 +158,10 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                 state: form.state,
                 country: form.country,
                 zipCode: form.zip,
+                default: form.default,
             });
             setShowAddForm(false);
-            setForm({ street: "", city: "", state: "", zip: "", country: "", isDefault: false });
+            setForm({ street: "", city: "", state: "", zip: "", country: "", default: false });
             refetch();
         } catch (err: unknown) {
             if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
@@ -178,6 +186,53 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
         }
     };
 
+    const handleSetDefaultAddress = async (addressId: string) => {
+        setDeleteError(null);
+        try {
+            await updateAddress.mutateAsync({
+                id: addressId,
+                data: { default: true },
+            });
+            refetch();
+        } catch (err: unknown) {
+            if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
+                setDeleteError((err as { message: string }).message);
+            } else {
+                setDeleteError("Failed to set default address.");
+            }
+        }
+    };
+
+    // Handler for file input upload
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUploadError(null);
+        const file = e.target.files?.[0];
+        if (!file || !user) return;
+        setUploading(true);
+        try {
+            // Read file as ArrayBuffer, then convert to Uint8Array
+            const arrayBuffer = await file.arrayBuffer();
+            // Correct: ArrayBuffer can be directly passed to Uint8Array
+            const uint8Array = new Uint8Array(arrayBuffer);
+            await uploadUserImage.mutateAsync({
+                userId: user.id,
+                filename: file.name,
+                body: Array.from(uint8Array), // <-- send as array
+                contentType: file.type,
+            });
+            refetch();
+        } catch (err) {
+            if (err && typeof err === "object" && "message" in err && typeof (err as { message?: string }).message === "string") {
+                setUploadError((err as { message: string }).message);
+            } else {
+                setUploadError("Failed to upload image");
+            }
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
     if (isLoading) return <div className="text-gray-500">Loading profile...</div>;
     if (error) return <div className="text-red-500">Error: {error.message}</div>;
     if (!user) return <div className="text-gray-500">User not found.</div>;
@@ -190,11 +245,37 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                     <Image
                         src={user.imgUrl}
                         alt={user.username}
-                        width={120}
-                        height={120}
-                        className="rounded-full"
+                        width={300}
+                        height={300}
+                        className="rounded-full border-4 border-[var(--supernova)] shadow-lg"
                     />
                 )}
+                <label
+                    htmlFor="profile-image-upload"
+                    className={`inline-block px-5 py-2 mt-2 mb-2 rounded-full font-semibold cursor-pointer transition-colors bg-[var(--supernova)] text-[var(--rangoon-green)] shadow hover:bg-[var(--yukon-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--yukon-gold)] focus:ring-offset-2 ${uploading ? 'opacity-60 cursor-not-allowed' : ''}`}
+                    tabIndex={0}
+                >
+                    {uploading ? (
+                        <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-[var(--rangoon-green)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                            Uploading...
+                        </span>
+                    ) : (
+                        <span>Change Profile Image</span>
+                    )}
+                    <input
+                        id="profile-image-upload"
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        disabled={uploading}
+                        className="hidden"
+                        aria-label="Upload profile image"
+                    />
+                </label>
+                
+                {uploadError && <div className="text-red-500">{uploadError}</div>}
                 <h1 className="text-3xl font-bold">{user.username}</h1>
                 <p className="text-gray-700">{user.email}</p>
             </div>
@@ -216,22 +297,22 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
             <div>
                 <h2 className="text-xl font-semibold mb-2">Wish List Products</h2>
                 {wishListItems && wishListItems.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {wishListItems
                             .filter((item: WishListItem) => item.WishList?.userId === user.id && item.product)
                             .map((item: WishListItem) => (
-                                <div key={item.id} className="flex items-center gap-4 p-2 border rounded hover:bg-gray-50">
-                                    <Link href={`/products/${item.product.id}`} className="flex items-center gap-4">
+                                <div key={item.id} className="flex flex-col sm:flex-row items-center gap-4 p-4 border rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-all">
+                                    <Link href={`/products/${item.product.id}`} className="flex items-center gap-4 w-full">
                                         <Image
-                                            src={item.product.imageUrl || "/no-product-image.png"}
+                                            src={item.product.imageUrl || "/no product image.png"}
                                             alt={item.product.name}
-                                            width={60}
-                                            height={60}
-                                            className="rounded"
+                                            width={70}
+                                            height={70}
+                                            className="rounded-lg object-cover border border-gray-200 bg-gray-100 w-[70px] h-[70px]"
                                         />
-                                        <div>
-                                            <div className="font-semibold">{item.product.name}</div>
-                                            <div className="text-sm text-gray-600">${item.product.price?.toFixed(2)}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-semibold truncate text-base md:text-lg">{item.product.name}</div>
+                                            <div className="text-sm text-gray-600 mt-1">${item.product.price?.toFixed(2)}</div>
                                         </div>
                                     </Link>
                                 </div>
@@ -363,11 +444,11 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                id="isDefault"
-                                checked={form.isDefault}
-                                onChange={e => setForm(f => ({ ...f, isDefault: e.target.checked }))}
+                                id="default"
+                                checked={form.default}
+                                onChange={e => setForm(f => ({ ...f, default: e.target.checked }))}
                             />
-                            <label htmlFor="isDefault" className="text-sm">Set as default</label>
+                            <label htmlFor="default" className="text-sm">Set as default</label>
                         </div>
                         {formError && <div className="text-red-500">{formError}</div>}
                         <button
@@ -394,8 +475,16 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
                                 <li key={address.id} className="border rounded p-3 flex items-center justify-between">
                                     <div>
                                         {fields.join(", ")}
-                                        {address.isDefault && (
+                                        {address.default ? (
                                             <span className="text-xs text-green-600 ml-2">(Default)</span>
+                                        ) : (
+                                            <button
+                                                className="ml-2 px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300"
+                                                onClick={() => handleSetDefaultAddress(address.id)}
+                                                type="button"
+                                            >
+                                                Set as default
+                                            </button>
                                         )}
                                     </div>
                                     <button

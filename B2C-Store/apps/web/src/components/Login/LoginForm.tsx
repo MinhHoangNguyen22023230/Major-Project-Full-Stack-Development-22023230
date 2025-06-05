@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 export default function LoginForm() {
     const router = useRouter();
     const loginMutation = trpc.login.useMutation();
+    const sessionCreateMutation = trpc.session.createSession.useMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -24,16 +25,16 @@ export default function LoginForm() {
             // Authenticate with tRPC
             const user = await loginMutation.mutateAsync({ email, password });
 
-            // Set session cookie via API route
-            const res = await fetch("/api/session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user }),
+            // Set session cookie via tRPC sessionProcedure
+            await new Promise((resolve, reject) => {
+                sessionCreateMutation.mutate(
+                    { userId: user.userId },
+                    {
+                        onSuccess: () => resolve(true),
+                        onError: (err) => reject(err),
+                    }
+                );
             });
-
-            if (!res.ok) {
-                throw new Error("Failed to create session");
-            }
 
             router.push("/");
         } catch (err) {
@@ -52,6 +53,7 @@ export default function LoginForm() {
                     Please log in to continue.
                 </div>
             )}
+            <button onClick={() => router.push('/')} className="block mx-auto mt-4 text-center w-fit h-fit cursor-pointer text-blue-500 hover:underline">Return home</button>
             <form className="flex flex-col h-50 gap-4" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-[var(--rangoon-green)]">

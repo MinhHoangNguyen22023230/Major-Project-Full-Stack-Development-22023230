@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/session";
 
-const protectedRoutes = ["/about", "/cart", "/checkout", "/profile"];
-const publicRoutes = ["/login"];
+const protectedRoutes = ["/cart", "/checkout", "/profile", "/order"];
+const publicRoutes = ["/login", "/register"];
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -11,7 +11,7 @@ export default async function middleware(req: NextRequest) {
   const isPublicRoute = publicRoutes.includes(path);
 
   const cookieStore = await cookies();
-  const cookie = cookieStore.get("session")?.value;
+  const cookie = cookieStore.get("session_web")?.value;
   const session = await decrypt(cookie);
 
   if (isProtectedRoute && !session?.userId) {
@@ -21,6 +21,5 @@ export default async function middleware(req: NextRequest) {
   if (isPublicRoute && session?.userId) {
     return NextResponse.redirect(new URL("/", req.nextUrl));
   }
-
   return NextResponse.next();
 }

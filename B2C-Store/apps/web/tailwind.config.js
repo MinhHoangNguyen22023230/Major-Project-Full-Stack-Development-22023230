@@ -1,17 +1,19 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const config = {
     content: [
-        "./apps/web/src/**/*.{js,ts,jsx,tsx}", // Include all relevant files
+        './src/**/*.{js,ts,jsx,tsx,mdx}',
+        './src/app/**/*.{js,ts,jsx,tsx,mdx}'
     ],
     theme: {
         extend: {
             colors: {
-                gallery: "var(--gallery)", // Map CSS variable to Tailwind color
-                "rangoon-green": "var(--rangoon-green)", // Map CSS variable to Tailwind color
-                supernova: "var(--supernova)", // Map CSS variable to Tailwind color
-                "yukon-gold": "var(--yukon-gold)" // Map CSS variable to Tailwind color
-            },
+                gallery: 'var(--gallery)',
+                'rangoon-green': 'var(--rangoon-green)',
+                supernova: 'var(--supernova)',
+                'yukon-gold': 'var(--yukon-gold)'
+            }
         },
     },
-    plugins: [],
+    plugins: []
 };
+
+export default config;

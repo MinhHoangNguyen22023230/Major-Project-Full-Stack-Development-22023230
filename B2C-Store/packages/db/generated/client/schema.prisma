@@ -24,7 +24,8 @@ model User {
   addresses      Address[]
   wishList       WishList?
   reviews        Review[]
-  imgUrl         String?
+  lastLogin      DateTime?
+  imgUrl         String?   @default("https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -156,11 +157,16 @@ model Review {
 }
 
 model Admin {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  username       String   @unique
-  email          String   @unique
-  imageUrl       String?
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  username       String    @unique
+  firstName      String?
+  lastName       String?
+  phoneNumber    String?   @unique
+  email          String    @unique
+  imageUrl       String?   @default("https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png")
   hashedPassword String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  role           String    @default("admin")
+  lastLogin      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

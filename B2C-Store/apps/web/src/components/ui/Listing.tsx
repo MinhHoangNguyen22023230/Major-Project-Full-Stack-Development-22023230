@@ -10,6 +10,7 @@ export type ListingProduct = {
     imageUrl?: string;
     category?: { name?: string };
     brand?: { name?: string; imageUrl?: string };
+    stock?: number; // Add stock field
 };
 
 type ListingProps = {
@@ -44,55 +45,60 @@ export default function Listing({ products, isLoading, error, title = "Our Produ
             <div className="w-fit">
                 <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-x-2 lg:gap-x-4 gap-y-10">
-                    {products?.map((product) => (
-                        <div key={product.id} className="w-full pl-6 pr-6 shadow-md sm:w-74 xl:w-84 lg:w-76">
-                            <Link href={`/products/${product.id}`} className="cursor-pointer block hover:opacity-80 transition-opacity duration-300">
-                                <div className="h-fit w-full sm:h-70 sm:w-70 lg:w-72 lg:h-72 xl:w-80 xl:h-80 flex items-center">
-                                    <Image
-                                        alt={product.name}
-                                        src={product.imageUrl || "/no-product-image.png"}
-                                        className="aspect-square rounded-md bg-gray-200 object-fit lg:aspect-auto w-full h-full sm:h-70 sm:w-70 lg:w-72 lg:h-72 xl:w-80 xl:h-80"
-                                        width={500}
-                                        height={500}
-                                    />
-                                </div>
-                            </Link>
-                            <div className="mt-2 flex flex-row w-full justify-between">
-
-                                <div className="flex flex-col">
-                                    <Link href={`/products/${product.id}`} className="cursor-pointer block">
-                                        <h3 className="text-sm sm:h-20 text-gray-700">
-                                            <p className="font-bold line-clamp-4">
-                                                {product.name}
+                    {products?.map((product) => {
+                        const isOutOfStock = typeof product.stock === 'number' && product.stock <= 0;
+                        return (
+                            <div key={product.id} className="w-full pl-6 pr-6 shadow-md sm:w-74 xl:w-84 lg:w-76">
+                                <Link href={`/products/${product.id}`} className="cursor-pointer block hover:opacity-80 transition-opacity duration-300">
+                                    <div className="h-fit w-full sm:h-70 sm:w-70 lg:w-72 lg:h-72 xl:w-80 xl:h-80 flex items-center">
+                                        <Image
+                                            alt={product.name}
+                                            src={isOutOfStock ? "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/out-of-stock.png" : (product.imageUrl || "/no-product-image.png")}
+                                            className="aspect-square rounded-md bg-gray-200 object-fit lg:aspect-auto w-full h-full sm:h-70 sm:w-70 lg:w-72 lg:h-72 xl:w-80 xl:h-80"
+                                            width={500}
+                                            height={500}
+                                        />
+                                    </div>
+                                </Link>
+                                <div className="mt-2 flex flex-row w-full justify-between">
+                                    <div className="flex flex-col">
+                                        <Link href={`/products/${product.id}`} className="cursor-pointer block">
+                                            <h3 className="text-sm sm:h-20 text-gray-700">
+                                                <p className="font-bold line-clamp-4">
+                                                    {product.name}
+                                                </p>
+                                            </h3>
+                                        </Link>
+                                        <div>
+                                            <p className="mt-1 text-sm text-gray-500 line-clamp-3" title={product.category?.name}>{product.category?.name || "Unknown"}</p>
+                                            <p className="mt-1 h-5 text-sm text-gray-500 flex items-center">
+                                                {product.brand?.imageUrl && (
+                                                    <Image
+                                                        src={product.brand.imageUrl}
+                                                        alt={product.brand.name + ' logo'}
+                                                        width={20}
+                                                        height={20}
+                                                        className="inline-block mr-2 rounded-full bg-gray-100 object-contain"
+                                                    />
+                                                )}
+                                                {product.brand?.name || "Unknown"}
                                             </p>
-                                        </h3>
-                                    </Link>
-                                    <div>
-                                        <p className="mt-1 text-sm text-gray-500 line-clamp-3" title={product.category?.name}>{product.category?.name || "Unknown"}</p>
-                                        <p className="mt-1 h-5 text-sm text-gray-500 flex items-center">
-                                            {product.brand?.imageUrl && (
-                                                <Image
-                                                    src={product.brand.imageUrl}
-                                                    alt={product.brand.name + ' logo'}
-                                                    width={20}
-                                                    height={20}
-                                                    className="inline-block mr-2 rounded-full bg-gray-100 object-contain"
-                                                />
-                                            )}
-                                            {product.brand?.name || "Unknown"}
-                                        </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <p className="text-sm font-medium text-[var(--yukon-gold)]">${product.price.toFixed(2)}</p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-end">
-                                    <p className="text-sm font-medium text-[var(--yukon-gold)]">${product.price.toFixed(2)}</p>
+                                <div className="flex items-center mt-5 justify-between mb-3">
+                                    <AddToWishlistButton productId={product.id} />
+                                    <AddToCartButton productId={product.id} disabled={isOutOfStock} />
                                 </div>
+                                {isOutOfStock && (
+                                    <div className="text-red-600 text-xs font-semibold text-center mt-2">Out of Stock</div>
+                                )}
                             </div>
-                            <div className="flex items-center mt-5 justify-between mb-3">
-                                <AddToWishlistButton productId={product.id} />
-                                <AddToCartButton productId={product.id} />
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         </div>

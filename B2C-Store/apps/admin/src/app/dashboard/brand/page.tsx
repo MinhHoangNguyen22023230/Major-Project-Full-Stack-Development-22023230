@@ -1,6 +1,7 @@
 'use client';
 
 import BrandTable from "@/components/Dashboard/Brand/BrandTable";
+import OverviewBrand from "@/components/Dashboard/Brand/OverviewBrand";
 import { useSidebar } from "@/app/SidebarContext";
 import ComponentCard from "@/components/ui/ComponentCard";
 import Link from "next/link";
@@ -19,6 +20,7 @@ export default function Brand() {
                 </>
             }
         >
+            <OverviewBrand />
             <BrandTable />
         </ComponentCard>
     );

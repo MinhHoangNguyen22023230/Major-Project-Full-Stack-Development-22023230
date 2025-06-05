@@ -53,6 +53,7 @@ export default function LoginForm() {
                     Please log in to continue.
                 </div>
             )}
+            <button onClick={() => router.push('/')} className="block mx-auto mt-4 text-center w-fit h-fit cursor-pointer text-blue-500 hover:underline">Return home</button>
             <form className="flex flex-col h-50 gap-4" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-[var(--rangoon-green)]">

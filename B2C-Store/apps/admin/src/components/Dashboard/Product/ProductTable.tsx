@@ -21,6 +21,7 @@ type Product = {
     createdAt?: string;
     updatedAt?: string;
     stock?: number;
+    rating?: number | null; // Added to match backend schema
 };
 
 export default function ProductTable() {
@@ -177,9 +178,10 @@ export default function ProductTable() {
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Image</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Brand</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Category</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Stock</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Rating</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -209,6 +211,7 @@ export default function ProductTable() {
                                             <TableCell className="px-4 py-2 text-start">{brand ? brand.name : <span className="text-xs text-gray-400">-</span>}</TableCell>
                                             <TableCell className="px-4 py-2 text-start">{category ? category.name : <span className="text-xs text-gray-400">-</span>}</TableCell>
                                             <TableCell className="px-4 py-2 text-start">{product.stock ?? <span className="text-xs text-gray-400">-</span>}</TableCell>
+                                            <TableCell className="px-4 py-2 text-start">{typeof product.rating === 'number' ? product.rating.toFixed(1) : <span className="text-xs text-gray-400">-</span>}</TableCell>
                                             <TableCell className="px-4 py-2 text-start">{product.createdAt ? new Date(product.createdAt).toLocaleString() : "-"}</TableCell>
                                             <TableCell className="px-4 py-2 text-start">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : "-"}</TableCell>
                                         </TableRow>

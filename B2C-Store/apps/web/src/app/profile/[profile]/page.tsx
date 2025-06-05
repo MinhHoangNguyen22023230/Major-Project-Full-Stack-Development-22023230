@@ -297,22 +297,22 @@ export default function Profile({ params }: { params: Promise<{ profile: string 
             <div>
                 <h2 className="text-xl font-semibold mb-2">Wish List Products</h2>
                 {wishListItems && wishListItems.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {wishListItems
                             .filter((item: WishListItem) => item.WishList?.userId === user.id && item.product)
                             .map((item: WishListItem) => (
-                                <div key={item.id} className="flex items-center gap-4 p-2 border rounded hover:bg-gray-50">
-                                    <Link href={`/products/${item.product.id}`} className="flex items-center gap-4">
+                                <div key={item.id} className="flex flex-col sm:flex-row items-center gap-4 p-4 border rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-all">
+                                    <Link href={`/products/${item.product.id}`} className="flex items-center gap-4 w-full">
                                         <Image
-                                            src={item.product.imageUrl || "/no-product-image.png"}
+                                            src={item.product.imageUrl || "/no product image.png"}
                                             alt={item.product.name}
-                                            width={60}
-                                            height={60}
-                                            className="rounded"
+                                            width={70}
+                                            height={70}
+                                            className="rounded-lg object-cover border border-gray-200 bg-gray-100 w-[70px] h-[70px]"
                                         />
-                                        <div>
-                                            <div className="font-semibold">{item.product.name}</div>
-                                            <div className="text-sm text-gray-600">${item.product.price?.toFixed(2)}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-semibold truncate text-base md:text-lg">{item.product.name}</div>
+                                            <div className="text-sm text-gray-600 mt-1">${item.product.price?.toFixed(2)}</div>
                                         </div>
                                     </Link>
                                 </div>

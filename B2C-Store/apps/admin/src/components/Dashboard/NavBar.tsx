@@ -10,12 +10,15 @@ import { trpc } from "@/app/_trpc/client";
 import { useAdminSession } from '@/app/clientLayout';
 import { LogoutButton } from "../Login/LogoutButton";
 import Link from "next/link";
+import { GiHamburgerMenu } from "react-icons/gi";
+import MobileSideBar from "./MobileSideBar";
 
 
 export default function NavBar() {
     const { isOpen, setIsOpen } = useSidebar();
     const isMobile = useMediaQuery({ maxWidth: 767 });
     const [profileMenuOpen, setProfileMenuOpen] = React.useState(false);
+    const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
     const profileMenuRef = React.useRef<HTMLDivElement>(null);
     const { userId } = useAdminSession();
     // Only fetch admin if userId is available and is a string
@@ -52,6 +55,7 @@ export default function NavBar() {
 
     return (
         <>
+            <MobileSideBar isOpen={mobileSidebarOpen} setIsOpen={setMobileSidebarOpen} />
             <div
                 className={`
                     flex items-center fixed justify-between h-20 top-0 left-0 z-30
@@ -71,12 +75,11 @@ export default function NavBar() {
                         </button>
                     )}
                     <h1 className="text-[var(--navbar-text)]">Admin Dashboard</h1>
-                    <input type="text" className="search-box rounded-md p-2 ml-2 text-[var(--navbar-text)] bg-[var(--gallery)] border border-[var(--ui-border-color)]" placeholder="Search..." />
                 </div>
                 <div className="flex space-x-4 relative items-center">
                     {/* Use ThemeSwitch for theme toggling */}
                     <div className="w-fit cursor-pointer items-center flex hover:opacity-80 opacity-100 transition-opacity duration-100 h-fit">
-                    <ThemeSwitch />
+                        <ThemeSwitch />
                     </div>
                     {/* Profile Image and Menu */}
                     <Image
@@ -87,10 +90,14 @@ export default function NavBar() {
                         className="rounded-full group mr-2 cursor-pointer hover:opacity-80 transition-opacity duration-300 border border-[var(--ui-border-color)] bg-[var(--navbar-bg)]"
                         onClick={() => setProfileMenuOpen((v) => !v)}
                     />
+                    {/* Burger menu button for mobile */}
+                    <button onClick={() => setMobileSidebarOpen(true)} className="block sm:hidden">
+                        <GiHamburgerMenu className="h-6 w-6" />
+                    </button>
                     {profileMenuOpen && (
                         <div ref={profileMenuRef} className="absolute right-2 top-12 w-40 rounded shadow-lg z-50 bg-[var(--popover-bg)] text-[var(--popover-text)] border border-[var(--popover-border)]">
                             <Link
-                                href={`/dashboard/profile/${adminData?.id}`}
+                                href={`/profile/${adminData?.id}`}
                                 className="block w-full text-left px-4 py-2 text-sm hover:font-semibold text-[var(--popover-text)] bg-[var(--popover-bg)] hover:bg-[var(--hover-bg-color)]"
                             >
                                 Profile

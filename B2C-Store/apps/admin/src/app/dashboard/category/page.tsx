@@ -4,6 +4,7 @@ import CategoryTable from "@/components/Dashboard/Category/CategoryTable";
 import { useSidebar } from "@/app/SidebarContext";
 import ComponentCard from "@/components/ui/ComponentCard";
 import Link from "next/link";
+import OverviewCategory from "@/components/Dashboard/Category/OverviewCategory";
 
 export default function Brand() {
     const { isOpen } = useSidebar();
@@ -19,6 +20,7 @@ export default function Brand() {
                 </>
             }
         >
+            <OverviewCategory />
             <CategoryTable />
         </ComponentCard>
     );

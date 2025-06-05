@@ -2,7 +2,7 @@
 
 import { trpc } from "@/app/_trpc/client";
 import { useState, useRef } from "react";
-import { MdDeleteOutline } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineEdit } from "react-icons/md";
 import { Loader2 } from "lucide-react";
 import Alert from "@/components/ui/Alert";
 import {
@@ -66,6 +66,17 @@ export default function OrderTable() {
         setSelected([]);
     };
 
+    const handleEdit = () => {
+        if (selected.length === 1) {
+            const orderId = selected[0];
+            window.location.href = `/dashboard/order/edit/${orderId}`;
+        } else {
+            setAlert({ message: "Please select exactly one order to edit.", type: "warning" });
+            if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
+            alertTimeoutRef.current = setTimeout(() => setAlert(null), 3000);
+        }
+    };
+
     // Filter and reorder orders: matching orders at the top, others below
     const filteredData = search.trim() === ""
         ? data
@@ -111,6 +122,21 @@ export default function OrderTable() {
                     <button
                         onClick={() => {
                             if (selected.length === 0) {
+                                setAlert({ message: "Please select exactly one order to edit.", type: "warning" });
+                                if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
+                                alertTimeoutRef.current = setTimeout(() => setAlert(null), 10000);
+                            } else {
+                                handleEdit();
+                            }
+                        }}
+                        title="edit selected order"
+                        className="cursor-pointer h-fit w-fit p-1 flex rounded-lg transition-colors bg-[var(--gallery)] text-[var(--foreground)] hover:bg-[var(--hover-bg-color)]"
+                    >
+                        <MdOutlineEdit className="h-6 w-6" />
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (selected.length === 0) {
                                 setAlert({ message: "You have to select at least one order to delete.", type: "warning" });
                                 if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
                                 alertTimeoutRef.current = setTimeout(() => setAlert(null), 3000);
@@ -152,7 +178,7 @@ export default function OrderTable() {
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">User</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Email</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Items</TableCell>
-                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Total Price</TableCell>
+                                    <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var,--card-title)] border-b border-[var(--ui-border-color)]">Total Price</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Status</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Created At</TableCell>
                                     <TableCell isHeader className="px-4 py-2 font-medium text-start text-theme-xs bg-[var(--gallery)] text-[var(--card-title)] border-b border-[var(--ui-border-color)]">Updated At</TableCell>

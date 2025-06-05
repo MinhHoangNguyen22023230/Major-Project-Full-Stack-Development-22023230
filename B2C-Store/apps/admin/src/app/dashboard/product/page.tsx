@@ -1,6 +1,7 @@
 'use client';
 
 import ProductTable from "@/components/Dashboard/Product/ProductTable";
+import OverviewProduct from "@/components/Dashboard/Product/OverviewProduct";
 import { useSidebar } from "@/app/SidebarContext";
 import ComponentCard from "@/components/ui/ComponentCard";
 import Link from "next/link";
@@ -19,6 +20,7 @@ export default function Product() {
                 </>
             }
         >
+            <OverviewProduct />
             <ProductTable />
         </ComponentCard>
     );

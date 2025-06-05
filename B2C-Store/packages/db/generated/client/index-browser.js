@@ -118,6 +118,7 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   email: 'email',
   hashedPassword: 'hashedPassword',
+  lastLogin: 'lastLogin',
   imgUrl: 'imgUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -229,9 +230,14 @@ exports.Prisma.ReviewScalarFieldEnum = {
 exports.Prisma.AdminScalarFieldEnum = {
   id: 'id',
   username: 'username',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  phoneNumber: 'phoneNumber',
   email: 'email',
   imageUrl: 'imageUrl',
   hashedPassword: 'hashedPassword',
+  role: 'role',
+  lastLogin: 'lastLogin',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

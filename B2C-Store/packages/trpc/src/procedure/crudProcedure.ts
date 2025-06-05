@@ -413,24 +413,14 @@ export const crudProcedure = router({
                     email: z.string().optional(),
                     hashedPassword: z.string().optional(),
                     imgUrl: z.string().optional(),
+                    lastLogin: z.string().optional(), // Added lastLogin
                 }),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            const updateData = { ...input.data };
-            if (updateData.hashedPassword) {
-                updateData.hashedPassword = await hashPassword(updateData.hashedPassword);
-            }
             return ctx.prisma.user.update({
                 where: { id: input.id },
-                data: updateData,
-                include: {
-                    cart: true,
-                    orders: true,
-                    addresses: true,
-                    wishList: true,
-                    reviews: true,
-                },
+                data: input.data,
             });
         }),
 
@@ -450,6 +440,36 @@ export const crudProcedure = router({
         }),
 
     /*----------------------Admin-------------------------*/
+
+        createAdmin: publicProcedure
+        .input(
+            z.object({
+                username: z.string(),
+                email: z.string(),
+                password: z.string(), // Accept plain password from input
+                imageUrl: z.string().optional(),
+                firstName: z.string().optional(),
+                lastName: z.string().optional(),
+                phoneNumber: z.string().optional(),
+                role: z.string().optional(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            const hashedPassword = await hashPassword(input.password);
+            return ctx.prisma.admin.create({
+                data: {
+                    username: input.username,
+                    email: input.email,
+                    hashedPassword,
+                    imageUrl: input.imageUrl,
+                    firstName: input.firstName,
+                    lastName: input.lastName,
+                    phoneNumber: input.phoneNumber,
+                    role: input.role ?? "Admin",
+                },
+            });
+        }),
+
     updateAdmin: publicProcedure
         .input(
             z.object({
@@ -459,6 +479,11 @@ export const crudProcedure = router({
                     email: z.string().optional(),
                     hashedPassword: z.string().optional(),
                     imageUrl: z.string().optional(),
+                    firstName: z.string().optional(), // Added firstName
+                    lastName: z.string().optional(),  // Added lastName
+                    phoneNumber: z.string().optional(),
+                    role: z.string().optional(),      // Added role
+                    lastLogin: z.string().optional(), // Added lastLogin
                 }),
             })
         )
@@ -476,12 +501,44 @@ export const crudProcedure = router({
                 where: { id: input.id },
                 select: {
                     id: true,
+                    firstName: true,
+                    lastName: true,
+                    phoneNumber: true,
+                    role: true,
+                    lastLogin: true, // Added lastLogin
                     username: true,
                     email: true,
                     imageUrl: true,
                     createdAt: true,
                     updatedAt: true,
                 },
+            });
+        }),
+
+    getAdmins: publicProcedure.query(async ({ ctx }) => {
+        return ctx.prisma.admin.findMany({
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                role: true,
+                firstName: true,
+                lastName: true,
+                phoneNumber: true,
+                imageUrl: true,
+                lastLogin: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+    }),
+
+    deleteAdmin: publicProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            // Optionally: Remove or transfer related data if needed
+            return ctx.prisma.admin.delete({
+                where: { id: input.id },
             });
         }),
 
@@ -1237,22 +1294,33 @@ export const crudProcedure = router({
                 userId: z.string(),
                 productId: z.string(),
                 rating: z.number(),
-                comment: z.string().optional(), // Optional field
+                comment: z.string().optional(),
             })
         )
         .mutation(async ({ ctx, input }) => {
-            return ctx.prisma.review.create({
+            // Create the review
+            const review = await ctx.prisma.review.create({
                 data: {
                     userId: input.userId,
                     productId: input.productId,
                     rating: input.rating,
-                    comment: input.comment || null, // Default to null if not provided
-                },
-                include: {
-                    user: true, // Include the related user
-                    product: true, // Include the related product
+                    comment: input.comment,
                 },
             });
+            // Get all reviews for the product (exclude null/invalid ratings)
+            const allReviews = await ctx.prisma.review.findMany({
+                where: { productId: input.productId, rating: { gte: 1, lte: 5 } },
+                select: { rating: true },
+            });
+            // Calculate average rating using only valid ratings
+            const ratings = allReviews.map(r => typeof r.rating === 'number' ? r.rating : 0).filter(r => r > 0);
+            const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : null;
+            // Update the product's rating
+            await ctx.prisma.product.update({
+                where: { id: input.productId },
+                data: { rating: avgRating },
+            });
+            return review;
         }),
 
     deleteReview: publicProcedure
@@ -1377,4 +1445,6 @@ export const crudProcedure = router({
                 },
             });
         }),
+
+
 })

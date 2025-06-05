@@ -141,9 +141,6 @@ export default function Navbar() {
                                 <li onClick={closeMenu} className="py-4 cursor-pointer hover:border-b">
                                     <Link className="block w-full h-full" href="/contact">Contact Us</Link>
                                 </li>
-                                <li onClick={closeMenu} className="py-4 cursor-pointer hover:border-b">
-                                    <Link className="block w-full h-full" href="/profile">Profile</Link>
-                                </li>
                                 {user ? (
                                     <>
                                         {/* Mobile Cart Link: Only show if user has a cart */}

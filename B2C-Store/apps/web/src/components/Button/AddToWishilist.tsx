@@ -32,7 +32,7 @@ type RawWishList = {
     wishListItems?: RawWishListItem[];
 };
 
-export default function AddToWishlist({ productId }: { productId: string }) {
+export default function AddToWishlist({ productId, className }: { productId: string; className?: string }) {
     const session = useSession();
     const userId = session.userId;
     const [loading, setLoading] = useState(false);
@@ -116,7 +116,7 @@ export default function AddToWishlist({ productId }: { productId: string }) {
 
     return (
         <button
-            className="font-semibold px-4 py-2 h-10 rounded hover:bg-pink-100 cursor-pointer transition flex items-center justify-center"
+            className={`font-semibold px-4 py-2 h-10 rounded hover:bg-pink-100 cursor-pointer transition flex items-center justify-center ${className ?? ''}`}
             onClick={handleToggleWishlist}
             disabled={loading}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}

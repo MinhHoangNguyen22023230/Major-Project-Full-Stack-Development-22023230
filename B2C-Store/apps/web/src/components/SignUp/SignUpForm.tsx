@@ -33,6 +33,7 @@ export default function SignUpForm() {
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 mt-8">
+      <button onClick={() => router.push('/')} className="block mx-auto mt-4 text-center w-fit h-fit cursor-pointer text-blue-500 hover:underline">Return home</button>
       <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div>

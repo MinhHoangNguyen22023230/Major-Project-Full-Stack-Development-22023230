@@ -34,6 +34,12 @@ export const adminLoginProcedure = publicProcedure
             throw new Error("Invalid email or password");
         }
 
+        // Update lastLogin field
+        await ctx.prisma.admin.update({
+            where: { id: admin.id },
+            data: { lastLogin: new Date() },
+        });
+
         // Return only userId for session
         return { userId: admin.id };
     });

@@ -21,7 +21,7 @@ type CartItem = {
     totalPrice: number;
 };
 
-export default function AddToCartButton({ productId }: { productId: string }) {
+export default function AddToCartButton({ productId, className, disabled }: { productId: string; className?: string; disabled?: boolean }) {
     const session = useSession();
     const userId = session.userId;
     const [loading, setLoading] = useState(false);
@@ -112,9 +112,9 @@ export default function AddToCartButton({ productId }: { productId: string }) {
                 />
             )}
             <button
-                className="bg-blue-600 h-10 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded cursor-pointer transition flex items-center justify-center"
+                className={`bg-blue-600 h-10 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded cursor-pointer transition flex items-center justify-center ${className ?? ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={handleAddToCart}
-                disabled={loading}
+                disabled={loading || disabled}
                 aria-label="Add to cart"
             >
                 <span

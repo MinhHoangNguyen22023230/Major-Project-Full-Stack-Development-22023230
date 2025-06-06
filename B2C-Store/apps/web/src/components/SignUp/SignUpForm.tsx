@@ -24,7 +24,22 @@ export default function SignUpForm() {
       });
       router.push("/login");
     } catch (err) {
-      const errorMsg = (err as { message?: string })?.message || "Sign up failed";
+      // Enhanced error handling for duplicate username/email
+      let errorMsg = "Sign up failed";
+      if (err && typeof err === "object" && "message" in err) {
+        const msg = (err as { message?: string }).message?.toLowerCase() || "";
+        if (msg.includes("unique constraint") || msg.includes("unique") || msg.includes("duplicate")) {
+          if (msg.includes("username")) {
+            errorMsg = "Username already exists. Please choose another.";
+          } else if (msg.includes("email")) {
+            errorMsg = "Email already exists. Please use another email.";
+          } else {
+            errorMsg = "Username or email already exists.";
+          }
+        } else {
+          errorMsg = (err as { message?: string }).message || errorMsg;
+        }
+      }
       setError(errorMsg);
     }
   };
@@ -32,66 +47,82 @@ export default function SignUpForm() {
   const isLoading = signUpMutation.status === "pending";
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 mt-8">
-      <button onClick={() => router.push('/')} className="block mx-auto mt-4 text-center w-fit h-fit cursor-pointer text-blue-500 hover:underline">Return home</button>
-      <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            required
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            required
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            required
-            minLength={8}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-        </div>
-        {error && <div className="text-red-600 text-sm">{error}</div>}
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          disabled={isLoading}
+          onClick={() => router.push('/')}
+          className="mb-6 text-blue-600 hover:underline transition text-sm"
         >
-          {isLoading ? "Signing up..." : "Sign Up"}
+          &larr; Return home
         </button>
-      </form>
-      <div className="mt-4 text-center">
-        <Link href="/login" className="text-blue-600 hover:underline">
-          Already have an account? Login
-        </Link>
+        <h2 className="text-3xl font-extrabold mb-8 text-center text-indigo-700 drop-shadow">
+          Create your account
+        </h2>
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              required
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              autoComplete="username"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              required
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              required
+              minLength={8}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              autoComplete="new-password"
+            />
+          </div>
+          {error && (
+            <div className="text-red-600 text-sm text-center bg-red-50 border border-red-200 rounded py-2 px-3">
+              {error}
+            </div>
+          )}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition disabled:opacity-60"
+            disabled={isLoading}
+          >
+            {isLoading ? "Signing up..." : "Sign Up"}
+          </button>
+        </form>
+        <div className="mt-6 text-center">
+          <Link href="/login" className="text-indigo-600 hover:underline font-medium">
+            Already have an account? Login
+          </Link>
+        </div>
       </div>
     </div>
   );

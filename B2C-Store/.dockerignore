@@ -8,3 +8,11 @@ docker-compose.yml
 .git
 .gitignore
 .vscode
+
+# Ignore all test files
+**/*.test.*
+**/*.spec.*
+
+# Ignore vitest config files
+**/vitest.config.ts
+**/vitest.config.mts

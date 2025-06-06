@@ -4,6 +4,10 @@
 
 next.js react turborepo tailwind mongodb and awss3(for image storage) trpc prisma-ORM
 
+# There are only one admin with SuperAdmin status which can use crud for admin table.
+
+username: admin@example.com password:123123123
+
 # Repo structure
 root
  - apps

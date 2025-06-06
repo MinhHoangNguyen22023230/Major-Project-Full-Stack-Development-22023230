@@ -16,7 +16,7 @@ describe("decrypt", () => {
     });
 
     it("returns null if session is undefined or empty", async () => {
-        const { decrypt } = await import("../lib/session");
+        const { decrypt } = await import("./session");
         expect(await decrypt(undefined)).toBeNull();
         expect(await decrypt("")).toBeNull();
     });
@@ -25,7 +25,7 @@ describe("decrypt", () => {
         vi.doMock("jose", () => ({
             jwtVerify: vi.fn().mockResolvedValue({ payload: validPayload }),
         }));
-        const { decrypt } = await import("../lib/session");
+        const { decrypt } = await import("./session");
         const result = await decrypt(validToken);
         expect(result).toEqual(validPayload);
         vi.resetModules();
@@ -37,7 +37,7 @@ describe("decrypt", () => {
             jwtVerify: vi.fn().mockRejectedValue(error),
         }));
         const logSpy = vi.spyOn(console, "error").mockImplementation(() => { });
-        const { decrypt } = await import("../lib/session");
+        const { decrypt } = await import("./session");
         const result = await decrypt("bad.jwt.token");
         expect(result).toBeNull();
         expect(logSpy).toHaveBeenCalledWith("Session decryption error:", error);
@@ -48,7 +48,7 @@ describe("decrypt", () => {
     it("throws if JWT_SECRET is not set", async () => {
         delete process.env.JWT_SECRET;
         vi.resetModules();
-        await expect(import("../lib/session")).rejects.toThrow("Environment variable JWT_SECRET is not defined.");
+        await expect(import("./session")).rejects.toThrow("Environment variable JWT_SECRET is not defined.");
         process.env.JWT_SECRET = "testsecret";
     });
 });

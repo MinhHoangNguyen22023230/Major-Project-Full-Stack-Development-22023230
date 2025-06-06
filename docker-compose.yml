@@ -1,0 +1,13 @@
+services:
+  admin:
+    build:
+      context: ./B2C-Store
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    image: minhhoangnguyen22023230/full-stack:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Add other env vars as needed
+    # Remove depends_on: db since DB is in the cloud

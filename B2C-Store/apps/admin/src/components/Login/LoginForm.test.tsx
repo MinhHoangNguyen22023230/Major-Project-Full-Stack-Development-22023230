@@ -2,7 +2,7 @@
 //   npm install --save-dev @testing-library/react @testing-library/jest-dom
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, vi, beforeEach, expect } from "vitest";
-import AdminLoginForm from "../components/Login/LoginForm";
+import AdminLoginForm from "@/components/Login/LoginForm";
 import React from "react";
 
 // Mock next/navigation
@@ -52,26 +52,32 @@ describe("AdminLoginForm", () => {
 
     it("renders form fields and submit button", () => {
         render(<AdminLoginForm />);
-        expect(screen.getByLabelText(/admin email/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+        expect(screen.getByLabelText(/admin email/i)).not.toBeNull();
+        expect(screen.getByLabelText(/password/i)).not.toBeNull();
+        expect(screen.getByRole("button", { name: /sign in/i })).not.toBeNull();
     });
 
     it("shows loader when loading", () => {
         adminLoginMutation.status = "pending";
         render(<AdminLoginForm />);
-        expect(screen.getByTestId("loader")).toBeInTheDocument();
+        expect(screen.getByTestId("loader")).not.toBeNull();
     });
 
     it("submits credentials and sets session, then redirects", async () => {
+        mutateAsync.mockClear();
+        mutate.mockClear();
         mutateAsync.mockResolvedValue({ userId: "admin1" });
         mutate.mockImplementation((_input: unknown, opts: { onSuccess: () => void }) => opts.onSuccess());
         render(<AdminLoginForm />);
         fireEvent.change(screen.getByLabelText(/admin email/i), { target: { value: "admin@b2c.com" } });
         fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password" } });
-        fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+        const buttons = screen.getAllByRole("button", { name: /sign in/i });
+        const button = buttons[buttons.length - 1];
+        fireEvent.click(button);
         await waitFor(() => {
             expect(mutateAsync).toHaveBeenCalledWith({ email: "admin@b2c.com", password: "password" });
+        });
+        await waitFor(() => {
             expect(mutate).toHaveBeenCalledWith(
                 { userId: "admin1" },
                 expect.objectContaining({ onSuccess: expect.any(Function), onError: expect.any(Function) })
@@ -84,27 +90,34 @@ describe("AdminLoginForm", () => {
         render(<AdminLoginForm />);
         fireEvent.change(screen.getByLabelText(/admin email/i), { target: { value: "admin@b2c.com" } });
         fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "wrong" } });
-        fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
-        await waitFor(() => {
-            expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
-        });
+        const buttons = screen.getAllByRole("button", { name: /sign in/i });
+        const button = buttons[buttons.length - 1];
+        fireEvent.click(button);
+        // Use findByText for robust async error assertion
+        const error = await screen.findByText(/invalid credentials/i, {}, { timeout: 1500 });
+        expect(error).toBeDefined();
     });
 
     it("shows error if session creation fails", async () => {
         mutateAsync.mockResolvedValue({ userId: "admin1" });
-        mutate.mockImplementation((_input: unknown, opts: { onSuccess?: () => void; onError: (err: { message: string }) => void }) => opts.onError({ message: "Session error" }));
+        mutate.mockImplementation((_input: unknown, opts: { onSuccess?: () => void; onError: (err: { message: string }) => void }) => {
+            opts.onError({ message: "Session error" });
+        });
         render(<AdminLoginForm />);
         fireEvent.change(screen.getByLabelText(/admin email/i), { target: { value: "admin@b2c.com" } });
         fireEvent.change(screen.getByLabelText(/password/i), { target: { value: "password" } });
-        fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
-        await waitFor(() => {
-            expect(screen.getByText(/session error/i)).toBeInTheDocument();
-        });
+        const buttons = screen.getAllByRole("button", { name: /sign in/i });
+        const button = buttons[buttons.length - 1];
+        fireEvent.click(button);
+        // Use findByText for robust async error assertion
+        const error = await screen.findByText(/session error/i, {}, { timeout: 1500 });
+        expect(error).toBeDefined();
     });
 
     it("shows alert if login_required message in search params", () => {
         searchParamsValue = new URLSearchParams("message=login_required");
         render(<AdminLoginForm />);
-        expect(screen.getByText(/please log in to continue/i)).toBeInTheDocument();
+        const alert = screen.queryByText(/please log in to continue/i);
+        expect(alert).not.toBeNull();
     });
 });

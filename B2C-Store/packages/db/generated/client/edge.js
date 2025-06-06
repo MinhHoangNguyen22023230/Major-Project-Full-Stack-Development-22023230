@@ -251,7 +251,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/workspaces/javascript-node-mongo/Major-Project-Full-Stack-Development-22023230/B2C-Store/packages/db/generated/client",
+      "value": "C:\\Users\\hoang\\Desktop\\Major Project\\Major-Project-Full-Stack-Development-22023230\\B2C-Store\\packages\\db\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -260,12 +260,12 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "windows",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/workspaces/javascript-node-mongo/Major-Project-Full-Stack-Development-22023230/B2C-Store/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "C:\\Users\\hoang\\Desktop\\Major Project\\Major-Project-Full-Stack-Development-22023230\\B2C-Store\\packages\\db\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

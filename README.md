@@ -45,3 +45,11 @@ turbo db:seed (deprecated due to update in schema without update the seed)
 
 # Remove all node_modules in project
 find . -name "node_modules" -type d -prune -exec rm -rf '{}' +
+
+# Install vitest
+
+pnpm add -D vitest @vitest/ui @vitest/coverage-v8 
+
+# Access ec2 through ssh
+
+ssh -i "au-dell.pem" ec2-user@ec2-13-210-72-239.ap-southeast-2.compute.amazonaws.com

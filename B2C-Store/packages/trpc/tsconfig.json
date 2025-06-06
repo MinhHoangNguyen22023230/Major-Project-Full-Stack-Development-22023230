@@ -6,7 +6,9 @@
         "baseUrl": ".",
         "moduleResolution": "nodenext",
         "skipLibCheck": true, // Added to avoid type-checking issues
-        "outDir": "dist"
+        "outDir": "dist",
+        "noEmit": true,
+        "allowImportingTsExtensions": true
     },
     "include": [
         "src"

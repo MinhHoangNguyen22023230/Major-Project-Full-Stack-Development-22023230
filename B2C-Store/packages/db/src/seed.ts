@@ -1,9 +1,7 @@
 import { PrismaClient } from '../generated/client'
 
-const prisma = new PrismaClient()
-
-async function main() {
-
+export async function main() {
+    const prisma = new PrismaClient();
     console.log("🌱 Seeding started...")
     // Seed Brands
     const brand1 = await prisma.brand.create({
@@ -53,6 +51,10 @@ async function main() {
             categoryId: category1.id,
             brandId: brand1.id,
             stock: 50,
+            // Optional fields
+            salePrice: 90.0,
+            releaseDate: new Date(),
+            rating: 4.5,
         },
     })
 
@@ -65,6 +67,9 @@ async function main() {
             categoryId: category2.id,
             brandId: brand2.id,
             stock: 30,
+            salePrice: 180.0,
+            releaseDate: new Date(),
+            rating: 4.2,
         },
     })
 
@@ -77,6 +82,9 @@ async function main() {
             categoryId: category1.id,
             brandId: brand1.id,
             stock: 50,
+            salePrice: 95.0,
+            releaseDate: new Date(),
+            rating: 4.8,
         },
     })
 
@@ -89,10 +97,13 @@ async function main() {
             categoryId: category2.id,
             brandId: brand2.id,
             stock: 30,
+            salePrice: 185.0,
+            releaseDate: new Date(),
+            rating: 4.3,
         },
     })
 
-    console.log("Products seeded:", { product1, product3, product4 })
+    console.log("Products seeded:", { product1, product2, product3, product4 })
 
     // Seed Users
     const user1 = await prisma.user.create({
@@ -101,6 +112,7 @@ async function main() {
             email: "hoang@example.com",
             hashedPassword: "$2b$10$eANxaIX6mUbhgZfJ6bRWteNXC8eE43xsHEXZEpJF0J.ELbgP3T67m",
             imgUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png",
+            lastLogin: new Date(),
         },
     })
 
@@ -110,6 +122,7 @@ async function main() {
             email: "son@example.com",
             hashedPassword: "$2b$10$eANxaIX6mUbhgZfJ6bRWteNXC8eE43xsHEXZEpJF0J.ELbgP3T67m",
             imgUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png",
+            lastLogin: new Date(),
         },
     })
 
@@ -124,6 +137,7 @@ async function main() {
             state: "State A",
             country: "Country A",
             zipCode: "12345",
+            default: true,
         },
     })
 
@@ -135,28 +149,36 @@ async function main() {
             state: "State B",
             country: "Country B",
             zipCode: "67890",
+            default: false,
         },
     })
+
     console.log("Addresses seeded", { address1, address2 })
 
     // Seed Admin
-
     const admin1 = await prisma.admin.create({
         data: {
             username: "admin",
             email: "admin@example.com",
-            hashedPassword: "$2b$10$dHxT2SChpe8TuYHklkYnZuhYa6ex4bLhrbUtdYtDb8qvdSKZW1feq"
+            hashedPassword: "$2b$10$dHxT2SChpe8TuYHklkYnZuhYa6ex4bLhrbUtdYtDb8qvdSKZW1feq",
+            role: "superadmin",
+            imageUrl: "https://b2cstorage.s3.ap-southeast-2.amazonaws.com/default/no+image+user.png",
+            lastLogin: new Date(),
         },
     })
 
+    console.log("Admin seeded:", { admin1 })
+
+    // Optionally, seed more related data (orders, reviews, etc.) as needed
     console.log("Seeding completed!")
+    await prisma.$disconnect();
 }
 
-main()
-    .catch(async (e) => {
-        console.error(e)
-        process.exit(1)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+// Only run main() if this file is executed directly (not imported)
+if (process.argv[1] && process.argv[1].endsWith("seed.ts")) {
+    main()
+        .catch(async (e) => {
+            console.error(e)
+            process.exit(1)
+        })
+}

@@ -7,9 +7,11 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const BUCKET_NAME = process.env.AWS_BUCKET_NAME as string;
-const BUCKET_REGION = process.env.AWS_BUCKET_REGION as string;
-const PUBLIC_URL_PREFIX = `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/`;
+function getPublicUrlPrefix() {
+    const BUCKET_NAME = process.env.AWS_BUCKET_NAME as string;
+    const BUCKET_REGION = process.env.AWS_BUCKET_REGION as string;
+    return `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/`;
+}
 
 // --- Helper to build S3 keys ---
 const buildKey = (folder: string, id: string | undefined, filename: string) => {
@@ -24,7 +26,7 @@ export async function uploadAdminImage(adminId: string, filename: string, body: 
     await deleteAdminImage(adminId);
     const key = buildKey("admin", adminId, filename);
     await uploadFile(key, body, contentType);
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 export async function getAdminImage(adminId: string, filename: string) {
     return getFile(buildKey("admin", adminId, filename));
@@ -48,7 +50,7 @@ export async function uploadBrandImage(brandId: string, filename: string, body: 
     await deleteBrandImage(brandId);
     const key = buildKey("brand", brandId, filename);
     await uploadFile(key, body, contentType);
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 export async function getBrandImage(brandId: string, filename: string) {
     return getFile(buildKey("brand", brandId, filename));
@@ -70,7 +72,7 @@ export async function uploadCategoryImage(categoryId: string, filename: string, 
     await deleteCategoryImage(categoryId);
     const key = buildKey("category", categoryId, filename);
     await uploadFile(key, body, contentType);
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 export async function getCategoryImage(categoryId: string, filename: string) {
     return getFile(buildKey("category", categoryId, filename));
@@ -92,7 +94,7 @@ export async function uploadUserImage(userId: string, filename: string, body: Bu
     await deleteUserImage(userId);
     const key = buildKey("user", userId, filename);
     await uploadFile(key, body, contentType);
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 export async function getUserImage(userId: string, filename: string) {
     return getFile(buildKey("user", userId, filename));
@@ -114,7 +116,7 @@ export async function uploadProductImage(productId: string, filename: string, bo
     await deleteProductImage(productId);
     const key = buildKey("product", productId, filename);
     await uploadFile(key, body, contentType);
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 export async function getProductImage(productId: string, filename: string) {
     return getFile(buildKey("product", productId, filename));
@@ -142,7 +144,7 @@ export async function getSignedDefaultImageUrl(filename: string, expiresInSecond
 // --- Generic functions (for advanced/fallback usage) ---
 export async function uploadFile(key: string, body: Buffer | Uint8Array | Blob | string, contentType?: string) {
     const command = new PutObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME as string,
         Key: key,
         Body: body,
         ContentType: contentType,
@@ -152,12 +154,12 @@ export async function uploadFile(key: string, body: Buffer | Uint8Array | Blob |
 
 export async function getFile(key: string) {
     // Return the public URL for the file instead of the raw AWS SDK object
-    return PUBLIC_URL_PREFIX + key;
+    return getPublicUrlPrefix() + key;
 }
 
 export async function deleteFile(key: string) {
     const command = new DeleteObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME as string,
         Key: key,
     });
     return s3.send(command);
@@ -165,7 +167,7 @@ export async function deleteFile(key: string) {
 
 export async function listFiles(prefix?: string) {
     const command = new ListObjectsV2Command({
-        Bucket: BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME as string,
         Prefix: prefix,
     });
     const result = await s3.send(command);
@@ -175,7 +177,7 @@ export async function listFiles(prefix?: string) {
 
 export async function getSignedFileUrl(key: string, expiresInSeconds = 3600) {
     const command = new GetObjectCommand({
-        Bucket: BUCKET_NAME,
+        Bucket: process.env.AWS_BUCKET_NAME as string,
         Key: key,
     });
     return getSignedUrl(s3, command, { expiresIn: expiresInSeconds });

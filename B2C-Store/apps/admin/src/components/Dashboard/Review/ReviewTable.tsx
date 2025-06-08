@@ -96,8 +96,8 @@ export default function ReviewTable() {
                 <input
                     type="text"
                     className="search-box rounded-md p-2 ml-2 text-[var(--foreground)] bg-[var(--gallery)] border border-[var(--ui-border-color)]"
-                    placeholder="Search by ID, User, or Product..."
-                    title="Search by ID, User, or Product"
+                    placeholder="Search by ID, Username, or Product Name"
+                    title="Search by ID, Username, or Product Name"
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />

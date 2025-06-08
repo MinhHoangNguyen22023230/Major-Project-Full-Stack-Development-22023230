@@ -111,7 +111,7 @@ export default function ProductTable() {
                 <input
                     type="text"
                     className="search-box rounded-md p-2 ml-2 text-[var(--foreground)] bg-[var(--gallery)] border border-[var(--ui-border-color)]"
-                    placeholder="Search..."
+                    placeholder="Search by ID or Name"
                     title="Search by ID or Name"
                     value={search}
                     onChange={e => setSearch(e.target.value)}

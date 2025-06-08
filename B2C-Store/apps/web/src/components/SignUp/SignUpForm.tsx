@@ -51,11 +51,11 @@ export default function SignUpForm() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
         <button
           onClick={() => router.push('/')}
-          className="mb-6 text-blue-600 hover:underline transition text-sm"
+          className="mb-6 text-[var(--supernova)] hover:text-[var(--yukon-gold)] hover:underline transition text-sm cursor-pointer"
         >
           &larr; Return home
         </button>
-        <h2 className="text-3xl font-extrabold mb-8 text-center text-indigo-700 drop-shadow">
+        <h2 className="text-3xl font-extrabold mb-8 text-center text-[var(--supernova)] drop-shadow">
           Create your account
         </h2>
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
@@ -67,7 +67,7 @@ export default function SignUpForm() {
               type="text"
               id="username"
               name="username"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--supernova)] focus:ring-2 focus:ring-[var(--supernova)] transition"
               required
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -82,7 +82,7 @@ export default function SignUpForm() {
               type="email"
               id="email"
               name="email"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--supernova)] focus:ring-2 focus:ring-[var(--supernova)] transition"
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -97,7 +97,7 @@ export default function SignUpForm() {
               type="password"
               id="password"
               name="password"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-[var(--supernova)] focus:ring-2 focus:ring-[var(--supernova)] transition"
               required
               minLength={8}
               value={password}
@@ -112,14 +112,14 @@ export default function SignUpForm() {
           )}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition disabled:opacity-60"
+            className="w-full py-2 px-4 bg-[var(--supernova)] text-[var(--rangoon-green)] font-semibold rounded-lg shadow hover:bg-[var(--yukon-gold)] transition disabled:opacity-60"
             disabled={isLoading}
           >
             {isLoading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <div className="mt-6 text-center">
-          <Link href="/login" className="text-indigo-600 hover:underline font-medium">
+          <Link href="/login" className="text-[var(--supernova)] hover:text-[var(--yukon-gold)] hover:underline font-medium cursor-pointer">
             Already have an account? Login
           </Link>
         </div>

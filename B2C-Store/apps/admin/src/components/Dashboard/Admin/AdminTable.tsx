@@ -93,7 +93,7 @@ export default function AdminTable() {
                 <input
                     type="text"
                     className="search-box rounded-md p-2 ml-2 text-[var(--foreground)] bg-[var(--gallery)] border border-[var(--ui-border-color)]"
-                    placeholder="Search..."
+                    placeholder="Search by ID, Name, or Email"
                     title="Search by ID, Name, or Email"
                     value={search}
                     onChange={e => setSearch(e.target.value)}

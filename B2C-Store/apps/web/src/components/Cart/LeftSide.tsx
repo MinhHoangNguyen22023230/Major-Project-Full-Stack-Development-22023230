@@ -134,20 +134,23 @@ export default function LeftSide({ cart }: { cart: Cart }) {
                     const product = item.product || productsById[item.productId] || {};
                     return (
                         <li key={item.id} className="flex gap-4 items-center border-b pb-4">
-                            <Link href={`/products/${product.id || ''}`} className="block">
-                                <Image
-                                    src={product.imageUrl || "/no product image.png"}
-                                    alt={product.name || "Product"}
-                                    width={80}
-                                    height={80}
-                                    className="rounded"
-                                />
-                            </Link>
+                            <div className="flex items-center justify-center w-24 h-24 bg-gray-100 rounded">
+                                <Link href={`/products/${product.id || ''}`} className="block">
+                                    <Image
+                                        src={product.imageUrl || "/no product image.png"}
+                                        alt={product.name || "Product"}
+                                        width={80}
+                                        height={80}
+                                        className="rounded object-contain mx-auto"
+                                        style={{ display: 'block', margin: 'auto' }}
+                                    />
+                                </Link>
+                            </div>
                             <div className="flex-1">
                                 <Link href={`/products/${product.id || ''}`} className="font-semibold hover:underline">
                                     {product.name || 'Unknown Product'}
                                 </Link>
-                                <div className="text-gray-600 text-sm">{product.description || 'No description'}</div>
+                                <div className="text-gray-600 text-sm line-clamp-2">{product.description || 'No description'}</div>
                                 <div className="text-gray-800 mt-1">Price: ${product.price?.toFixed(2) || '0.00'}</div>
                                 <div className="text-gray-800 mt-1">Item Total: ${(item.totalPrice || ((product.price || 0) * item.quantity)).toFixed(2)}</div>
                                 <div className="flex items-center mt-2 gap-2">

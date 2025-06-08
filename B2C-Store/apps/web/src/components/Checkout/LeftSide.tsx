@@ -86,7 +86,7 @@ export default function LeftSide({ cart }: { cart: Cart }) {
                                 <Link href={`/products/${product?.id || ""}`} className="font-semibold hover:underline">
                                     {product?.name || "Unknown Product"}
                                 </Link>
-                                <div className="text-gray-600 text-sm">{product?.description || "No description"}</div>
+                                <div className="text-gray-600 text-sm line-clamp-2">{product?.description || "No description"}</div>
                                 <div className="text-gray-800 mt-1">Price: ${product?.price?.toFixed(2) || "0.00"}</div>
                                 <div className="text-gray-800 mt-1">
                                     Quantity: {item.quantity}

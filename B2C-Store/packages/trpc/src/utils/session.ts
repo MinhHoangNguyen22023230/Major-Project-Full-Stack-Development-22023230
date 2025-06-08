@@ -14,7 +14,9 @@ export async function createSession(userId: string, cookieName = "session_web") 
     const cookieStore = await cookies();
     await cookieStore.set(cookieName, session, {
         httpOnly: true,
-        secure: true,
+        secure: true, // Only allow HTTPS
+        sameSite: "lax", // Lax is safe for most cases
+        path: "/",
         expires: expiresAt,
     });
 }

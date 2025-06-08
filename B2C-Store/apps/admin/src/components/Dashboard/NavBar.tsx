@@ -74,6 +74,12 @@ export default function NavBar() {
                             <CgPushChevronLeftR className="h-10 w-10 cursor-pointer transition-colors duration-300 inline-block mr-1" title="close sidebar" />
                         </button>
                     )}
+                    {/* Always show mobile sidebar button on mobile, and show on desktop when sidebar toggle is visible */}
+                    {(isMobile || (!isMobile && true)) && (
+                        <button onClick={() => setMobileSidebarOpen(true)} className="block sm:hidden mr-2">
+                            <GiHamburgerMenu className="h-6 w-6" />
+                        </button>
+                    )}
                     <h1 className="text-[var(--navbar-text)]">Admin Dashboard</h1>
                 </div>
                 <div className="flex space-x-4 relative items-center">
@@ -90,10 +96,6 @@ export default function NavBar() {
                         className="rounded-full group mr-2 cursor-pointer hover:opacity-80 transition-opacity duration-300 border border-[var(--ui-border-color)] bg-[var(--navbar-bg)]"
                         onClick={() => setProfileMenuOpen((v) => !v)}
                     />
-                    {/* Burger menu button for mobile */}
-                    <button onClick={() => setMobileSidebarOpen(true)} className="block sm:hidden">
-                        <GiHamburgerMenu className="h-6 w-6" />
-                    </button>
                     {profileMenuOpen && (
                         <div ref={profileMenuRef} className="absolute right-2 top-12 w-40 rounded shadow-lg z-50 bg-[var(--popover-bg)] text-[var(--popover-text)] border border-[var(--popover-border)]">
                             <Link

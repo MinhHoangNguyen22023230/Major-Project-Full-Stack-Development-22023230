@@ -3,7 +3,7 @@ import { trpc } from "@/app/_trpc/client";
 import { useState, useEffect } from "react";
 import { BsCartPlus } from "react-icons/bs";
 import { BsFillCartCheckFill } from "react-icons/bs";
-import Alert from "@repo/ui/Alert";
+import Alert from "@/components/ui/Alert";
 
 // Match the backend Cart type, allowing totalPrice to be number | null
 type Cart = {
@@ -43,6 +43,12 @@ export default function AddToCartButton({ productId, className, disabled }: { pr
             return () => clearTimeout(timeout);
         }
     }, [alert]);
+
+    // Helper to show alert for 2 seconds (like UserTable)
+    const showAlert = (message: string, type?: "info" | "success" | "warning" | "error") => {
+        setAlert({ message, type });
+        setTimeout(() => setAlert(null), 2000);
+    };
 
     const handleAddToCart = async () => {
         if (!userId) {
@@ -93,10 +99,11 @@ export default function AddToCartButton({ productId, className, disabled }: { pr
                 utils.crud.getCartItems.invalidate(),
             ]);
 
-            setAlert({ message: "Product added to cart!", type: "success" });
+            setAlert(null);
+            showAlert("Product added to cart!", "success");
         } catch (error) {
             console.error("Error adding to cart:", error);
-            setAlert({ message: "Failed to add product to cart.", type: "error" });
+            showAlert("Failed to add product to cart.", "error");
         } finally {
             setLoading(false);
         }
@@ -105,11 +112,9 @@ export default function AddToCartButton({ productId, className, disabled }: { pr
     return (
         <>
             {alert && (
-                <Alert
-                    message={alert.message}
-                    type={alert.type}
-                    onClose={() => setAlert(null)}
-                />
+                <div className="fixed top-6 left-1/2 z-50 transform -translate-x-1/2 w-full max-w-xs flex justify-center pointer-events-none">
+                    <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />
+                </div>
             )}
             <button
                 className={`bg-blue-600 h-10 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded cursor-pointer transition flex items-center justify-center ${className ?? ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
